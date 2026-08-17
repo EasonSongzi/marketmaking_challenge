@@ -317,14 +317,9 @@ class MarketMaker:
 
     @property
     def name(self) -> str:  # type: ignore[empty-body]
-        # TODO: return a unique display name for your market maker.
-        ...
+        return "Mola mola"
 
     def price_option(self, option: BinaryOption) -> float:
-        # TODO: return your own theoretical probability (in [0, 1]) that `option` expires in
-        # the money, using whatever you estimated in `warm_up` and the current
-        # `self.underlying_state`. Called whenever you quote or price a FOK, and by the grader
-        # to log what you thought an option was worth, so keep it free of side effects.
         if self.estimated_market_parameters is None:
             raise RuntimeError("warm_up must be called before price_option")
         return self.price_option_from_parameters(self.estimated_market_parameters, option)
@@ -380,14 +375,22 @@ class MarketMaker:
         return min(max(price, 0.0), 1.0)
 
     def quote(self, option: BinaryOption, counterparty_id: int) -> Quote:  # type: ignore[empty-body]
-        # TODO: return a two-sided `Quote` for `option`.
-        ...
+        fair_value_cents: int = round(self.price_option(option) * 100)
+        bid_price: float = max(fair_value_cents - 1, 0) / 100
+        offer_price: float = min(fair_value_cents + 1, 100) / 100
+        return Quote(
+            bid_price=bid_price,
+            bid_quantity=1,
+            offer_price=offer_price,
+            offer_quantity=1,
+        )
 
     def respond_to_fok(self, option: BinaryOption, fok_order: FokOrder) -> bool:  # type: ignore[empty-body]
-        # TODO: return True to accept the order at its price, False to ignore it. You cannot
-        # accept part of it, and accepting does not guarantee you `fok_order.quantity` -- it is
-        # shared with every other market maker that accepts. See `FokOrder` for the split rule.
-        ...
+        # quote: Quote = self.quote(option, fok_order.counterparty_id)
+        # if fok_order.order_type == OrderType.BUY:
+        #     return fok_order.price >= quote.offer_price
+        # return fok_order.price <= quote.bid_price
+        return False
 
     def warm_up(self, market_history: MarketHistory) -> None:
         """Build history summaries and fit the initial, deliberately simple model."""

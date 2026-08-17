@@ -1,0 +1,7 @@
+interface:
+  display_name: "Review HackerRank Results"
+  short_description: "Review results and promote only better baselines"
+  default_prompt: "Use $review-hackerrank-results with the attached HackerRank results tab. Compare every case with the current baseline; if the run qualifies, save and promote it, otherwise save nothing. Do not commit."
+
+policy:
+  allow_implicit_invocation: false
