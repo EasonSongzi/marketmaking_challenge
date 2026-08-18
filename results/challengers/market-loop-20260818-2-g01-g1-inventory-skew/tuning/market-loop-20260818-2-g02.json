@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "137d9cfbc203f61ec30e224d5e0472faaf1206339e45ece6fe9c6ff80aad5f8b",
+  "variants": [
+    {
+      "id": "skew-zero-fine",
+      "granularity": "fine",
+      "parameters": {
+        "skewCents": 0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g02/tune-02/.tuning/market-loop-20260818-2/g02/variants/skew-zero-fine/Market_making_binary_option.py",
+      "sourceSha256": "c887cecf82477d0e21b1df5d603bd3f2b9f744ae3d9179242a19b641b660c907",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-two-fine",
+      "granularity": "fine",
+      "parameters": {
+        "skewCents": 2
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g02/tune-02/.tuning/market-loop-20260818-2/g02/variants/skew-two-fine/Market_making_binary_option.py",
+      "sourceSha256": "f4622ca2df994d4ee0ce921219c4df997de19221a5ff549d33fefdfa994c8441",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-three-medium",
+      "granularity": "medium",
+      "parameters": {
+        "skewCents": 3
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g02/tune-02/.tuning/market-loop-20260818-2/g02/variants/skew-three-medium/Market_making_binary_option.py",
+      "sourceSha256": "60444da83b6d92f9f740812c532ea8feccc5535b7aa55f48dbba8411a23118f0",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-four-medium",
+      "granularity": "medium",
+      "parameters": {
+        "skewCents": 4
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g02/tune-02/.tuning/market-loop-20260818-2/g02/variants/skew-four-medium/Market_making_binary_option.py",
+      "sourceSha256": "67d7985edd3e06aba9f3e73db6086fc0d2f65791ac7b219315fcb8f01eab8e12",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-six-coarse",
+      "granularity": "coarse",
+      "parameters": {
+        "skewCents": 6
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g02/tune-02/.tuning/market-loop-20260818-2/g02/variants/skew-six-coarse/Market_making_binary_option.py",
+      "sourceSha256": "5e2b13a24566c73d20b2fd2caa6600805d79724d95885ffa1f9e8c7fb7c1a12b",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}

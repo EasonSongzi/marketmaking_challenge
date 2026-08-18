@@ -1,10 +1,10 @@
 # Market-Maker Experiment: market-loop-20260818-2
 
-- Status: failed
+- Status: active
 - Started: 2026-08-18T17:11:09.865Z
 - Starting baseline: g5-wide-three-two (12.30/16.00)
 - Current baseline: g5-wide-three-two (12.30/16.00)
-- Stop condition: integrity failure
+- Stop condition: not reached
 - Score trend: 12.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
@@ -57,8 +57,8 @@ The one-cent inventory skew matched the 12.30 champion and improved combined PnL
 
 - Hypothesis: fine parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
 - Implementation plan: {"skewCents":0}
-- Worker summary: Materialized fine tuning vector.
-- Status: evaluated
+- Worker summary: Designed five immutable skew-magnitude vectors spanning fine, medium, and coarse granularity, excluding the one-cent parent. The materializer changed only the paired quote literals, compiled every variant, and passed scope validation; the resumed dispatcher reused all completed evidence and evaluated only the two remaining sources.
+- Status: archived
 - Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 75.49; minimum capital 5.92/10.00
 - Baseline delta: 0.00 points; PnL 0.00
 
@@ -66,8 +66,8 @@ The one-cent inventory skew matched the 12.30 champion and improved combined PnL
 
 - Hypothesis: fine parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
 - Implementation plan: {"skewCents":2}
-- Worker summary: Materialized fine tuning vector.
-- Status: evaluated
+- Worker summary: Designed five immutable skew-magnitude vectors spanning fine, medium, and coarse granularity, excluding the one-cent parent. The materializer changed only the paired quote literals, compiled every variant, and passed scope validation; the resumed dispatcher reused all completed evidence and evaluated only the two remaining sources.
+- Status: archived
 - Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 75.64; minimum capital 5.88/10.00
 - Baseline delta: 0.00 points; PnL 0.15
 
@@ -75,32 +75,33 @@ The one-cent inventory skew matched the 12.30 champion and improved combined PnL
 
 - Hypothesis: medium parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
 - Implementation plan: {"skewCents":3}
-- Worker summary: Materialized medium tuning vector.
-- Status: evaluated
-- Result: 5/20 passed; 0 bankruptcies; 0.70/16.00 points; PnL 0.40; minimum capital 20.00/20.00
-- Baseline delta: -11.60 points; PnL -75.09
+- Worker summary: Designed five immutable skew-magnitude vectors spanning fine, medium, and coarse granularity, excluding the one-cent parent. The materializer changed only the paired quote literals, compiled every variant, and passed scope validation; the resumed dispatcher reused all completed evidence and evaluated only the two remaining sources.
+- Status: archived
+- Result: 5/20 passed; n/a bankruptcies; 0.70/16.00 points; PnL n/a; minimum capital n/a; 15 runtime errors
+- Baseline delta: -11.60 points; PnL n/a
 
 ### skew-four-medium
 
 - Hypothesis: medium parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
 - Implementation plan: {"skewCents":4}
-- Worker summary: Materialized medium tuning vector.
-- Status: prepared
-- Result: not evaluated
-- Baseline delta: n/a
+- Worker summary: Designed five immutable skew-magnitude vectors spanning fine, medium, and coarse granularity, excluding the one-cent parent. The materializer changed only the paired quote literals, compiled every variant, and passed scope validation; the resumed dispatcher reused all completed evidence and evaluated only the two remaining sources.
+- Status: archived
+- Result: 5/20 passed; n/a bankruptcies; 0.70/16.00 points; PnL n/a; minimum capital n/a; 15 runtime errors
+- Baseline delta: -11.60 points; PnL n/a
 
 ### skew-six-coarse
 
 - Hypothesis: coarse parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
 - Implementation plan: {"skewCents":6}
-- Worker summary: Materialized coarse tuning vector.
-- Status: prepared
-- Result: not evaluated
-- Baseline delta: n/a
+- Worker summary: Designed five immutable skew-magnitude vectors spanning fine, medium, and coarse granularity, excluding the one-cent parent. The materializer changed only the paired quote literals, compiled every variant, and passed scope validation; the resumed dispatcher reused all completed evidence and evaluated only the two remaining sources.
+- Status: archived
+- Result: 5/20 passed; n/a bankruptcies; 0.70/16.00 points; PnL n/a; minimum capital n/a; 15 runtime errors
+- Baseline delta: -11.60 points; PnL n/a
 
-
-Failure (integrity): skew-three-medium integrity failure after retry
-
-## Recovery
-
-Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: Zero- and two-cent skew both passed 20/20 at 12.30 points. The zero-skew control exactly reproduced the champion's 75.49 combined PnL and 5.92/10.00 minimum capital, improving the parent challenger's minimum capital from 5.90/10.00; two cents reduced both PnL and minimum capital versus the one-cent parent. Skews of three, four, and six cents produced explicit quote-boundary runtime failures, so the useful magnitude region ends below three cents for this unclamped structure.
+Next-generation rationale: Archive zero skew as the challenger's best revision, but do not spend the second tuning batch on magnitudes already evaluated or cached. Return to Explore and test structurally safe inventory controls, including center clamping for larger skews and asymmetric risk-reducing quote behavior.
+Challenger update: updated market-loop-20260818-2-g01-g1-inventory-skew to skew-zero-fine.
+Previous failure (integrity): skew-three-medium integrity failure
+Recovery instruction: Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.

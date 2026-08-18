@@ -25,8 +25,8 @@
       "method": "quote",
       "origin": "explore",
       "rationale": "It matched the champion's 12.30 points and zero-bankruptcy record while adding 1.20 combined PnL. The discrete one-cent skew and immediate activation expose explicit tuning upside in skew magnitude and inventory threshold.",
-      "tuningAttempts": 0,
-      "currentRevision": 0,
+      "tuningAttempts": 1,
+      "currentRevision": 1,
       "revisions": [
         {
           "number": 0,
@@ -62,9 +62,52 @@
             ]
           },
           "createdAt": "2026-08-18T17:16:32.793Z"
+        },
+        {
+          "number": 1,
+          "sourcePath": "results/challengers/market-loop-20260818-2-g01-g1-inventory-skew/r01.py",
+          "sourceSha256": "c887cecf82477d0e21b1df5d603bd3f2b9f744ae3d9179242a19b641b660c907",
+          "evaluationPath": "results/challengers/market-loop-20260818-2-g01-g1-inventory-skew/r01.json",
+          "summaryPath": "results/challengers/market-loop-20260818-2-g01-g1-inventory-skew/r01.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "skew-zero-fine",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260818-2-g01-g1-inventory-skew/r01.py",
+            "sourceSha256": "c887cecf82477d0e21b1df5d603bd3f2b9f744ae3d9179242a19b641b660c907",
+            "modifiedLines": null,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1230,
+              "combinedPnlCents": 7549,
+              "minimumCapital": {
+                "endingCashCents": 592,
+                "startingCapitalCents": 1000
+              }
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-18T18:59:06.667Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [
+        {
+          "runId": "market-loop-20260818-2",
+          "generation": 2,
+          "manifestPath": "results/challengers/market-loop-20260818-2-g01-g1-inventory-skew/tuning/market-loop-20260818-2-g02.json",
+          "bestCandidateId": "skew-zero-fine",
+          "improved": true
+        }
+      ]
     }
   ],
   "evaluations": {
@@ -136,6 +179,94 @@
       },
       "reasons": [
         "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "c887cecf82477d0e21b1df5d603bd3f2b9f744ae3d9179242a19b641b660c907": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1230,
+        "combinedPnlCents": 7549,
+        "minimumCapital": {
+          "endingCashCents": 592,
+          "startingCapitalCents": 1000
+        }
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "f4622ca2df994d4ee0ce921219c4df997de19221a5ff549d33fefdfa994c8441": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1230,
+        "combinedPnlCents": 7564,
+        "minimumCapital": {
+          "endingCashCents": 588,
+          "startingCapitalCents": 1000
+        }
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "60444da83b6d92f9f740812c532ea8feccc5535b7aa55f48dbba8411a23118f0": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 5,
+        "total": 20,
+        "bankruptcies": null,
+        "scoredPointsHundredths": 70,
+        "combinedPnlCents": null,
+        "minimumCapital": null,
+        "runtimeErrors": 15
+      },
+      "reasons": [
+        "Cases did not pass: 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+        "Candidate runtime error in cases 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20: ValueError: Quote bid price must be less than offer price"
+      ]
+    },
+    "67d7985edd3e06aba9f3e73db6086fc0d2f65791ac7b219315fcb8f01eab8e12": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 5,
+        "total": 20,
+        "bankruptcies": null,
+        "scoredPointsHundredths": 70,
+        "combinedPnlCents": null,
+        "minimumCapital": null,
+        "runtimeErrors": 15
+      },
+      "reasons": [
+        "Cases did not pass: 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+        "Candidate runtime error in cases 5, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20: ValueError: Quote prices must be between 0 and 1",
+        "Candidate runtime error in cases 14: ValueError: Quote bid price must be less than offer price"
+      ]
+    },
+    "5e2b13a24566c73d20b2fd2caa6600805d79724d95885ffa1f9e8c7fb7c1a12b": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 5,
+        "total": 20,
+        "bankruptcies": null,
+        "scoredPointsHundredths": 70,
+        "combinedPnlCents": null,
+        "minimumCapital": null,
+        "runtimeErrors": 15
+      },
+      "reasons": [
+        "Cases did not pass: 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+        "Candidate runtime error in cases 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20: ValueError: Quote prices must be between 0 and 1"
       ]
     }
   }
