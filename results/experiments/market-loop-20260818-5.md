@@ -167,3 +167,41 @@ Selection: No candidate passed the promotion gate.
 Promotion: none.
 Finding: All three joint estimators passed 20/20 without bankruptcy or runtime errors, but none preserved the 12.80 rank envelope. Coordinate MAP scored 12.40 with 89.11 PnL and neighborhood MAP scored 12.40 with 87.88; both retained cases 9, 13, 15, and 16 at the champion ranks but moved case 17 from second to fourth with -13.21 PnL. Joint ridge scored 12.30 with 107.12 PnL, losing case 15 from first to second and case 17 from second to third. The current profiled 10/1 estimator is therefore materially better on the remaining discrete boundaries than these fully joint fits, even though ridge slightly raised aggregate PnL. No joint candidate has focused tuning upside sufficient to justify displacing or extending it in the remaining two generations.
 Next-generation rationale: Keep the 12.80 champion unchanged. With adjacent estimator structure now tested and rejected, use generation 5 on the research notes' highest-priority unused feature: counterparty-aware adverse-selection control for FOK orders. Make only small online, ID-agnostic adjustments derived from prior orders from the same counterparty, preserving the fair-value inventory unwind and all quote behavior.
+
+## Generation 5: explore respond_to_fok
+
+The 12.80 champion has exhausted the historical static rank envelope, and generation 4 rejected fully joint rate estimators. Counterparty ID remains the highest-priority unused feature in the research notes. Test three small ID-agnostic online FOK controls based only on prior orders from the same counterparty, preserving position-bounded fair-value unwinds, quote behavior, the 10/1 estimator, the quantity tier, and the half-dollar loss cap.
+
+Parent: champion `g3-tail-loss-six` (`8d61104514e06c4d5e213399e5f60033b19024f64370cd7a55a912f7019ee66a`).
+
+### g5-repeat-fok-edge
+
+- Hypothesis: Repeated FOK requests from the same counterparty are more likely to reflect a persistent informed strategy, so one additional cent of edge after its first new-risk order may remove adverse repeat flow without reducing first-contact liquidity.
+- Implementation plan: Lazily track the number of new-risk FOK requests per counterparty inside respond_to_fok. Preserve the inventory-unwind exception. For later new-risk orders from an already seen counterparty, add one cent to the existing two-cent/3.4-cent edge; update the request count deterministically and retain both loss caps.
+- Worker summary: Added lazy per-counterparty new-risk FOK request counts and one cent of extra edge after the first request, bypassing the existing fair-value inventory unwind. Scope validation, compilation, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 105.19; minimum capital 7.32/10.00
+- Baseline delta: 0.00 points; PnL -0.59
+
+### g5-flow-fok-edge
+
+- Hypothesis: A counterparty that repeatedly trades in the same direction carries more directional adverse-selection risk than one whose flow reverses, so only continuation orders should pay an extra cent.
+- Implementation plan: Lazily maintain a signed BUY-minus-SELL request imbalance per counterparty. Preserve fair-value inventory unwinds. On a new-risk FOK whose side continues the sign of its prior imbalance, add one cent to the current quantity-tier edge; then update the imbalance by one signed request and retain the half-dollar loss cap.
+- Worker summary: Added lazy signed BUY-minus-SELL request imbalance per counterparty and one cent of extra edge only when new-risk flow continued the prior direction, preserving unwind and loss caps. Scope validation, focused behavior, compilation, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 104.30; minimum capital 7.32/10.00
+- Baseline delta: 0.00 points; PnL -1.48
+
+### g5-quality-fok-edge
+
+- Hypothesis: Counterparties whose prior new-risk FOK prices offered below-threshold average edge should face stricter acceptance, while historically generous counterparties can retain the champion threshold.
+- Implementation plan: For each counterparty, lazily track count and cumulative signed favorable edge of prior new-risk FOK requests relative to theoretical value. Preserve fair-value inventory unwinds. If the prior average offered edge is below the current order's base quantity-tier edge, require one additional cent; record the current offered edge and retain the existing loss cap.
+- Worker summary: Added lazy per-counterparty cumulative offered-edge statistics and one cent of extra edge when prior average new-risk FOK quality was below the base quantity-tier threshold, preserving unwind and loss caps. Scope validation, compilation, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 104.95; minimum capital 7.32/10.00
+- Baseline delta: 0.00 points; PnL -0.83
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three counterparty-aware FOK policies passed 20/20 without bankruptcy or runtime errors and preserved the champion's 12.80 score and 7.32/10.00 minimum capital, confirming repeated counterparty state exists during sessions. None improved economics: repeat gating produced 105.19 PnL, 0.59 below the champion; historical-quality gating produced 104.95, down 0.83; directional-flow gating produced 104.30, down 1.48. A uniform extra cent based on FOK request history filters profitable flow without changing any rank boundary, so these policies have no focused tuning upside for the final generation.
+Next-generation rationale: Keep the champion unchanged. Use the sixth and final generation to complete the counterparty-information test on RFQs, where routing competition differs from fill-or-kill acceptance: test bilateral widening for repeated requesters, concentration-aware widening only when the same counterparty repeats the same contract, and size reduction for repeated requesters. Preserve the proven tail-six price structure for first contacts.
