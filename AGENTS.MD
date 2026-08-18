@@ -55,6 +55,3 @@ class MarketMaker:
 
 
 
-### GIT RULES
-do not commit anything, keep your change and let me check and add and commit
-after your write the code, give me a recommend commit message

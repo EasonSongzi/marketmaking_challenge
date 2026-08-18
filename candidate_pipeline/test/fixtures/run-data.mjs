@@ -15,6 +15,13 @@ export const baseline = {
   },
 };
 
+export const baselineV2 = {
+  ...baseline,
+  schemaVersion: 2,
+  sourceSha256: "b".repeat(64),
+  experimentId: "experiment-001",
+};
+
 function decimal(hundredths) {
   const sign = hundredths < 0 ? "-" : "";
   const magnitude = Math.abs(hundredths);

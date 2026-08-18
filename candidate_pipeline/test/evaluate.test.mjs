@@ -7,7 +7,7 @@ import path from "node:path";
 import test from "node:test";
 
 import { countModifiedLines, evaluateCandidate, evaluateRun } from "../src/evaluate.mjs";
-import { baseline, rawCase, rawReport } from "./fixtures/run-data.mjs";
+import { baseline, baselineV2, rawCase, rawReport } from "./fixtures/run-data.mjs";
 
 const matchingHash = "a".repeat(64);
 
@@ -33,6 +33,23 @@ test("evaluateCandidate accepts a complete 20/20 higher-scoring result", () => {
   assert.equal(result.summary.bankruptcies, 0);
   assert.equal(result.summary.scoredPointsHundredths, 960);
   assert.equal(result.modifiedLines, 12);
+});
+
+test("evaluateCandidate accepts baseline schema versions 1 and 2", () => {
+  assert.equal(evaluateCandidate(rawReport(), baseline, matchingHash).valid, true);
+  assert.equal(evaluateCandidate(rawReport(), baselineV2, matchingHash).valid, true);
+});
+
+test("evaluateCandidate requires source and experiment identity for baseline schema version 2", () => {
+  const missingSource = { ...baselineV2, sourceSha256: undefined };
+  const malformedSource = { ...baselineV2, sourceSha256: "not-a-sha" };
+  const missingExperiment = { ...baselineV2, experimentId: "" };
+
+  for (const invalidBaseline of [missingSource, malformedSource, missingExperiment]) {
+    const result = evaluateCandidate(rawReport(), invalidBaseline, matchingHash);
+    assert.equal(result.valid, false);
+    assert.match(result.reasons.join("\n"), /Baseline JSON/);
+  }
 });
 
 test("evaluateCandidate rejects 19/19 even when every available case passes", () => {

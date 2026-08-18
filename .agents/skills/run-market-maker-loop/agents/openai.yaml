@@ -1,0 +1,7 @@
+interface:
+  display_name: "Run Market Maker Loop"
+  short_description: "Run autonomous scored strategy experiments"
+  default_prompt: "Use $run-market-maker-loop to start a new autonomous market-maker experiment loop."
+
+policy:
+  allow_implicit_invocation: false

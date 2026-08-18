@@ -1,6 +1,8 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "strategy": "rfq-only-v1",
+  "sourceSha256": "71502da93165c3bfaf62ffbbaf7e8eb021c1f3f349e5a5c4efaf7bec4693b064",
+  "experimentId": "rfq-only-v1",
   "resultArtifact": "results/baselines/rfq-only-v1.md",
   "summary": {
     "passed": 20,

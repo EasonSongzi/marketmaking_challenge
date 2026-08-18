@@ -85,6 +85,13 @@ export function countModifiedLines(sourcePath) {
 
 function baselineReason(baseline) {
   const summary = baseline?.summary;
+  const supportedVersion = baseline?.schemaVersion === 1 || baseline?.schemaVersion === 2;
+  const validV2Identity = baseline?.schemaVersion !== 2 || (
+    typeof baseline.sourceSha256 === "string"
+    && /^[a-f0-9]{64}$/i.test(baseline.sourceSha256)
+    && typeof baseline.experimentId === "string"
+    && baseline.experimentId.length > 0
+  );
   const integerFields = [
     summary?.passed,
     summary?.total,
@@ -95,12 +102,13 @@ function baselineReason(baseline) {
     summary?.minimumCapital?.startingCapitalCents,
   ];
   if (
-    baseline?.schemaVersion !== 1
+    !supportedVersion
+    || !validV2Identity
     || !integerFields.every(Number.isSafeInteger)
     || summary.total !== 20
     || summary.minimumCapital.startingCapitalCents <= 0
   ) {
-    return "Baseline JSON does not match schema version 1";
+    return "Baseline JSON does not match supported schema version 1 or 2";
   }
   return null;
 }

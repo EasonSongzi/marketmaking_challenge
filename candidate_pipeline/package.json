@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "check": "node --check src/case-result.mjs && node --check src/evaluate.mjs && node --check src/select.mjs && node --check src/candidate.mjs"
+    "check": "node --check src/case-result.mjs && node --check src/evaluate.mjs && node --check src/select.mjs && node --check src/candidate.mjs && node --check src/loop.mjs && node --check src/run-generation.mjs"
   },
   "engines": {
     "node": ">=20"
