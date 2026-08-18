@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "g2-rate-smoothing",
+  "id": "g1-q2-edge034",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "f4d4f21e12b5d011db36f4b8585a88b887497eb068e7a14ea526ecd99d44cd3a",
+  "sourceSha256": "bf6c5a80f9e7756d3306df338c4bcf46c47d7ab27a5b6ef9f60f3dfb66f0f6a0",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260818-3:g02:g2-rate-smoothing",
+  "experimentId": "market-loop-20260818-4:g01:g1-q2-edge034",
   "experiment": {
-    "runId": "market-loop-20260818-3",
-    "generation": 2,
-    "candidateId": "g2-rate-smoothing"
+    "runId": "market-loop-20260818-4",
+    "generation": 1,
+    "candidateId": "g1-q2-edge034"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1230,
-    "combinedPnlCents": 7722,
+    "combinedPnlCents": 7936,
     "minimumCapital": {
       "endingCashCents": 598,
       "startingCapitalCents": 1000

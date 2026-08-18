@@ -387,14 +387,13 @@ class MarketMaker:
 
     def respond_to_fok(self, option: BinaryOption, fok_order: FokOrder) -> bool:  # type: ignore[empty-body]
         theoretical_value: float = self.price_option(option)
-        edge: float = 0.034 if fok_order.quantity > 2 else 0.02
         if fok_order.order_type == OrderType.BUY:
             return (
-                fok_order.price >= theoretical_value + edge
+                fok_order.price >= theoretical_value + 0.02
                 and (1.0 - fok_order.price) * fok_order.quantity <= 0.5
             )
         return (
-            fok_order.price <= theoretical_value - edge
+            fok_order.price <= theoretical_value - 0.02
             and fok_order.price * fok_order.quantity <= 0.5
         )
 
