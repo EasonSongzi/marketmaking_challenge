@@ -460,23 +460,24 @@ class MarketMaker:
             THERIODIC_UNDERLYING_ID
         ]
 
-        moment_up_probability, moment_down_probability, moment_reversion_strength = (
+        rate_up_probability, rate_down_probability, rate_reversion_strength = (
             self._estimate_rate_parameters(rate_values)
         )
         num_rate_transitions: int = len(rate_changes)
-        smoothed_up_probability = (moment_up_probability * num_rate_transitions + 0.5) / (
+        rate_up_probability = (rate_up_probability * num_rate_transitions + 0.5) / (
             num_rate_transitions + 1.5
         )
-        smoothed_down_probability = (moment_down_probability * num_rate_transitions + 0.5) / (
+        rate_down_probability = (rate_down_probability * num_rate_transitions + 0.5) / (
             num_rate_transitions + 1.5
         )
-        rate_up_probability, rate_down_probability, rate_reversion_strength = (
-            self._fit_penalized_rate(
-                rate_values,
-                smoothed_up_probability,
-                smoothed_down_probability,
-                moment_reversion_strength,
-            )
+        likelihood_up, likelihood_down, likelihood_reversion = self._estimate_rate_likelihood(
+            rate_values
+        )
+        likelihood_weight: float = num_rate_transitions / (num_rate_transitions + 50.0)
+        rate_up_probability += likelihood_weight * (likelihood_up - rate_up_probability)
+        rate_down_probability += likelihood_weight * (likelihood_down - rate_down_probability)
+        rate_reversion_strength += likelihood_weight * (
+            likelihood_reversion - rate_reversion_strength
         )
         ajarai_drift, ajarai_rate_beta, ajarai_residuals = self._linear_regression(
             rate_changes,
@@ -857,18 +858,14 @@ class MarketMaker:
         return rate_up_probability, rate_down_probability, reversion_strength
 
     @staticmethod
-    def _fit_penalized_rate(
-        rate_values: tuple[float, ...],
-        smoothed_up_probability: float,
-        smoothed_down_probability: float,
-        moment_reversion_strength: float,
-    ) -> tuple[float, float, float]:
+    def _estimate_rate_likelihood(rate_values: tuple[float, ...]) -> tuple[float, float, float]:
         initial_values: tuple[float, ...] = rate_values[:-1]
         changes: tuple[float, ...] = tuple(
             current - previous for previous, current in zip(rate_values, rate_values[1:])
         )
         up_indicators: tuple[float, ...] = tuple(float(change > 0.0) for change in changes)
         down_indicators: tuple[float, ...] = tuple(float(change < 0.0) for change in changes)
+        minimum_probability: float = 1e-6
         target_gaps: tuple[float, ...] = tuple(2.0 - value for value in initial_values)
         best_score: float = float("-inf")
         best_parameters: tuple[float, float, float] | None = None
@@ -882,11 +879,11 @@ class MarketMaker:
                 down + reversion_strength * gap
                 for down, gap in zip(down_indicators, target_gaps)
             ) / len(down_indicators)
-            rate_up_probability = max(rate_up_probability, 1e-6)
-            rate_down_probability = max(rate_down_probability, 1e-6)
+            rate_up_probability = max(rate_up_probability, minimum_probability)
+            rate_down_probability = max(rate_down_probability, minimum_probability)
             probability_sum: float = rate_up_probability + rate_down_probability
             if probability_sum > 1.0:
-                scale: float = (1.0 - 1e-6) / probability_sum
+                scale: float = (1.0 - minimum_probability) / probability_sum
                 rate_up_probability *= scale
                 rate_down_probability *= scale
 
@@ -905,21 +902,15 @@ class MarketMaker:
                     log_likelihood = float("-inf")
                     break
                 log_likelihood += math.log(transition_probability)
-            score: float = (
-                log_likelihood
-                - 400.0 * (rate_up_probability - smoothed_up_probability) ** 2
-                - 400.0 * (rate_down_probability - smoothed_down_probability) ** 2
-                - 64.0 * (reversion_strength - moment_reversion_strength) ** 2
-            )
-            if score > best_score:
-                best_score = score
+            if log_likelihood > best_score:
+                best_score = log_likelihood
                 best_parameters = (
                     rate_up_probability,
                     rate_down_probability,
                     reversion_strength,
                 )
         if best_parameters is None:
-            raise RuntimeError("Unable to fit penalized rate transition parameters")
+            raise RuntimeError("Unable to fit rate transition parameters")
         return best_parameters
 
     @staticmethod

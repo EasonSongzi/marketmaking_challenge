@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T21:49:07.026Z
 - Starting baseline: g2-rate-smoothing (12.30/16.00)
-- Current baseline: g1-q2-edge034 (12.30/16.00)
+- Current baseline: g2-rate-adaptive (12.30/16.00)
 - Stop condition: not reached
-- Score trend: 12.30 → 12.30
+- Score trend: 12.30 → 12.30 → 12.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -83,7 +83,88 @@ Parent: champion `g1-q2-edge034` (`bf6c5a80f9e7756d3306df338c4bcf46c47d7ab27a5b6
 - Baseline delta: -0.30 points; PnL 21.28
 
 Selection: g2-rate-adaptive.
-Promotion: none.
+Promotion: g2-rate-adaptive (2370db038a25598277d4c52e6a37e460e290a899).
 Finding: All three shrinkage estimators passed 20/20 without bankruptcy or runtime errors. Fixed 25% blending retained 12.30 points, raised PnL to 81.89, and lifted minimum capital to 6.09/10.00. Sample-size-adaptive blending led the promotion gate at the same 12.30 points and capital with 85.66 PnL, 6.30 above the quantity-tier parent; it kept cases 9 and 16 first while improving case 17 from -14.10 to -9.42. Penalized likelihood reached 100.64 PnL and 6.18/10.00 minimum capital, improving case 17 to +9.98, but case 9 fell from first to second by 0.79 and total score fell to 12.00.
 Next-generation rationale: Promote the sample-size-adaptive estimator. Preserve penalized likelihood as an active challenger because its explicit probability and reversion penalties expose a direct shrinkage path between the 12.00 high-PnL endpoint and the 12.30 adaptive champion; tune those weights before adding another trading-policy interaction.
 Challenger update: admitted market-loop-20260818-4-g02-g2-rate-penalized.
+
+## Generation 3: tune warm_up
+
+The penalized estimator is a high-PnL near miss: 12.00 points, 100.64 PnL, and 6.18/10.00 minimum capital. It improves case 17 from -14.10 to +9.98 but loses case 9 first place by only 0.79. Increase the two shrinkage penalties jointly to pull the fit toward the stable endpoint until case 9 recovers, seeking an intermediate revision that retains enough case-17 economics to exceed the adaptive champion's 85.66 PnL at 12.30 points.
+
+### coarse-100-16
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-4-g02-g2-rate-penalized
+- Implementation plan: {"probabilityPenalty":100,"reversionPenalty":16}
+- Worker summary: Designed eight immutable joint probability/reversion penalty vectors spanning coarse, medium, and fine granularities, with no parent vector or post-result adaptation. The AST materializer changed only the three bound penalty literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 96.86; minimum capital 6.06/10.00
+- Baseline delta: -0.30 points; PnL 11.20
+
+### coarse-250-40
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-4-g02-g2-rate-penalized
+- Implementation plan: {"probabilityPenalty":250,"reversionPenalty":40}
+- Worker summary: Designed eight immutable joint probability/reversion penalty vectors spanning coarse, medium, and fine granularities, with no parent vector or post-result adaptation. The AST materializer changed only the three bound penalty literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 95.78; minimum capital 6.04/10.00
+- Baseline delta: 0.00 points; PnL 10.12
+
+### coarse-400-64
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-4-g02-g2-rate-penalized
+- Implementation plan: {"probabilityPenalty":400,"reversionPenalty":64}
+- Worker summary: Designed eight immutable joint probability/reversion penalty vectors spanning coarse, medium, and fine granularities, with no parent vector or post-result adaptation. The AST materializer changed only the three bound penalty literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 96.10; minimum capital 6.01/10.00
+- Baseline delta: 0.00 points; PnL 10.44
+
+### medium-50-4
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-4-g02-g2-rate-penalized
+- Implementation plan: {"probabilityPenalty":50,"reversionPenalty":4}
+- Worker summary: Designed eight immutable joint probability/reversion penalty vectors spanning coarse, medium, and fine granularities, with no parent vector or post-result adaptation. The AST materializer changed only the three bound penalty literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 97.63; minimum capital 6.13/10.00
+- Baseline delta: -0.30 points; PnL 11.97
+
+### medium-75-8
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-4-g02-g2-rate-penalized
+- Implementation plan: {"probabilityPenalty":75,"reversionPenalty":8}
+- Worker summary: Designed eight immutable joint probability/reversion penalty vectors spanning coarse, medium, and fine granularities, with no parent vector or post-result adaptation. The AST materializer changed only the three bound penalty literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 97.64; minimum capital 6.11/10.00
+- Baseline delta: -0.30 points; PnL 11.98
+
+### medium-150-24
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-4-g02-g2-rate-penalized
+- Implementation plan: {"probabilityPenalty":150,"reversionPenalty":24}
+- Worker summary: Designed eight immutable joint probability/reversion penalty vectors spanning coarse, medium, and fine granularities, with no parent vector or post-result adaptation. The AST materializer changed only the three bound penalty literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 96.03; minimum capital 6.06/10.00
+- Baseline delta: 0.00 points; PnL 10.37
+
+### fine-30-2-5
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-4-g02-g2-rate-penalized
+- Implementation plan: {"probabilityPenalty":30,"reversionPenalty":2.5}
+- Worker summary: Designed eight immutable joint probability/reversion penalty vectors spanning coarse, medium, and fine granularities, with no parent vector or post-result adaptation. The AST materializer changed only the three bound penalty literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 98.91; minimum capital 6.18/10.00
+- Baseline delta: -0.30 points; PnL 13.25
+
+### fine-40-3-5
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-4-g02-g2-rate-penalized
+- Implementation plan: {"probabilityPenalty":40,"reversionPenalty":3.5}
+- Worker summary: Designed eight immutable joint probability/reversion penalty vectors spanning coarse, medium, and fine granularities, with no parent vector or post-result adaptation. The AST materializer changed only the three bound penalty literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 96.69; minimum capital 6.15/10.00
+- Baseline delta: -0.30 points; PnL 11.03
+
+Selection: coarse-400-64.
+Promotion: none.
+Finding: All eight penalty variants passed 20/20 without bankruptcy or runtime errors. Light and medium shrinkage through probability/reversion penalties of 100/16 remained at 12.00 points, with PnL from 96.69 to 98.91. Stronger pairs 150/24, 250/40, and 400/64 recovered 12.30 points and passed the promotion gate. The 400/64 vector led at 96.10 PnL, 10.44 above the adaptive champion and 16.74 above the quantity-tier baseline, with 6.01/10.00 minimum capital.
+Next-generation rationale: Promote the 400/64 penalized estimator. It preserves the critical score while retaining most of the high-likelihood economics. Next follow the research plan's highest-priority cross-method interaction by exploring targeted inventory-unwind and other marginal FOK controls from this full promoted source, holding the estimator and quote fixed.

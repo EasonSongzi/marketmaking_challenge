@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "id": "g2-rate-adaptive",
+  "id": "coarse-400-64",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "7125f79760ffefff4498102ce36bc6c0e14e8b3ea8fe5aedaa83cc8c3aedec86",
+  "sourceSha256": "44b91f8acec677de3a6eb56eedcfd0b9497e2e77c22933311e06a6f261328e5d",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260818-4:g02:g2-rate-adaptive",
+  "experimentId": "market-loop-20260818-4:g03:coarse-400-64",
   "experiment": {
     "runId": "market-loop-20260818-4",
-    "generation": 2,
-    "candidateId": "g2-rate-adaptive"
+    "generation": 3,
+    "candidateId": "coarse-400-64"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1230,
-    "combinedPnlCents": 8566,
+    "combinedPnlCents": 9610,
     "minimumCapital": {
-      "endingCashCents": 609,
+      "endingCashCents": 601,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0

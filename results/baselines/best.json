@@ -1,22 +1,22 @@
 {
   "schemaVersion": 2,
-  "strategy": "g2-rate-adaptive",
+  "strategy": "coarse-400-64",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "7125f79760ffefff4498102ce36bc6c0e14e8b3ea8fe5aedaa83cc8c3aedec86",
-  "experimentId": "market-loop-20260818-4:g02:g2-rate-adaptive",
+  "sourceSha256": "44b91f8acec677de3a6eb56eedcfd0b9497e2e77c22933311e06a6f261328e5d",
+  "experimentId": "market-loop-20260818-4:g03:coarse-400-64",
   "experiment": {
     "runId": "market-loop-20260818-4",
-    "generation": 2,
-    "candidateId": "g2-rate-adaptive"
+    "generation": 3,
+    "candidateId": "coarse-400-64"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1230,
-    "combinedPnlCents": 8566,
+    "combinedPnlCents": 9610,
     "minimumCapital": {
-      "endingCashCents": 609,
+      "endingCashCents": 601,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0

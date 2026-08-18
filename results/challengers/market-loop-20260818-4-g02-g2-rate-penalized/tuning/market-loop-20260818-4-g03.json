@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "56a138427cce85157e45c81472ab56fb6dd28314984cd13f6a072447f43569c9",
+  "variants": [
+    {
+      "id": "coarse-100-16",
+      "granularity": "coarse",
+      "parameters": {
+        "probabilityPenalty": 100.0,
+        "reversionPenalty": 16.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-4/g03/tune-03/.tuning/market-loop-20260818-4/g03/variants/coarse-100-16/Market_making_binary_option.py",
+      "sourceSha256": "d8e2c813730bd3466e2e38c51776553dc0dd802c483f4b39c4e99da29cca5f02",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "coarse-250-40",
+      "granularity": "coarse",
+      "parameters": {
+        "probabilityPenalty": 250.0,
+        "reversionPenalty": 40.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-4/g03/tune-03/.tuning/market-loop-20260818-4/g03/variants/coarse-250-40/Market_making_binary_option.py",
+      "sourceSha256": "705ffac383fd34bfc1a3c6948771154bf962711521b4210764488fcecdb0826f",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "coarse-400-64",
+      "granularity": "coarse",
+      "parameters": {
+        "probabilityPenalty": 400.0,
+        "reversionPenalty": 64.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-4/g03/tune-03/.tuning/market-loop-20260818-4/g03/variants/coarse-400-64/Market_making_binary_option.py",
+      "sourceSha256": "44b91f8acec677de3a6eb56eedcfd0b9497e2e77c22933311e06a6f261328e5d",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "medium-50-4",
+      "granularity": "medium",
+      "parameters": {
+        "probabilityPenalty": 50.0,
+        "reversionPenalty": 4.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-4/g03/tune-03/.tuning/market-loop-20260818-4/g03/variants/medium-50-4/Market_making_binary_option.py",
+      "sourceSha256": "71373655f45afd4a9c4334ce48825d6427faebe4c6de03357dc3fe051e2c4d48",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "medium-75-8",
+      "granularity": "medium",
+      "parameters": {
+        "probabilityPenalty": 75.0,
+        "reversionPenalty": 8.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-4/g03/tune-03/.tuning/market-loop-20260818-4/g03/variants/medium-75-8/Market_making_binary_option.py",
+      "sourceSha256": "9092bb82ff34d082ac5982356028637b2fbfd0bf234bcda8c7c66e4420ca8928",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "medium-150-24",
+      "granularity": "medium",
+      "parameters": {
+        "probabilityPenalty": 150.0,
+        "reversionPenalty": 24.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-4/g03/tune-03/.tuning/market-loop-20260818-4/g03/variants/medium-150-24/Market_making_binary_option.py",
+      "sourceSha256": "c88075781f7730b0e3fa60381f5c9498d0676bc1694ba43b7db285fdd441b104",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "fine-30-2-5",
+      "granularity": "fine",
+      "parameters": {
+        "probabilityPenalty": 30.0,
+        "reversionPenalty": 2.5
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-4/g03/tune-03/.tuning/market-loop-20260818-4/g03/variants/fine-30-2-5/Market_making_binary_option.py",
+      "sourceSha256": "337a6a0763e74f5bf706bf7a7ff34f4d7888dbb7f499a1aa11d5d2b74cc76c03",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "fine-40-3-5",
+      "granularity": "fine",
+      "parameters": {
+        "probabilityPenalty": 40.0,
+        "reversionPenalty": 3.5
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-4/g03/tune-03/.tuning/market-loop-20260818-4/g03/variants/fine-40-3-5/Market_making_binary_option.py",
+      "sourceSha256": "18e8a346ac0c50a3d92f13f767d778cea605098d0f6fa286899df2f12d08ba51",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}
