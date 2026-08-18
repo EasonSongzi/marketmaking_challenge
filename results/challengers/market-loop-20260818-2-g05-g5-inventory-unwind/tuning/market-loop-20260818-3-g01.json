@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "41272ed59ec4ad6cf3e210434ed0b58a0fd22c6d6a33ce8c79b6dbebc8d75e7f",
+  "variants": [
+    {
+      "id": "coarse-low-edge",
+      "granularity": "coarse",
+      "parameters": {
+        "ordinaryEdge": 0.015
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g01/tune-01/.tuning/market-loop-20260818-3/g01/variants/coarse-low-edge/Market_making_binary_option.py",
+      "sourceSha256": "14a286f188f5c689725832dd19b2d12217def4de3efda9243255cb0c41e10646",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "coarse-high-edge",
+      "granularity": "coarse",
+      "parameters": {
+        "ordinaryEdge": 0.039
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g01/tune-01/.tuning/market-loop-20260818-3/g01/variants/coarse-high-edge/Market_making_binary_option.py",
+      "sourceSha256": "f31ec83456098eb19d41783c945be6600eddaf14e9ec68c628ff890a9a52d916",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "medium-lower-edge",
+      "granularity": "medium",
+      "parameters": {
+        "ordinaryEdge": 0.019
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g01/tune-01/.tuning/market-loop-20260818-3/g01/variants/medium-lower-edge/Market_making_binary_option.py",
+      "sourceSha256": "2711cb48100277409fd8faa503bdaabfd250b9addeb99a7fdb1e040f294ad4da",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "medium-upper-edge",
+      "granularity": "medium",
+      "parameters": {
+        "ordinaryEdge": 0.033
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g01/tune-01/.tuning/market-loop-20260818-3/g01/variants/medium-upper-edge/Market_making_binary_option.py",
+      "sourceSha256": "ea8b5c56deb373bcf9c55226a52e29f0e71e0fce379e893af225d732ef7cce6e",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "fine-below-parent",
+      "granularity": "fine",
+      "parameters": {
+        "ordinaryEdge": 0.023
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g01/tune-01/.tuning/market-loop-20260818-3/g01/variants/fine-below-parent/Market_making_binary_option.py",
+      "sourceSha256": "58917f8b3d9ea25f544a21aafce2cff6aafdee9abf675f1a8a6c4b9903bd767c",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "fine-above-parent",
+      "granularity": "fine",
+      "parameters": {
+        "ordinaryEdge": 0.027
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g01/tune-01/.tuning/market-loop-20260818-3/g01/variants/fine-above-parent/Market_making_binary_option.py",
+      "sourceSha256": "00123892403151c7a358b61007997792fd187cd2229f842100a720ed29cfe818",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}

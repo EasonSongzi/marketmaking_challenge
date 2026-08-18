@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "fine-above-parent",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-2-g05-g5-inventory-unwind/r02.py",
+  "sourceSha256": "00123892403151c7a358b61007997792fd187cd2229f842100a720ed29cfe818",
+  "modifiedLines": null,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1230,
+    "combinedPnlCents": 8008,
+    "minimumCapital": {
+      "endingCashCents": 592,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 459
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
