@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g1-rate-recross-10-1",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-5-g01-g1-rate-recross-10-1/r00.py",
+  "sourceSha256": "62feea3c97e975a314a102336249973f5a36d124bab1bb2948ac145b27346f95",
+  "modifiedLines": 6,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1250,
+    "combinedPnlCents": 11716,
+    "minimumCapital": {
+      "endingCashCents": 700,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -10,
+    "combinedPnlCents": -512
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

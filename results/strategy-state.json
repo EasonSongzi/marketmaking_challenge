@@ -959,6 +959,54 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260818-5-g01-g1-rate-recross-10-1",
+      "status": "active",
+      "method": "warm_up",
+      "origin": "explore",
+      "rationale": "It passed 20/20 with zero bankruptcies, moved case 17 from third to second, retained cases 9, 13, and 16 at their champion ranks, and missed the champion only because case 15 fell from first to second by 0.51. Its explicit low-penalty estimator paired with the unchanged maximum-loss-side shade exposes a focused quote-interaction path to repair the sole lost rank.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260818-5-g01-g1-rate-recross-10-1/r00.py",
+          "sourceSha256": "62feea3c97e975a314a102336249973f5a36d124bab1bb2948ac145b27346f95",
+          "evaluationPath": "results/challengers/market-loop-20260818-5-g01-g1-rate-recross-10-1/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260818-5-g01-g1-rate-recross-10-1/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g1-rate-recross-10-1",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260818-5-g01-g1-rate-recross-10-1/r00.py",
+            "sourceSha256": "62feea3c97e975a314a102336249973f5a36d124bab1bb2948ac145b27346f95",
+            "modifiedLines": 6,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1250,
+              "combinedPnlCents": 11716,
+              "minimumCapital": {
+                "endingCashCents": 700,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": -10,
+              "combinedPnlCents": -512
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-18T22:57:14.585Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -2490,6 +2538,63 @@
         "runtimeErrors": 0
       },
       "reasons": []
+    },
+    "278f9de63ebc7c1f7421f3d1c22a9669a80c7d74c2d1095602d5ef17a0a8ab41": {
+      "valid": true,
+      "modifiedLines": 38,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1230,
+        "combinedPnlCents": 11230,
+        "minimumCapital": {
+          "endingCashCents": 703,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "62feea3c97e975a314a102336249973f5a36d124bab1bb2948ac145b27346f95": {
+      "valid": true,
+      "modifiedLines": 6,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1250,
+        "combinedPnlCents": 11716,
+        "minimumCapital": {
+          "endingCashCents": 700,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "426bd3f9afbf7941908e195c2fb2ab08b7497cbe785acdf8bac26a6d08b902e1": {
+      "valid": true,
+      "modifiedLines": 6,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 12131,
+        "minimumCapital": {
+          "endingCashCents": 694,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
     }
   }
 }
