@@ -205,3 +205,41 @@ Selection: No candidate passed the promotion gate.
 Promotion: none.
 Finding: All three counterparty-aware FOK policies passed 20/20 without bankruptcy or runtime errors and preserved the champion's 12.80 score and 7.32/10.00 minimum capital, confirming repeated counterparty state exists during sessions. None improved economics: repeat gating produced 105.19 PnL, 0.59 below the champion; historical-quality gating produced 104.95, down 0.83; directional-flow gating produced 104.30, down 1.48. A uniform extra cent based on FOK request history filters profitable flow without changing any rank boundary, so these policies have no focused tuning upside for the final generation.
 Next-generation rationale: Keep the champion unchanged. Use the sixth and final generation to complete the counterparty-information test on RFQs, where routing competition differs from fill-or-kill acceptance: test bilateral widening for repeated requesters, concentration-aware widening only when the same counterparty repeats the same contract, and size reduction for repeated requesters. Preserve the proven tail-six price structure for first contacts.
+
+## Generation 6: explore quote
+
+Generation 5 confirmed repeated counterparty state but found no benefit from stricter FOK gates. RFQ routing is different because quotes compete before the side is known. Use the final generation to test three ID-agnostic RFQ responses to repeat activity while preserving the champion's four-cent base, fifth high-loss cent, tail-only sixth cent, estimator, and FOK behavior for first contacts.
+
+Parent: champion `g3-tail-loss-six` (`8d61104514e06c4d5e213399e5f60033b19024f64370cd7a55a912f7019ee66a`).
+
+### g6-repeat-rfq-wide
+
+- Hypothesis: A counterparty returning for later RFQs may be more selectively informed, so widening both sides by one cent after its first request can reduce adverse repeat fills while keeping first-contact competitiveness.
+- Implementation plan: Lazily count quote requests per counterparty inside quote. Use the champion quote unchanged for the first request. On later requests, increase the base half-width from four to five cents on both sides, then apply the existing one-cent high-loss shade and tail-only second shade; retain size two and clamps.
+- Worker summary: Added lazy per-counterparty RFQ counts and widened the base half-width from four to five cents after first contact, retaining the champion's high-loss and tail shades at size two. Scope validation, focused behavior, compilation, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.40/16.00 points; PnL 105.44; minimum capital 7.68/10.00
+- Baseline delta: -0.40 points; PnL -0.34
+
+### g6-contract-rfq-wide
+
+- Hypothesis: Repeated requests for the same option are a stronger adverse-selection signal than unrelated activity from the same counterparty, so only contract-specific concentration should trigger wider prices.
+- Implementation plan: Lazily count quote requests by counterparty and option ID. Use the champion quote on the first request for each pair. On repeats of the same pair, widen the base by one cent on both sides before applying the unchanged high-loss and tail shades; preserve size two and all non-quote behavior.
+- Worker summary: Added lazy request counts keyed by counterparty and option ID, widening the base from four to five cents only after the same pair repeats while preserving champion prices on first contact and all existing shades. Scope validation, compilation, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 105.88; minimum capital 7.38/10.00
+- Baseline delta: 0.00 points; PnL 0.10
+
+### g6-repeat-rfq-small
+
+- Hypothesis: Reducing exposure rather than price competitiveness may control repeat-counterparty risk without disturbing the penny routing boundaries that produce 12.80.
+- Implementation plan: Lazily count quote requests per counterparty. Preserve every champion price exactly. Quote size two on first contact and size one on subsequent requests from that counterparty, on both bid and offer; preserve all estimator and FOK behavior.
+- Worker summary: Preserved every champion price and added lazy per-counterparty counts that reduce both quote quantities from two to one after first contact. Scope validation, focused behavior, compilation, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 10.40/16.00 points; PnL 71.56; minimum capital 7.97/10.00
+- Baseline delta: -2.40 points; PnL -34.22
+
+Selection: g6-contract-rfq-wide.
+Promotion: none.
+Finding: All three RFQ-memory policies passed 20/20 without bankruptcy or runtime errors. Contract-specific repeat widening uniquely passed the promotion gate: it preserved 12.80 points, raised PnL from 105.78 to 105.88, and improved minimum capital from 7.32 to 7.38. It kept cases 9, 15, and 16 first, case 13 second by 0.30, and case 17 second by 0.73. Widening every later RFQ from a counterparty scored only 12.40 because cases 13 and 17 fell to third, despite lifting minimum capital to 7.68. Reducing repeat sizes was strongly harmful, falling to 10.40 points and 71.56 PnL by losing rank in cases 9, 13, 15, and 17. The useful counterparty signal is therefore narrow contract-specific repetition, not broad identity-level defensiveness.
+Next-generation rationale: Promote contract-specific repeat widening. The configured six-generation limit is reached; finish the run with the 12.80 champion and retain the verified evidence that only same-counterparty, same-option repetition supports a small RFQ adjustment.

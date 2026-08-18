@@ -1,22 +1,22 @@
 {
   "schemaVersion": 2,
-  "strategy": "g3-tail-loss-six",
+  "strategy": "g6-contract-rfq-wide",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "8d61104514e06c4d5e213399e5f60033b19024f64370cd7a55a912f7019ee66a",
-  "experimentId": "market-loop-20260818-5:g03:g3-tail-loss-six",
+  "sourceSha256": "353ad16d0004889c9ed825971d416fe543ec6b51e5dc9851a9e32d5bcf7be2fe",
+  "experimentId": "market-loop-20260818-5:g06:g6-contract-rfq-wide",
   "experiment": {
     "runId": "market-loop-20260818-5",
-    "generation": 3,
-    "candidateId": "g3-tail-loss-six"
+    "generation": 6,
+    "candidateId": "g6-contract-rfq-wide"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1280,
-    "combinedPnlCents": 10578,
+    "combinedPnlCents": 10588,
     "minimumCapital": {
-      "endingCashCents": 732,
+      "endingCashCents": 738,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0
