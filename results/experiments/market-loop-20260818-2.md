@@ -142,3 +142,67 @@ Promotion: none.
 Finding: All candidates passed 20/20 without bankruptcy or runtime errors. Clamped three-cent skew reached 12.10, losing 0.20 points but adding 3.75 combined PnL and improving minimum capital to 5.94/10.00. Risk-side quantity reduction over-filtered flow and fell to 11.30; risk-side-only shading added 5.66 PnL and improved minimum capital to 6.00/10.00 but fell to 11.90. Safe inventory controls improve PnL and capital yet need magnitude tuning to recover rank points.
 Next-generation rationale: Admit clamped three-cent skew because the structural clamp removed all boundary failures and its magnitude has explicit upside on both sides of the parent value. Tune the safe center shift across zero, smaller, and larger magnitudes without changing the structure.
 Challenger update: admitted market-loop-20260818-2-g03-g3-clamped-skew-three.
+
+## Generation 4: tune quote
+
+The clamped three-cent skew passed 20/20 and improved PnL and minimum capital while losing only 0.20 points. Tune only the symmetric clamped center-shift magnitude, preserving the full challenger revision, clamp, three-cent half-width, and size two.
+
+### skew-zero-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-2-g03-g3-clamped-skew-three
+- Implementation plan: {"skewCents":0}
+- Worker summary: Designed six immutable clamped-skew magnitudes spanning fine, medium, and coarse granularity. The materializer changed only the paired magnitude literals, compiled and scope-validated every variant, and the serial dispatcher evaluated each unique source exactly once.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 75.49; minimum capital 5.92/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+### skew-one-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-2-g03-g3-clamped-skew-three
+- Implementation plan: {"skewCents":1}
+- Worker summary: Designed six immutable clamped-skew magnitudes spanning fine, medium, and coarse granularity. The materializer changed only the paired magnitude literals, compiled and scope-validated every variant, and the serial dispatcher evaluated each unique source exactly once.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.10/16.00 points; PnL 77.64; minimum capital 5.92/10.00
+- Baseline delta: -0.20 points; PnL 2.15
+
+### skew-two-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-2-g03-g3-clamped-skew-three
+- Implementation plan: {"skewCents":2}
+- Worker summary: Designed six immutable clamped-skew magnitudes spanning fine, medium, and coarse granularity. The materializer changed only the paired magnitude literals, compiled and scope-validated every variant, and the serial dispatcher evaluated each unique source exactly once.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.10/16.00 points; PnL 78.79; minimum capital 5.92/10.00
+- Baseline delta: -0.20 points; PnL 3.30
+
+### skew-four-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-2-g03-g3-clamped-skew-three
+- Implementation plan: {"skewCents":4}
+- Worker summary: Designed six immutable clamped-skew magnitudes spanning fine, medium, and coarse granularity. The materializer changed only the paired magnitude literals, compiled and scope-validated every variant, and the serial dispatcher evaluated each unique source exactly once.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 72.52; minimum capital 5.94/10.00
+- Baseline delta: -0.30 points; PnL -2.97
+
+### skew-six-coarse
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-2-g03-g3-clamped-skew-three
+- Implementation plan: {"skewCents":6}
+- Worker summary: Designed six immutable clamped-skew magnitudes spanning fine, medium, and coarse granularity. The materializer changed only the paired magnitude literals, compiled and scope-validated every variant, and the serial dispatcher evaluated each unique source exactly once.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 64.05; minimum capital 5.94/10.00
+- Baseline delta: -0.30 points; PnL -11.44
+
+### skew-eight-coarse
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-2-g03-g3-clamped-skew-three
+- Implementation plan: {"skewCents":8}
+- Worker summary: Designed six immutable clamped-skew magnitudes spanning fine, medium, and coarse granularity. The materializer changed only the paired magnitude literals, compiled and scope-validated every variant, and the serial dispatcher evaluated each unique source exactly once.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.40/16.00 points; PnL 49.68; minimum capital 5.94/10.00
+- Baseline delta: -0.90 points; PnL -25.81
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All six clamped-skew variants passed 20/20 without bankruptcy or runtime errors. Zero skew recovered the champion's 12.30 score and 5.92/10.00 minimum capital. One and two cents scored 12.10 while adding 2.15 and 3.30 combined PnL; four and six cents scored 12.00, and eight cents fell to 11.40. The monotonically weaker score at larger magnitudes makes zero the best revision despite the parent's higher PnL and minimum capital.
+Next-generation rationale: Update the clamped-skew challenger to zero, but do not repeat magnitude tuning. With only two generations remaining and quote inventory controls unable to exceed 12.30, explore structurally inventory-aware FOK acceptance as an orthogonal source of rank improvement.
+Challenger update: updated market-loop-20260818-2-g03-g3-clamped-skew-three to skew-zero-fine.

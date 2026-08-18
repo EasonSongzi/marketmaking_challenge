@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "c58ecf573537c6db921a0aabf58438c559f12c3d1c26f4d04467208c4f5c76e9",
+  "variants": [
+    {
+      "id": "skew-zero-fine",
+      "granularity": "fine",
+      "parameters": {
+        "skewCents": 0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g04/tune-04/.tuning/market-loop-20260818-2/g04/variants/skew-zero-fine/Market_making_binary_option.py",
+      "sourceSha256": "94a934965060e4a6b9e7ba708028e6d002a026556bfb001caaca61f8765f474b",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-one-fine",
+      "granularity": "fine",
+      "parameters": {
+        "skewCents": 1
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g04/tune-04/.tuning/market-loop-20260818-2/g04/variants/skew-one-fine/Market_making_binary_option.py",
+      "sourceSha256": "4451d1e31cbdc02a6eacfbf1e95a28868b6854695e2f6910e302d7d10dc76f57",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-two-medium",
+      "granularity": "medium",
+      "parameters": {
+        "skewCents": 2
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g04/tune-04/.tuning/market-loop-20260818-2/g04/variants/skew-two-medium/Market_making_binary_option.py",
+      "sourceSha256": "1dc69d7dbe6c7a144590fa1b2fdf986df58b65e0b89044ba85112812231cfae4",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-four-medium",
+      "granularity": "medium",
+      "parameters": {
+        "skewCents": 4
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g04/tune-04/.tuning/market-loop-20260818-2/g04/variants/skew-four-medium/Market_making_binary_option.py",
+      "sourceSha256": "38e1ac74337e30adf7432cb8acdada35fa32d3e2bb5253d651e1404c04bb47ef",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-six-coarse",
+      "granularity": "coarse",
+      "parameters": {
+        "skewCents": 6
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g04/tune-04/.tuning/market-loop-20260818-2/g04/variants/skew-six-coarse/Market_making_binary_option.py",
+      "sourceSha256": "bacc9b463bff8341dae4806e042befcf4c2ffb212ccddfc18af5eaaafff1a9c4",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "skew-eight-coarse",
+      "granularity": "coarse",
+      "parameters": {
+        "skewCents": 8
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g04/tune-04/.tuning/market-loop-20260818-2/g04/variants/skew-eight-coarse/Market_making_binary_option.py",
+      "sourceSha256": "a1c2c8a2b58434afd904f0d53c6190fddadae06d4e39f7259974c0ff21f23b94",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}
