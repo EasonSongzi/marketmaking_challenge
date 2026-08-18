@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T05:29:44.743Z
 - Starting baseline: rfq-only-v1 (9.00/16.00)
-- Current baseline: g1-wide-two (11.40/16.00)
+- Current baseline: g2-cross-one (11.70/16.00)
 - Stop condition: not reached
-- Score trend: 9.00 → 11.40
+- Score trend: 9.00 → 11.40 → 11.70
 
 A normal promoted candidate is based on one HackerRank run; stochastic score risk remains. Fixture-only validation uses stubbed evidence.
 
@@ -80,8 +80,46 @@ The promoted 11.40 baseline still rejects every FOK, while verbose evidence cont
 - Baseline delta: -0.10 points; PnL 25.58
 
 Selection: g2-cross-one.
-Promotion: none.
+Promotion: g2-cross-one (59021c63145187a9df6be2270911c9a4a8906dbe).
 Finding: The one-dollar cap at a two-cent edge passed 20/20 and improved the baseline from 11.40 to 11.70 with +50.97 combined PnL. Raising the cap to two dollars fell to 11.00 despite higher combined PnL, while the five-cent edge with that larger cap caused bankruptcy in case 7. The tighter capital cap, not simply a wider price edge, controlled rank and solvency best.
 Next-generation rationale: Promote the one-dollar-cap winner, then refine respond_to_fok around that risk boundary by testing a lower cap and slightly narrower or wider price margins. This preserves the proven quote strategy while isolating participation versus adverse-selection effects.
 Previous failure (integrity): Generation 2 dispatcher returned integrity code 3: g2-edge-five passed 19/20 and reported bankruptcy in case 7; selection and promotion were intentionally skipped.
 Recovery instruction: Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+
+## Generation 3: respond_to_fok
+
+The two-cent edge with a one-dollar cap improved the baseline to 11.70, while a two-dollar cap reduced points and a wider edge did not offset its bankruptcy risk. This generation holds the proven logic constant while independently tightening the loss cap and moving the acceptance margin one cent in either direction.
+
+### g3-half-cap
+
+- Hypothesis: Keeping the two-cent edge but lowering total worst-case loss to fifty cents will improve solvency-adjusted ranking by excluding the riskiest accepted FOKs.
+- Implementation plan: Preserve the side-aware two-cent favorable-price test and reduce the total worst-case-loss cap from 1.00 to 0.50. This lowers participation and capital usage.
+- Worker summary: Reduced both side-aware FOK worst-case-loss caps from one dollar to fifty cents while preserving the two-cent favorable edge. Scope validation, Python compilation, focused edge and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 55.84; minimum capital 5.48/10.00
+- Baseline delta: 0.30 points; PnL -25.48
+
+### g3-edge-one
+
+- Hypothesis: A one-cent favorable-price margin with the proven one-dollar cap will capture additional positive-edge FOK flow and raise PnL enough to improve rank.
+- Implementation plan: Preserve the one-dollar loss cap and reduce the side-aware acceptance margin from two cents to one cent. This increases participation and adverse-selection sensitivity.
+- Worker summary: Reduced the side-aware FOK acceptance margin from two cents to one cent while preserving the one-dollar cap. Scope validation, Python compilation, focused edge and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.10/16.00 points; PnL 77.08; minimum capital 15.69/20.00
+- Baseline delta: -0.60 points; PnL -4.24
+
+### g3-edge-three
+
+- Hypothesis: A three-cent favorable-price margin with the proven one-dollar cap will improve trade quality while retaining enough FOK participation to beat the baseline.
+- Implementation plan: Preserve the one-dollar loss cap and increase the side-aware acceptance margin from two cents to three cents. This trades less often for stronger estimated edge.
+- Worker summary: Raised the side-aware FOK acceptance margin from two cents to three cents while preserving the one-dollar cap. Scope validation, Python compilation, focused edge and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.40/16.00 points; PnL 75.25; minimum capital 16.77/20.00
+- Baseline delta: -0.30 points; PnL -6.07
+
+Selection: g3-half-cap.
+Promotion: none.
+Finding: All candidates passed 20/20 without bankruptcy. Lowering the FOK worst-case-loss cap to fifty cents improved points from 11.70 to 12.00, despite reducing combined PnL by 25.48 and producing a lower observed minimum-capital ratio. Moving the price edge to one or three cents with the one-dollar cap reduced points to 11.10 and 11.40, confirming the two-cent margin is the stronger center.
+Next-generation rationale: Promote the fifty-cent-cap winner and refine risk around that new boundary. Test quarter-dollar and seventy-five-cent caps at the proven two-cent edge, plus a three-cent edge under the fifty-cent cap to check whether stronger filtering interacts differently at lower exposure.
+Previous failure (runner): Generation 3 runner failed before any candidate completed: browser automation reported Unexpected end of JSON input; queued siblings were cancelled.
+Recovery instruction: Repair the HackerRank browser profile with `auto_extract_result/login.sh`, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.

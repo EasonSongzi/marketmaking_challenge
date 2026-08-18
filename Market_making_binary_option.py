@@ -390,11 +390,11 @@ class MarketMaker:
         if fok_order.order_type == OrderType.BUY:
             return (
                 fok_order.price >= theoretical_value + 0.02
-                and (1.0 - fok_order.price) * fok_order.quantity <= 1.0
+                and (1.0 - fok_order.price) * fok_order.quantity <= 0.5
             )
         return (
             fok_order.price <= theoretical_value - 0.02
-            and fok_order.price * fok_order.quantity <= 1.0
+            and fok_order.price * fok_order.quantity <= 0.5
         )
 
     def warm_up(self, market_history: MarketHistory) -> None:
