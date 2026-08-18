@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g2-rate-penalized",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-4-g02-g2-rate-penalized/r00.py",
+  "sourceSha256": "56a138427cce85157e45c81472ab56fb6dd28314984cd13f6a072447f43569c9",
+  "modifiedLines": 80,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1200,
+    "combinedPnlCents": 10064,
+    "minimumCapital": {
+      "endingCashCents": 618,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -30,
+    "combinedPnlCents": 2128
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

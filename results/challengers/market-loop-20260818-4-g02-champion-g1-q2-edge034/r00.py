@@ -470,15 +470,6 @@ class MarketMaker:
         rate_down_probability = (rate_down_probability * num_rate_transitions + 0.5) / (
             num_rate_transitions + 1.5
         )
-        likelihood_up, likelihood_down, likelihood_reversion = self._estimate_rate_likelihood(
-            rate_values
-        )
-        likelihood_weight: float = num_rate_transitions / (num_rate_transitions + 50.0)
-        rate_up_probability += likelihood_weight * (likelihood_up - rate_up_probability)
-        rate_down_probability += likelihood_weight * (likelihood_down - rate_down_probability)
-        rate_reversion_strength += likelihood_weight * (
-            likelihood_reversion - rate_reversion_strength
-        )
         ajarai_drift, ajarai_rate_beta, ajarai_residuals = self._linear_regression(
             rate_changes,
             ajarai_log_returns,
@@ -856,62 +847,6 @@ class MarketMaker:
             rate_up_probability *= scale
             rate_down_probability *= scale
         return rate_up_probability, rate_down_probability, reversion_strength
-
-    @staticmethod
-    def _estimate_rate_likelihood(rate_values: tuple[float, ...]) -> tuple[float, float, float]:
-        initial_values: tuple[float, ...] = rate_values[:-1]
-        changes: tuple[float, ...] = tuple(
-            current - previous for previous, current in zip(rate_values, rate_values[1:])
-        )
-        up_indicators: tuple[float, ...] = tuple(float(change > 0.0) for change in changes)
-        down_indicators: tuple[float, ...] = tuple(float(change < 0.0) for change in changes)
-        minimum_probability: float = 1e-6
-        target_gaps: tuple[float, ...] = tuple(2.0 - value for value in initial_values)
-        best_score: float = float("-inf")
-        best_parameters: tuple[float, float, float] | None = None
-        for candidate_index in range(1001):
-            reversion_strength: float = candidate_index / 1000.0
-            rate_up_probability: float = sum(
-                up - reversion_strength * gap
-                for up, gap in zip(up_indicators, target_gaps)
-            ) / len(up_indicators)
-            rate_down_probability: float = sum(
-                down + reversion_strength * gap
-                for down, gap in zip(down_indicators, target_gaps)
-            ) / len(down_indicators)
-            rate_up_probability = max(rate_up_probability, minimum_probability)
-            rate_down_probability = max(rate_down_probability, minimum_probability)
-            probability_sum: float = rate_up_probability + rate_down_probability
-            if probability_sum > 1.0:
-                scale: float = (1.0 - minimum_probability) / probability_sum
-                rate_up_probability *= scale
-                rate_down_probability *= scale
-
-            log_likelihood: float = 0.0
-            for rate_value, up, down in zip(initial_values, up_indicators, down_indicators):
-                tilt: float = reversion_strength * (2.0 - rate_value)
-                up_probability: float = min(max(rate_up_probability + tilt, 0.0), 1.0)
-                down_probability: float = min(
-                    max(rate_down_probability - tilt, 0.0), 1.0 - up_probability
-                )
-                stay_probability: float = max(1.0 - up_probability - down_probability, 0.0)
-                transition_probability: float = (
-                    up_probability if up else down_probability if down else stay_probability
-                )
-                if transition_probability <= 0.0:
-                    log_likelihood = float("-inf")
-                    break
-                log_likelihood += math.log(transition_probability)
-            if log_likelihood > best_score:
-                best_score = log_likelihood
-                best_parameters = (
-                    rate_up_probability,
-                    rate_down_probability,
-                    reversion_strength,
-                )
-        if best_parameters is None:
-            raise RuntimeError("Unable to fit rate transition parameters")
-        return best_parameters
 
     @staticmethod
     def _linear_regression(
