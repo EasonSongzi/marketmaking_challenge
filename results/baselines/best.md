@@ -1,10 +1,10 @@
 # Current Baseline
 
-- Current baseline: `g1-wide-two`
-- Result file: `market-loop-20260818-g01-g1-wide-two.md`
-- Source SHA-256: `1f253f98153437ce3d2cf19e69555cf1bf131ffe6ecb9080fbb113e8dde43c42`
-- Experiment: `market-loop-20260818`, generation 1, candidate `g1-wide-two`
-- SCORED points: 11.40/16.00
+- Current baseline: `g2-cross-one`
+- Result file: `market-loop-20260818-g02-g2-cross-one.md`
+- Source SHA-256: `bed7dc9b72b792d130084f5f09562eac50b4dd2cd33cfffb71fa7030265b0548`
+- Experiment: `market-loop-20260818`, generation 2, candidate `g2-cross-one`
+- SCORED points: 11.70/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0
 - Observed runs: 1

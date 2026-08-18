@@ -1,23 +1,23 @@
 {
   "schemaVersion": 2,
-  "strategy": "g1-wide-two",
-  "resultArtifact": "results/baselines/market-loop-20260818-g01-g1-wide-two.md",
-  "sourceSha256": "1f253f98153437ce3d2cf19e69555cf1bf131ffe6ecb9080fbb113e8dde43c42",
-  "experimentId": "market-loop-20260818:g01:g1-wide-two",
+  "strategy": "g2-cross-one",
+  "resultArtifact": "results/baselines/market-loop-20260818-g02-g2-cross-one.md",
+  "sourceSha256": "bed7dc9b72b792d130084f5f09562eac50b4dd2cd33cfffb71fa7030265b0548",
+  "experimentId": "market-loop-20260818:g02:g2-cross-one",
   "experiment": {
     "runId": "market-loop-20260818",
-    "generation": 1,
-    "candidateId": "g1-wide-two"
+    "generation": 2,
+    "candidateId": "g2-cross-one"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
-    "scoredPointsHundredths": 1140,
-    "combinedPnlCents": 3035,
+    "scoredPointsHundredths": 1170,
+    "combinedPnlCents": 8132,
     "minimumCapital": {
-      "endingCashCents": 550,
-      "startingCapitalCents": 1000
+      "endingCashCents": 1649,
+      "startingCapitalCents": 2000
     }
   }
 }

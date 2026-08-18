@@ -386,11 +386,16 @@ class MarketMaker:
         )
 
     def respond_to_fok(self, option: BinaryOption, fok_order: FokOrder) -> bool:  # type: ignore[empty-body]
-        # quote: Quote = self.quote(option, fok_order.counterparty_id)
-        # if fok_order.order_type == OrderType.BUY:
-        #     return fok_order.price >= quote.offer_price
-        # return fok_order.price <= quote.bid_price
-        return False
+        theoretical_value: float = self.price_option(option)
+        if fok_order.order_type == OrderType.BUY:
+            return (
+                fok_order.price >= theoretical_value + 0.02
+                and (1.0 - fok_order.price) * fok_order.quantity <= 1.0
+            )
+        return (
+            fok_order.price <= theoretical_value - 0.02
+            and fok_order.price * fok_order.quantity <= 1.0
+        )
 
     def warm_up(self, market_history: MarketHistory) -> None:
         """Build history summaries and fit the initial, deliberately simple model."""

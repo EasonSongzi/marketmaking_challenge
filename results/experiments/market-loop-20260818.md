@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T05:29:44.743Z
 - Starting baseline: rfq-only-v1 (9.00/16.00)
-- Current baseline: rfq-only-v1 (9.00/16.00)
+- Current baseline: g1-wide-two (11.40/16.00)
 - Stop condition: not reached
-- Score trend: 9.00
+- Score trend: 9.00 → 11.40
 
 A normal promoted candidate is based on one HackerRank run; stochastic score risk remains. Fixture-only validation uses stubbed evidence.
 
@@ -41,9 +41,47 @@ The 9.00-point baseline uses a one-cent spread and size one. An archived unpromo
 - Baseline delta: 1.00 points; PnL 0.82
 
 Selection: g1-wide-two.
-Promotion: none.
+Promotion: g1-wide-two (0dbcc7053c999f11739e56609a26d4b5b28cac87).
 Finding: All three quote variants passed 20/20 without bankruptcy and strictly improved the 9.00 baseline. Widening alone reached 9.50, size two alone reached 10.00, and combining both reached 11.40 with +33.08 combined PnL, showing a strong interaction while reducing the minimum-capital ratio to 0.55.
 Next-generation rationale: After promoting the 11.40 winner, FOK remains entirely unused. A risk-limited respond_to_fok generation can seek additional edge while preserving the now-proven quote settings and explicitly compare acceptance margins and quantity caps.
 Previous failure (setup): git -C /Users/easonhao/Documents/dev/Akuna_challenge worktree add --detach /tmp/akuna-market-maker/market-loop-20260818/g01/g1-wide-two 2b20e2da4f7f16113c81835387080107ebb8b763 failed: Preparing worktree (detached HEAD 2b20e2d)
 fatal: could not create leading directories of '.git/worktrees/g1-wide-two': Operation not permitted
+Recovery instruction: Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+
+## Generation 2: respond_to_fok
+
+The promoted 11.40 baseline still rejects every FOK, while verbose evidence contains selectively favorable orders. This generation compares two worst-case-loss caps at the current two-cent quote edge and a wider five-cent edge to seek incremental PnL without exposing the strategy to large binary-option liabilities.
+
+### g2-cross-one
+
+- Hypothesis: Accepting FOKs that cross the current two-cent quote only when total worst-case loss is at most one dollar will add low-risk profitable flow.
+- Implementation plan: Compute theoretical value and side-specific worst-case loss. Accept counterparty buys at least two cents above theoretical value or sells at least two cents below it, only when order quantity times per-contract maximum loss is at most 1.00.
+- Worker summary: Implemented side-aware two-cent FOK acceptance with a one-dollar total worst-case-loss cap. Scope validation, Python compilation, focused BUY/SELL edge and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 81.32; minimum capital 16.49/20.00
+- Baseline delta: 0.30 points; PnL 50.97
+
+### g2-cross-two
+
+- Hypothesis: A two-dollar worst-case-loss cap at the current two-cent edge will capture more favorable FOK volume and outperform the stricter one-dollar cap without bankruptcy.
+- Implementation plan: Use the same side-aware two-cent favorable-price test as the live quote and accept only when total worst-case loss is at most 2.00. This increases fill opportunity and capital risk relative to g2-cross-one.
+- Worker summary: Implemented side-aware two-cent FOK acceptance with a two-dollar total worst-case-loss cap. Scope validation, Python compilation, focused BUY/SELL edge and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.00/16.00 points; PnL 84.63; minimum capital 6.92/10.00
+- Baseline delta: -0.40 points; PnL 54.28
+
+### g2-edge-five
+
+- Hypothesis: Requiring a five-cent theoretical edge while allowing up to two dollars of worst-case loss will trade less often but improve adverse-selection resistance.
+- Implementation plan: Accept only side-aware FOK prices at least five cents favorable to theoretical value and only when total worst-case loss is at most 2.00. This sacrifices marginal trades for stronger expected edge.
+- Worker summary: Implemented side-aware five-cent FOK acceptance with a two-dollar total worst-case-loss cap. Scope validation, Python compilation, focused BUY/SELL edge and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 19/20 passed; 1 bankruptcies; 11.30/16.00 points; PnL 55.93; minimum capital -2.55/10.00
+- Baseline delta: -0.10 points; PnL 25.58
+
+Selection: g2-cross-one.
+Promotion: none.
+Finding: The one-dollar cap at a two-cent edge passed 20/20 and improved the baseline from 11.40 to 11.70 with +50.97 combined PnL. Raising the cap to two dollars fell to 11.00 despite higher combined PnL, while the five-cent edge with that larger cap caused bankruptcy in case 7. The tighter capital cap, not simply a wider price edge, controlled rank and solvency best.
+Next-generation rationale: Promote the one-dollar-cap winner, then refine respond_to_fok around that risk boundary by testing a lower cap and slightly narrower or wider price margins. This preserves the proven quote strategy while isolating participation versus adverse-selection effects.
+Previous failure (integrity): Generation 2 dispatcher returned integrity code 3: g2-edge-five passed 19/20 and reported bankruptcy in case 7; selection and promotion were intentionally skipped.
 Recovery instruction: Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
