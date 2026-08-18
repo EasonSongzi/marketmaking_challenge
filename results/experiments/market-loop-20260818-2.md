@@ -105,3 +105,40 @@ Next-generation rationale: Archive zero skew as the challenger's best revision, 
 Challenger update: updated market-loop-20260818-2-g01-g1-inventory-skew to skew-zero-fine.
 Previous failure (integrity): skew-three-medium integrity failure
 Recovery instruction: Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+
+## Generation 3: explore quote
+
+Unclamped inventory skews below three cents preserved 12.30 points, while larger skews failed only at quote boundaries. Test three structurally safe ways to discourage inventory accumulation without exceeding the champion's size-two exposure.
+
+### g3-clamped-skew-three
+
+- Hypothesis: A three-cent inventory center skew can improve unwinding and spread capture once the shifted center is clamped before quote construction, eliminating the boundary failures seen in tuning.
+- Implementation plan: Shift rounded theoretical center down three cents when long and up three cents when short, clamp the shifted center to zero through one hundred cents, then apply the champion's three-cent half-width and size two.
+- Worker summary: Added a signed three-cent inventory center shift, clamped the shifted center to zero through one hundred cents, and preserved the champion's three-cent half-width and size two. Compilation, scope validation, boundary assertions, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.10/16.00 points; PnL 79.24; minimum capital 5.94/10.00
+- Baseline delta: -0.20 points; PnL 3.75
+
+### g3-risk-side-size
+
+- Hypothesis: Reducing only the quote quantity that would increase absolute inventory will preserve full size for unwinding fills while lowering directional accumulation and capital risk.
+- Implementation plan: Keep champion prices. When long, quote bid size one and offer size two; when short, bid size two and offer size one; when flat, keep both at two.
+- Worker summary: Preserved champion prices while reducing only the inventory-increasing quote quantity to one and keeping the unwinding side at two. Compilation, scope validation, position-state assertions, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.30/16.00 points; PnL 69.62; minimum capital 6.03/10.00
+- Baseline delta: -1.00 points; PnL -5.87
+
+### g3-risk-side-shade
+
+- Hypothesis: Widening only the inventory-increasing side by two additional cents will deter risk accumulation without sacrificing competitiveness on the inventory-reducing side.
+- Implementation plan: Start from champion three-cent prices. When long, move only the bid two cents farther from fair; when short, move only the offer two cents farther from fair; leave the opposite side and both quantities at champion settings.
+- Worker summary: Preserved the champion's unwinding-side price and widened only the inventory-increasing side by two additional cents, with size two on both sides. Compilation, scope validation, boundary assertions, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.90/16.00 points; PnL 81.15; minimum capital 6.00/10.00
+- Baseline delta: -0.40 points; PnL 5.66
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All candidates passed 20/20 without bankruptcy or runtime errors. Clamped three-cent skew reached 12.10, losing 0.20 points but adding 3.75 combined PnL and improving minimum capital to 5.94/10.00. Risk-side quantity reduction over-filtered flow and fell to 11.30; risk-side-only shading added 5.66 PnL and improved minimum capital to 6.00/10.00 but fell to 11.90. Safe inventory controls improve PnL and capital yet need magnitude tuning to recover rank points.
+Next-generation rationale: Admit clamped three-cent skew because the structural clamp removed all boundary failures and its magnitude has explicit upside on both sides of the parent value. Tune the safe center shift across zero, smaller, and larger magnitudes without changing the structure.
+Challenger update: admitted market-loop-20260818-2-g03-g3-clamped-skew-three.

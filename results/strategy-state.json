@@ -108,6 +108,54 @@
           "improved": true
         }
       ]
+    },
+    {
+      "id": "market-loop-20260818-2-g03-g3-clamped-skew-three",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "The candidate is structurally safe at all quote boundaries, passed 20/20, and traded only 0.20 points for higher PnL and capital. Its three-cent literal exposes a clean bounded tuning axis that can test whether smaller or larger safe skews recover the lost rank points.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260818-2-g03-g3-clamped-skew-three/r00.py",
+          "sourceSha256": "c58ecf573537c6db921a0aabf58438c559f12c3d1c26f4d04467208c4f5c76e9",
+          "evaluationPath": "results/challengers/market-loop-20260818-2-g03-g3-clamped-skew-three/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260818-2-g03-g3-clamped-skew-three/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g3-clamped-skew-three",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260818-2-g03-g3-clamped-skew-three/r00.py",
+            "sourceSha256": "c58ecf573537c6db921a0aabf58438c559f12c3d1c26f4d04467208c4f5c76e9",
+            "modifiedLines": 11,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1210,
+              "combinedPnlCents": 7924,
+              "minimumCapital": {
+                "endingCashCents": 594,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": -20,
+              "combinedPnlCents": 375
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-18T19:03:40.230Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -267,6 +315,63 @@
       "reasons": [
         "Cases did not pass: 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
         "Candidate runtime error in cases 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20: ValueError: Quote prices must be between 0 and 1"
+      ]
+    },
+    "c58ecf573537c6db921a0aabf58438c559f12c3d1c26f4d04467208c4f5c76e9": {
+      "valid": true,
+      "modifiedLines": 11,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1210,
+        "combinedPnlCents": 7924,
+        "minimumCapital": {
+          "endingCashCents": 594,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "4e1d0e4878561ce709bbd7f02de6a9f39d200492608de73d33aba29ba7597f53": {
+      "valid": true,
+      "modifiedLines": 7,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1130,
+        "combinedPnlCents": 6962,
+        "minimumCapital": {
+          "endingCashCents": 603,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "b8d20efbbfc7fa8b052dea93b70e038e4fe5b35bdbe6500822821891161e4b9f": {
+      "valid": true,
+      "modifiedLines": 7,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1190,
+        "combinedPnlCents": 8115,
+        "minimumCapital": {
+          "endingCashCents": 600,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
       ]
     }
   }
