@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T19:49:43.378Z
 - Starting baseline: g5-wide-three-two (12.30/16.00)
-- Current baseline: g5-wide-three-two (12.30/16.00)
+- Current baseline: g2-rate-smoothing (12.30/16.00)
 - Stop condition: not reached
-- Score trend: 12.30
+- Score trend: 12.30 → 12.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -107,6 +107,43 @@ The champion's quote and FOK controls have been extensively explored and tuned t
 - Baseline delta: -0.20 points; PnL 1.38
 
 Selection: g2-rate-smoothing.
-Promotion: none.
+Promotion: g2-rate-smoothing (c5f16eff28fa966cbfa5dc778ed851a082f45e5d).
 Finding: All three warm-up estimators passed 20/20 without bankruptcy or runtime errors. Jeffreys-smoothed rate transitions tied the champion's 12.30 points, improved minimum capital from 5.92/10.00 to 5.98/10.00, and added 1.73 combined PnL, so it uniquely passed the promotion gate. Likelihood fitting improved combined PnL by 24.99 and minimum capital to 6.27/10.00 but lost 0.10 points; residual MLE scaling lost 0.20 points and reduced minimum capital to 5.87/10.00.
 Next-generation rationale: Promote rate smoothing. The likelihood result shows that rate-estimator structure materially changes economics, but its current pure fit sacrifices rank and lacks a clean literal-only tuning axis. Continue with structural exploration from the new smoothed champion, testing confidence-aware trading policies that can exploit improved rate calibration while protecting the newly higher minimum capital.
+
+## Generation 3: explore respond_to_fok
+
+The promoted rate-smoothed estimator improved minimum capital, while the fixed two-cent FOK edge treats all contracts and order shapes as equally uncertain. Test three orthogonal confidence gates that retain the proven half-dollar worst-case-loss cap and alter only which marginal FOK flow is accepted.
+
+### g3-rate-edge-one
+
+- Hypothesis: The newly smoothed transition probabilities support accepting one-cent edges on pure FED options while preserving the two-cent edge for noisier company and spread contracts.
+- Implementation plan: Detect a single-leg FED contract in respond_to_fok and use a one-cent favorable edge only for that contract type; retain the champion's two-cent edge for every other option and its side-specific half-dollar loss cap for all orders.
+- Worker summary: Used a one-cent favorable edge only for pure single-leg FED FOKs and retained two cents elsewhere, with the half-dollar loss cap unchanged. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 77.22; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+### g3-long-edge-three
+
+- Hypothesis: Longer-dated FOKs are more exposed to warm-up parameter error, so requiring three cents beyond three days will improve trade quality and minimum capital without reducing near-term participation.
+- Implementation plan: Use the champion's two-cent favorable edge for expiries of three days or fewer and a three-cent edge for longer expiries, preserving the same symmetric BUY/SELL logic and half-dollar worst-case-loss cap.
+- Worker summary: Required a three-cent favorable edge only beyond three days to expiry and retained the champion's two-cent edge for shorter contracts, preserving the half-dollar loss cap. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 77.69; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 0.47
+
+### g3-large-edge-three
+
+- Hypothesis: A stricter three-cent edge on larger FOK quantities will filter adverse selection that the dollar loss cap alone does not distinguish while preserving ordinary small-order flow.
+- Implementation plan: Use the champion's two-cent favorable edge for quantity one and a three-cent edge for larger FOK orders, then apply the unchanged side-specific half-dollar loss cap. Keep the rule symmetric across BUY and SELL.
+- Worker summary: Required a three-cent favorable edge for FOK quantities above one and retained two cents for single-contract orders, preserving the symmetric half-dollar loss cap. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 78.65; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 1.43
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three confidence gates passed 20/20 without bankruptcy or runtime errors and preserved the champion's 12.30 points and 5.98/10.00 minimum capital, so none qualified for promotion. A one-cent pure-rate edge exactly reproduced the champion. Requiring three cents beyond three days added 0.47 combined PnL, while requiring three cents on quantities above one led the batch with a 1.43 PnL gain.
+Next-generation rationale: Admit the quantity-tier FOK gate as a challenger and tune its large-order edge plus activation threshold. It preserved every promotion-gate metric while improving economics, and both literals define bounded axes that can test whether stricter filtering on only genuinely large orders lifts minimum capital or score.
+Challenger update: admitted market-loop-20260818-3-g03-g3-large-edge-three.
