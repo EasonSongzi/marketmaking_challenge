@@ -206,3 +206,40 @@ Promotion: none.
 Finding: All six clamped-skew variants passed 20/20 without bankruptcy or runtime errors. Zero skew recovered the champion's 12.30 score and 5.92/10.00 minimum capital. One and two cents scored 12.10 while adding 2.15 and 3.30 combined PnL; four and six cents scored 12.00, and eight cents fell to 11.40. The monotonically weaker score at larger magnitudes makes zero the best revision despite the parent's higher PnL and minimum capital.
 Next-generation rationale: Update the clamped-skew challenger to zero, but do not repeat magnitude tuning. With only two generations remaining and quote inventory controls unable to exceed 12.30, explore structurally inventory-aware FOK acceptance as an orthogonal source of rank improvement.
 Challenger update: updated market-loop-20260818-2-g03-g3-clamped-skew-three to skew-zero-fine.
+
+## Generation 5: explore respond_to_fok
+
+Four generations of quote and inventory-skew work have not exceeded 12.30. Explore orthogonal FOK structures that use existing position or pricing confidence while preserving the champion's half-dollar exposure rule for ordinary orders.
+
+### g5-inventory-unwind
+
+- Hypothesis: Favorable FOKs that cannot overshoot an existing option position can safely bypass the ordinary loss cap because every possible shared fill reduces directional inventory.
+- Implementation plan: Preserve the champion rule for ordinary orders. Additionally accept a counterparty BUY that sells down a positive position, or a counterparty SELL that buys back a negative position, when full order quantity is no greater than absolute position and price is at least break-even theoretical value.
+- Worker summary: Added a break-even-or-better acceptance path for FOKs whose full quantity cannot overshoot an existing opposite-signed position, while preserving the champion rule for ordinary orders. Compilation, scope validation, directional and quantity assertions, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 78.97; minimum capital 5.92/10.00
+- Baseline delta: 0.00 points; PnL 3.48
+
+### g5-position-guard
+
+- Hypothesis: Allowing the first champion-qualified FOK while requiring later FOKs to reduce projected absolute position will prevent repeated one-way accumulation and improve solvency-adjusted rank.
+- Implementation plan: Apply the champion's two-cent edge and half-dollar loss cap, then accept only when current option position is zero or the full signed order would not increase its absolute value. Treat counterparty BUY as negative market-maker quantity and SELL as positive.
+- Worker summary: Preserved the champion's edge and loss cap, then allowed qualified FOKs only from flat inventory or when full signed quantity would not increase absolute position. Compilation, scope validation, projected-position assertions, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 71.66; minimum capital 5.94/10.00
+- Baseline delta: -0.30 points; PnL -3.83
+
+### g5-tail-edge-one
+
+- Hypothesis: A one-cent required edge for near-certain or near-impossible contracts will capture additional low-uncertainty FOK flow while the existing half-dollar cap contains exposure.
+- Implementation plan: Keep the champion's half-dollar side-specific loss cap. Require one cent of favorable edge when theoretical value is at most ten cents or at least ninety cents, and retain two cents elsewhere.
+- Worker summary: Reduced required FOK edge to one cent only when theoretical value was at most ten cents or at least ninety cents, preserving the half-dollar cap and two-cent edge elsewhere. Compilation, scope validation, threshold assertions, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 72.80; minimum capital 5.92/10.00
+- Baseline delta: 0.00 points; PnL -2.69
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three FOK structures passed 20/20 without bankruptcy or runtime errors. Inventory unwind tied the 12.30 champion with identical minimum capital and added 3.48 combined PnL. The projected-position guard fell to 12.00 and lost 3.83 PnL. A one-cent tail edge tied 12.30 but lost 2.69 PnL, so only the unwind exception preserved rank while improving economics.
+Next-generation rationale: Admit inventory unwind and use the sixth generation to tune the ordinary FOK rule around it. The existing two-cent edge and half-dollar cap expose explicit paired literals, and their interaction may differ now that safe position-reducing flow bypasses the ordinary cap.
+Challenger update: admitted market-loop-20260818-2-g05-g5-inventory-unwind.
