@@ -3,7 +3,7 @@
 - Date: 2026-08-18T06:14:48.279Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
 - Label: g5-wide-three-two
-- Source: `/tmp/akuna-market-maker/market-loop-20260818/g05/g5-wide-three-two/Market_making_binary_option.py`
+- Source: `Market_making_binary_option.py`
 - Source SHA-256: `f19704494d5edc6cff65eac13240ce2fe32ca4afef87d1e414573eac694630a0`
 - Overall: All available test cases passed
 - Passed: 20/20
@@ -401,4 +401,3 @@ Result: PASS (score=1.00)
 Hidden Test Case
 Hidden test cases help evaluate whether your code handles different scenarios correctly. You can use print or log statements to debug and understand their behavior.
 ~~~~
-

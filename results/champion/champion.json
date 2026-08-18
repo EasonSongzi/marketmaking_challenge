@@ -1,8 +1,9 @@
 {
-  "schemaVersion": 2,
-  "strategy": "g5-wide-three-two",
-  "resultArtifact": "results/champion/result.md",
+  "schemaVersion": 1,
+  "id": "g5-wide-three-two",
+  "sourcePath": "Market_making_binary_option.py",
   "sourceSha256": "f19704494d5edc6cff65eac13240ce2fe32ca4afef87d1e414573eac694630a0",
+  "resultArtifact": "results/champion/result.md",
   "experimentId": "market-loop-20260818:g05:g5-wide-three-two",
   "experiment": {
     "runId": "market-loop-20260818",

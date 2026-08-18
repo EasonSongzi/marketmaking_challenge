@@ -9,18 +9,20 @@ Use the repository skill to plan, implement, evaluate, and promote scored
 Use $run-market-maker-loop to start a new experiment loop.
 ```
 
-The lead agent inspects the strategy, baseline, recent evaluations, and prior
-reports. Each generation targets `quote`, `respond_to_fok`, or `warm_up`, creates
-three distinct hypotheses, and assigns them to three parallel subagents in
-isolated detached worktrees. Workers edit and run local checks only. The lead
-runs each candidate through the shared, serialized HackerRank runner, archives
-the evidence, promotes a strict improvement, and commits only loop-managed
-files.
+The lead agent chooses an `explore` or `tune` generation. Explore creates three
+structurally distinct champion variants in parallel worktrees. Tune selects one
+saved full-source challenger, uses one subagent to design N coarse/medium/fine
+joint parameter vectors, and evaluates the materialized variants serially.
+Every unique source SHA is run once through the fixed grader; later occurrences
+reuse the project evaluation cache.
 
-The loop stops after reaching 15.00/16.00, completing five generations, or two
-consecutive generations without promotion. Its tracked report is written to
+The loop stops after reaching 15.00/16.00 or completing six generations. Its
+tracked report is written to
 `results/experiments/<run-id>.md`; state and archived candidate evidence live
-under `results/runs/<run-id>/`.
+under `results/runs/<run-id>/`. The canonical champion lives in
+`results/champion/`, full-source challenger revisions live in
+`results/challengers/`, and `results/strategy-state.json` indexes both plus the
+evaluation cache. Former champion evidence lives in `results/history/`.
 
 If authentication fails, repair the saved browser profile:
 

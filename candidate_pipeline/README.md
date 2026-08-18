@@ -19,8 +19,8 @@ candidate_pipeline/loop.sh start --run-id <run-id>
 candidate_pipeline/loop.sh status --run-id <run-id>
 ```
 
-For each generation, supply a JSON plan containing one target method and
-exactly three distinct candidates, then prepare detached worktrees:
+For each generation, supply a schema-version-2 plan whose `mode` is `explore`
+or `tune`, then prepare detached worktrees:
 
 ```bash
 candidate_pipeline/loop.sh prepare --run-id <run-id> --plan <plan-json>
@@ -30,7 +30,8 @@ The plan schema is:
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
+  "mode": "explore",
   "method": "quote",
   "rationale": "Evidence-based generation rationale.",
   "candidates": [
@@ -53,14 +54,30 @@ The plan schema is:
 }
 ```
 
-`method` must be `quote`, `respond_to_fok`, or `warm_up`. Candidate IDs must be
+Explore `method` must be `quote`, `respond_to_fok`, or `warm_up`. Candidate IDs must be
 unique lowercase slugs. Read the prepared worktree and result-directory paths
 from `results/runs/<run-id>/state.json`.
 
-The lead assigns one subagent to each returned worktree and waits for all three.
-Workers edit `MarketMaker` and required imports, preserve public signatures,
-and run local checks. Before any live evaluation, validate each candidate's
-scope and signatures:
+A Tune plan selects an active entry in `results/strategy-state.json` and gives
+`challengerId`, the current `parentSourceSha256`, its method, `sampleCount`, and
+parameter records with type, direction, parent value, inclusive bounds, and
+literal bindings. Prepare creates one designer worktree from the challenger's
+complete source revision. The worker writes exactly N unique joint vectors
+covering coarse, medium, and fine granularities. Materialize and register them:
+
+```bash
+candidate_pipeline/materialize-tuning.sh \
+  --source <designer>/Market_making_binary_option.py \
+  --plan <absolute-plan> --manifest <draft-manifest> \
+  --output-root <designer-variants-root>
+candidate_pipeline/loop.sh register-tuning --run-id <run-id> \
+  --manifest <designer>/.../materialized-manifest.json
+```
+
+Explore assigns one subagent to each of three worktrees. Tune assigns one
+subagent to the designer worktree and materializes all N variants there.
+Workers preserve public signatures and run local checks. Before any live
+evaluation, validate each candidate's scope and signatures:
 
 ```bash
 candidate_pipeline/validate-candidate.sh \
@@ -70,9 +87,7 @@ candidate_pipeline/validate-candidate.sh \
 
 Workers receive one repair pass after a failed validation or local check.
 
-Launch the valid candidates together through the fail-fast dispatcher. It
-queues all candidate processes behind the shared browser lock and terminates
-siblings after the first runner or integrity failure:
+Launch the valid candidates through the serial dispatcher:
 
 ```bash
 candidate_pipeline/run-generation.sh \
@@ -82,10 +97,10 @@ candidate_pipeline/run-generation.sh \
 ```
 
 Add `--invalid <candidate-id>` for every worker that exhausted its repair pass.
-The dispatcher returns `0` after candidate codes `0`/`2`, `1` on a runner or
-infrastructure failure, and `3` on malformed or hash-invalid evidence. It
-atomically records every completed, skipped, failed, or cancelled candidate in
-the output JSON.
+The dispatcher returns `0` after candidate codes `0`/`2`, `1` after the same
+source has two consecutive runner failures, and `3` on malformed or
+hash-invalid evidence. The first runner failure is automatically recorded,
+resumed, and retried. Integrity failures never retry.
 
 After the dispatcher finishes successfully, save worker summaries and a
 post-evaluation analysis under `results/runs/<run-id>/inputs/`, archive evidence
@@ -100,18 +115,17 @@ candidate_pipeline/loop.sh finish --run-id <run-id>
 
 `results/runs/<run-id>/state.json` records completed candidates, evaluations,
 promotions, commits, and the stop reason. Resume from this state without
-rerunning completed HackerRank evaluations. The loop stops at 15.00/16.00,
-after five generations, or after two consecutive generations without
-promotion. Add `--invalid <candidate-id>` to `archive` for each worker that
+rerunning completed HackerRank evaluations. The loop stops at 15.00/16.00 or
+after six generations. Add `--invalid <candidate-id>` to `archive` for each worker that
 exhausted its repair pass. `archive` runs selection internally, records
 `selection.json`, and cleans up verified worktrees. `finish` writes
 `results/experiments/<run-id>.md`, creates a
 report-only commit when needed, and skips an empty commit.
 
-A browser or authentication failure stops the run immediately without
-selection or promotion and preserves its worktrees. Repair the browser profile
-with `auto_extract_result/login.sh`, then resume the same run. Record the
-failure without cleanup and resume by running:
+A browser or authentication failure is automatically recorded and retried once
+for the same source. A second consecutive failure stops without selection or
+promotion and preserves the worktree. Repair the browser profile with
+`auto_extract_result/login.sh`, then resume the same run manually if needed:
 
 ```bash
 candidate_pipeline/loop.sh archive --run-id <run-id> \
@@ -125,7 +139,8 @@ old evaluation is retained as `evaluation.legacy-invalid.json`; no HackerRank
 case is rerun.
 
 Pass `--summaries <json-path>` to a successful `archive` call to store actual
-worker implementation summaries keyed by candidate ID. Pass `--analysis
+worker implementation summaries keyed by candidate ID for Explore or by the
+single designer ID for Tune. Pass `--analysis
 <json-path>` with a required `finding` and optional `nextGenerationRationale`
 to record the lead's evidence-based result analysis. Use failure kind
 `authentication`, `browser`, `runner`, or `integrity`; integrity failures must
@@ -155,8 +170,8 @@ Candidate exit statuses are:
 - `3`: evidence is malformed or incomplete, or the source SHA changed;
 - `1`: runner or pipeline failure.
 
-Each candidate receives one live HackerRank run. Historical unpromoted results
-may inform a hypothesis but cannot be promoted without a fresh evaluation.
+Each unique source SHA receives at most one live HackerRank run. Cached evidence
+is rebound to the current champion before selection.
 
 ## Standalone selector API
 
@@ -189,9 +204,10 @@ and plan before cleanup or promotion. Treat malformed data, changed hashes, and
 selection-integrity failures as hard stops. Remove only pipeline-registered
 worktrees whose evidence was archived and verified.
 
-Promotion copies the verified winner to `Market_making_binary_option.py`,
-creates an immutable baseline artifact, updates `best.json` and `best.md`, and
-commits only the strategy, baseline files, and experiment report as
+Promotion copies the verified full-source winner to
+`Market_making_binary_option.py`, demotes the old full champion into the pool,
+updates `results/champion/`, the registry, and the compatibility `best.*`
+files, and commits only the strategy state and report as
 `strategy: promote <candidate-id>`. It never stages unrelated changes and never
 pushes, tags, deploys, or submits.
 

@@ -8,11 +8,24 @@ import { fileURLToPath } from "node:url";
 import { compareCapital } from "./case-result.mjs";
 import { evaluateRun } from "./evaluate.mjs";
 import { selectFromFiles } from "./select.mjs";
+import {
+  activeChallenger,
+  cacheEvaluation,
+  challengersPath,
+  compareStrategy,
+  currentRevision,
+  loadRegistry,
+  registryPath,
+  saveRegistry,
+  storeRevision,
+  syncChampion,
+} from "./strategy-state.mjs";
 
 const execFile = promisify(execFileCallback);
 const SOURCE = "Market_making_binary_option.py";
 const WORKTREE_ROOT = "/tmp/akuna-market-maker";
 const METHODS = new Set(["quote", "respond_to_fok", "warm_up"]);
+const MODES = new Set(["explore", "tune"]);
 const FAILURE_KINDS = new Set(["authentication", "browser", "runner", "integrity"]);
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
 
@@ -91,6 +104,7 @@ async function resolveRepo(repoOption) {
 
 function pathsFor(repo, runId) {
   const runDirectory = path.join(repo, "results", "runs", runId);
+  const championDirectory = path.join(repo, "results", "champion");
   return {
     repo,
     runId,
@@ -98,6 +112,11 @@ function pathsFor(repo, runId) {
     statePath: path.join(runDirectory, "state.json"),
     reportPath: path.join(repo, "results", "experiments", `${runId}.md`),
     baselinePath: path.join(repo, "results", "baselines", "best.json"),
+    registryPath: registryPath(repo),
+    challengersPath: challengersPath(repo),
+    championDirectory,
+    championRecordPath: path.join(championDirectory, "champion.json"),
+    championResultPath: path.join(championDirectory, "result.md"),
     sourcePath: path.join(repo, SOURCE),
   };
 }
@@ -132,8 +151,8 @@ async function loadState(options) {
   const repo = await resolveRepo(options.repo);
   const paths = pathsFor(repo, options.runId);
   const state = await readJson(paths.statePath, "loop state");
-  if (state.schemaVersion !== 1 || state.runId !== options.runId) {
-    throw new LoopInputError("Loop state does not match schema version 1 or the requested run");
+  if (![1, 2].includes(state.schemaVersion) || state.runId !== options.runId) {
+    throw new LoopInputError("Loop state does not match a supported schema or the requested run");
   }
   validateLoadedState(paths, state);
   return { paths, state };
@@ -146,7 +165,14 @@ function validateLoadedState(paths, state) {
       throw new LoopInputError(`Generation at index ${index} has an invalid number`);
     }
     if (!Array.isArray(generation.candidates)) throw new LoopInputError(`Generation ${generation.number} candidates must be an array`);
-    if (generation.candidates.length !== 3) throw new LoopInputError(`Generation ${generation.number} must contain exactly three candidates`);
+    const mode = generation.mode ?? "explore";
+    if (!MODES.has(mode)) throw new LoopInputError(`Generation ${generation.number} has an invalid mode`);
+    if (mode === "explore" && generation.candidates.length !== 3) {
+      throw new LoopInputError(`Explore generation ${generation.number} must contain exactly three candidates`);
+    }
+    if (mode === "tune" && generation.materialized && generation.candidates.length === 0) {
+      throw new LoopInputError(`Tune generation ${generation.number} has no materialized candidates`);
+    }
     const ids = new Set();
     for (const candidate of generation.candidates) {
       assertId(candidate?.id, `generation ${generation.number} candidate ID`);
@@ -220,12 +246,12 @@ export function renderReportText(state) {
     `- Stop condition: ${state.stopReason ?? "not reached"}`,
     `- Score trend: ${state.scoreTrend.map(formatHundredths).join(" → ")}`,
     "",
-    "A normal promoted candidate is based on one HackerRank run; stochastic score risk remains. Fixture-only validation uses stubbed evidence.",
+    "The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.",
   ];
   for (const generation of state.generations) {
     lines.push(
       "",
-      `## Generation ${generation.number}: ${generation.method}`,
+      `## Generation ${generation.number}: ${generation.mode ?? "explore"} ${generation.method}`,
       "",
       generation.rationale,
       "",
@@ -234,8 +260,8 @@ export function renderReportText(state) {
       lines.push(
         `### ${candidate.id}`,
         "",
-        `- Hypothesis: ${candidate.hypothesis}`,
-        `- Implementation plan: ${candidate.implementationPlan}`,
+        `- Hypothesis: ${candidate.hypothesis ?? "parameter tuning variant"}`,
+        `- Implementation plan: ${candidate.implementationPlan ?? JSON.stringify(candidate.parameters ?? {})}`,
         `- Worker summary: ${candidate.implementationSummary ?? "not supplied"}`,
         `- Status: ${candidate.status}`,
         `- Result: ${summaryLine(candidate.evaluation?.summary)}`,
@@ -251,6 +277,7 @@ export function renderReportText(state) {
     }
     if (generation.finding) lines.push(`Finding: ${generation.finding}`);
     if (generation.nextGenerationRationale) lines.push(`Next-generation rationale: ${generation.nextGenerationRationale}`);
+    if (generation.challengerUpdate) lines.push(`Challenger update: ${generation.challengerUpdate}.`);
     if (generation.previousFailure) {
       lines.push(
         `Previous failure (${generation.previousFailure.kind}): ${generation.previousFailure.message}`,
@@ -282,7 +309,15 @@ async function hasStagedChanges(repo) {
 }
 
 async function dirtyManaged(repo, reportPath) {
-  const managed = [SOURCE, "results/baselines/best.json", "results/baselines/best.md", "results/experiments"];
+  const managed = [
+    SOURCE,
+    "results/baselines/best.json",
+    "results/baselines/best.md",
+    "results/experiments",
+    "results/strategy-state.json",
+    "results/challengers",
+    "results/champion",
+  ];
   const { stdout } = await git(repo, "status", "--porcelain=v1", "--untracked-files=all", "--", ...managed);
   return stdout.trim();
 }
@@ -317,22 +352,28 @@ export async function startRun(options) {
     gitCommit: head.trim(),
     legacyBaseline: baseline.schemaVersion === 1,
   };
+  const registry = await loadRegistry(repo, { ...baseline, sourceSha256 });
+  if (registry.champion.sourceSha256 && registry.champion.sourceSha256 !== sourceSha256) {
+    throw new LoopInputError("Strategy registry champion does not match the current source");
+  }
   const state = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     runId: options.runId,
     status: "active",
     createdAt: now(),
     updatedAt: now(),
     config: {
-      candidateCount: 3,
-      maxGenerations: options.maxGenerations ?? 5,
-      stallGenerations: options.stallGenerations ?? 2,
+      exploreCandidateCount: 3,
+      maxTuningAttempts: 2,
+      maxGenerations: options.maxGenerations ?? 6,
       targetPointsHundredths: options.targetPointsHundredths ?? 1500,
     },
     startingBaseline: structuredClone(baselineState),
     baseline: baselineState,
     generations: [],
-    consecutiveNoPromotion: 0,
+    challengerPool: registry.challengers
+      .filter(({ status }) => status === "active")
+      .map(({ id }) => id),
     scoreTrend: [baseline.summary.scoredPointsHundredths],
     commits: [],
     stopReason: null,
@@ -341,15 +382,33 @@ export async function startRun(options) {
   return { paths, state };
 }
 
-function validatePlan(plan) {
-  if (plan?.schemaVersion !== 1 || !METHODS.has(plan.method)) {
-    throw new LoopInputError("Plan must use schemaVersion 1 and target quote, respond_to_fok, or warm_up");
+function validatePlan(plan, registry) {
+  const mode = plan?.mode ?? (plan?.schemaVersion === 1 ? "explore" : null);
+  if (![1, 2].includes(plan?.schemaVersion) || !MODES.has(mode) || !METHODS.has(plan.method)) {
+    throw new LoopInputError("Plan must use a supported schema, mode, and target method");
   }
   if (typeof plan.rationale !== "string" || !plan.rationale.trim()) {
     throw new LoopInputError("Plan rationale is required");
   }
+  if (mode === "tune") {
+    if (plan.schemaVersion !== 2) throw new LoopInputError("Tune plans require schemaVersion 2");
+    const challenger = activeChallenger(registry, plan.challengerId);
+    if (!challenger) throw new LoopInputError("Tune plan must select an active challenger");
+    const revision = currentRevision(challenger);
+    if (plan.parentSourceSha256 !== revision.sourceSha256) {
+      throw new LoopInputError("Tune plan parentSourceSha256 does not match the challenger revision");
+    }
+    if (plan.method !== challenger.method) throw new LoopInputError("Tune plan method does not match the challenger");
+    if (!Number.isSafeInteger(plan.sampleCount) || plan.sampleCount < 3) {
+      throw new LoopInputError("Tune plan sampleCount must be at least three");
+    }
+    if (!Array.isArray(plan.parameters) || plan.parameters.length === 0) {
+      throw new LoopInputError("Tune plan requires parameter bindings");
+    }
+    return mode;
+  }
   if (!Array.isArray(plan.candidates) || plan.candidates.length !== 3) {
-    throw new LoopInputError("Plan must contain exactly three candidates");
+    throw new LoopInputError("Explore plan must contain exactly three candidates");
   }
   const ids = new Set();
   for (const candidate of plan.candidates) {
@@ -362,12 +421,12 @@ function validatePlan(plan) {
       }
     }
   }
+  return mode;
 }
 
 export function getStopReason(state) {
   if (state.baseline.summary.scoredPointsHundredths >= state.config.targetPointsHundredths) return "target score reached";
   if (state.generations.filter(({ status }) => ["promoted", "not-promoted"].includes(status)).length >= state.config.maxGenerations) return "generation limit reached";
-  if (state.consecutiveNoPromotion >= state.config.stallGenerations) return "stall limit reached";
   return null;
 }
 
@@ -377,6 +436,12 @@ export async function prepareGeneration(options) {
   if (state.status !== "active") throw new LoopInputError(`Run is ${state.status}, not active`);
   if (incomplete && ["preparing", "prepared"].includes(incomplete.status)) {
     await ensureWorktrees(paths, state, incomplete);
+    if (incomplete.mode === "tune") {
+      await fs.copyFile(
+        path.join(paths.repo, incomplete.parentRevision.sourcePath),
+        path.join(incomplete.designer.worktreePath, SOURCE),
+      );
+    }
     return { paths, state, generation: incomplete, resumed: true };
   }
   if (incomplete && !["promoted", "not-promoted"].includes(incomplete.status)) {
@@ -386,18 +451,21 @@ export async function prepareGeneration(options) {
   if (reason) throw new LoopInputError(`Cannot prepare another generation: ${reason}`);
   const planPath = path.resolve(options.planPath ?? "");
   const plan = await readJson(planPath, "generation plan");
-  validatePlan(plan);
+  const baseline = await readJson(paths.baselinePath, "best baseline");
+  const registry = await loadRegistry(paths.repo, baseline);
+  const mode = validatePlan(plan, registry);
   const number = state.generations.length + 1;
   const generationRoot = ensureWorktreePath(path.join(WORKTREE_ROOT, state.runId, `g${String(number).padStart(2, "0")}`));
   const planArchivePath = path.join(paths.runDirectory, `g${String(number).padStart(2, "0")}`, "plan.json");
   await writeJson(planArchivePath, plan);
   const generation = {
     number,
+    mode,
     method: plan.method,
     rationale: plan.rationale.trim(),
     status: "preparing",
     planPath: path.relative(paths.repo, planArchivePath),
-    candidates: plan.candidates.map((candidate) => {
+    candidates: (plan.candidates ?? []).map((candidate) => {
       const worktreePath = ensureWorktreePath(path.join(generationRoot, candidate.id));
       return {
         id: candidate.id,
@@ -412,10 +480,100 @@ export async function prepareGeneration(options) {
     selection: null,
     promotion: null,
   };
+  if (mode === "tune") {
+    const challenger = activeChallenger(registry, plan.challengerId);
+    const revision = currentRevision(challenger);
+    const designerId = `tune-${String(number).padStart(2, "0")}`;
+    const worktreePath = ensureWorktreePath(path.join(generationRoot, designerId));
+    generation.challengerId = challenger.id;
+    generation.parentRevision = structuredClone(revision);
+    generation.sampleCount = plan.sampleCount;
+    generation.designer = {
+      id: designerId,
+      status: "pending",
+      worktreePath,
+      manifestPath: path.join(worktreePath, ".tuning", state.runId, `g${String(number).padStart(2, "0")}`, "materialized-manifest.json"),
+      variantsRoot: path.join(worktreePath, ".tuning", state.runId, `g${String(number).padStart(2, "0")}`, "variants"),
+    };
+  }
   state.generations.push(generation);
   await saveState(paths, state);
   await ensureWorktrees(paths, state, generation);
+  if (mode === "tune") {
+    const parentSource = path.join(paths.repo, generation.parentRevision.sourcePath);
+    const designerSource = path.join(generation.designer.worktreePath, SOURCE);
+    await fs.copyFile(parentSource, designerSource);
+    if (await sha256(designerSource) !== generation.parentRevision.sourceSha256) {
+      throw new LoopInputError("Tune designer source does not match the challenger revision");
+    }
+    generation.designer.status = "prepared";
+    await saveState(paths, state);
+  }
   return { paths, state, generation, resumed: false };
+}
+
+export async function registerTuning(options) {
+  const { paths, state } = await loadState(options);
+  const generation = state.generations.at(-1);
+  if (state.status !== "active" || generation?.mode !== "tune" || generation.status !== "prepared") {
+    throw new LoopInputError("No prepared tune generation is available");
+  }
+  const manifestPath = path.resolve(options.manifestPath ?? "");
+  if (manifestPath !== path.resolve(generation.designer.manifestPath)) {
+    throw new LoopInputError(`Tuning manifest must equal ${generation.designer.manifestPath}`);
+  }
+  await command(options.materializerPath ?? path.join(paths.repo, "candidate_pipeline", "materialize-tuning.sh"), [
+    "--source", path.join(generation.designer.worktreePath, SOURCE),
+    "--plan", path.join(paths.repo, generation.planPath),
+    "--manifest", manifestPath,
+    "--output-root", generation.designer.variantsRoot,
+  ]);
+  const manifest = await readJson(manifestPath, "materialized tuning manifest");
+  if (
+    manifest.schemaVersion !== 1
+    || manifest.parentSourceSha256 !== generation.parentRevision.sourceSha256
+    || !Array.isArray(manifest.variants)
+    || manifest.variants.length !== generation.sampleCount
+  ) {
+    throw new LoopInputError("Tuning manifest identity or sample count is invalid");
+  }
+  const ids = new Set();
+  const granularities = new Set();
+  generation.candidates = [];
+  for (const variant of manifest.variants) {
+    assertId(variant?.id, "tuning variant ID");
+    if (ids.has(variant.id)) throw new LoopInputError("Tuning variant IDs must be unique");
+    ids.add(variant.id);
+    if (!["coarse", "medium", "fine"].includes(variant.granularity)) {
+      throw new LoopInputError(`Invalid tuning granularity for ${variant.id}`);
+    }
+    granularities.add(variant.granularity);
+    const sourcePath = await fs.realpath(path.resolve(variant.sourcePath ?? ""));
+    const expectedSource = path.join(generation.designer.variantsRoot, variant.id, SOURCE);
+    if (sourcePath !== await fs.realpath(expectedSource) || await sha256(sourcePath) !== variant.sourceSha256) {
+      throw new LoopInputError(`Tuning source identity failed for ${variant.id}`);
+    }
+    if (variant.checks?.compile !== true || variant.checks?.scope !== true) {
+      throw new LoopInputError(`Tuning local checks are incomplete for ${variant.id}`);
+    }
+    generation.candidates.push({
+      id: variant.id,
+      granularity: variant.granularity,
+      parameters: structuredClone(variant.parameters),
+      hypothesis: `${variant.granularity} parameter tuning for ${generation.challengerId}`,
+      implementationPlan: JSON.stringify(variant.parameters),
+      implementationSummary: `Materialized ${variant.granularity} tuning vector.`,
+      status: "prepared",
+      worktreePath: generation.designer.worktreePath,
+      sourcePath: expectedSource,
+      resultDirectory: path.join(path.dirname(expectedSource), ".candidate-results", state.runId, variant.id),
+    });
+  }
+  if (granularities.size !== 3) throw new LoopInputError("Tune generation requires coarse, medium, and fine variants");
+  generation.materialized = true;
+  generation.manifestPath = manifestPath;
+  await saveState(paths, state);
+  return { paths, state, generation };
 }
 
 async function canonicalWorktree(worktreePath) {
@@ -438,7 +596,8 @@ async function ensureWorktrees(paths, state, generation) {
   try {
     validateCandidatePaths(state, generation);
     const registered = await registeredWorktrees(paths.repo);
-    for (const candidate of generation.candidates) {
+    const worktreeOwners = generation.mode === "tune" ? [generation.designer] : generation.candidates;
+    for (const candidate of worktreeOwners) {
       const worktreePath = ensureWorktreePath(candidate.worktreePath);
       let exists = true;
       try {
@@ -492,12 +651,14 @@ function recomputeEligibility(evaluation, baseline) {
 async function copyCandidate(paths, state, generation, candidate, invalidIds) {
   const archiveDirectory = path.join(paths.runDirectory, "archive", `g${String(generation.number).padStart(2, "0")}`, candidate.id);
   await fs.mkdir(path.join(archiveDirectory, "raw"), { recursive: true });
-  const sourcePath = path.join(candidate.worktreePath, SOURCE);
+  const sourcePath = candidate.sourcePath ?? path.join(candidate.worktreePath, SOURCE);
   const archivedSource = path.join(archiveDirectory, SOURCE);
   await fs.copyFile(sourcePath, archivedSource);
   const sourceSha256 = await sha256(sourcePath);
   if (await sha256(archivedSource) !== sourceSha256) throw new LoopInputError(`Archive SHA-256 failed for ${candidate.id}`);
-  const { stdout: patch } = await git(candidate.worktreePath, "diff", "--binary", "HEAD", "--", SOURCE);
+  const patch = generation.mode === "tune"
+    ? `${JSON.stringify(candidate.parameters, null, 2)}\n`
+    : (await git(candidate.worktreePath, "diff", "--binary", "HEAD", "--", SOURCE)).stdout;
   await fs.writeFile(path.join(archiveDirectory, "candidate.patch"), patch);
   candidate.sourceSha256 = sourceSha256;
   candidate.archiveDirectory = archiveDirectory;
@@ -532,7 +693,7 @@ async function scanEvaluations(generation) {
     const evaluationPath = path.join(candidate.resultDirectory, "evaluation.json");
     try {
       const evaluation = await readJson(evaluationPath, `evaluation for ${candidate.id}`);
-      const sourcePath = path.join(candidate.worktreePath, SOURCE);
+      const sourcePath = candidate.sourcePath ?? path.join(candidate.worktreePath, SOURCE);
       const sourceSha256 = await sha256(sourcePath);
       if (evaluation.candidateId !== candidate.id || evaluation.sourceSha256 !== sourceSha256) continue;
       candidate.status = "evaluated";
@@ -586,7 +747,8 @@ async function refreshLegacyEvaluations(paths, generation) {
 
 async function cleanupWorktrees(paths, state, generation) {
   const registered = await registeredWorktrees(paths.repo);
-  for (const candidate of generation.candidates) {
+  const worktreeOwners = generation.mode === "tune" ? [generation.designer] : generation.candidates;
+  for (const candidate of worktreeOwners) {
     const worktreePath = ensureWorktreePath(candidate.worktreePath);
     const expected = path.join(
       WORKTREE_ROOT,
@@ -597,10 +759,32 @@ async function cleanupWorktrees(paths, state, generation) {
     if (worktreePath !== expected) throw new LoopInputError(`Refusing cleanup: unexpected worktree path for ${candidate.id}`);
     if (!registered.has(await fs.realpath(worktreePath))) throw new LoopInputError(`Refusing cleanup: ${worktreePath} is not a registered worktree`);
   }
-  for (const candidate of generation.candidates) await git(paths.repo, "worktree", "remove", "--force", candidate.worktreePath);
+  for (const candidate of worktreeOwners) await git(paths.repo, "worktree", "remove", "--force", candidate.worktreePath);
 }
 
 function validateCandidatePaths(state, generation) {
+  if (generation.mode === "tune") {
+    const expectedWorktree = path.join(
+      WORKTREE_ROOT,
+      state.runId,
+      `g${String(generation.number).padStart(2, "0")}`,
+      generation.designer.id,
+    );
+    if (ensureWorktreePath(generation.designer.worktreePath) !== expectedWorktree) {
+      throw new LoopInputError("Unexpected tune designer worktree path");
+    }
+    for (const candidate of generation.candidates) {
+      const expectedSource = path.join(generation.designer.variantsRoot, candidate.id, SOURCE);
+      if (path.resolve(candidate.sourcePath ?? "") !== expectedSource) {
+        throw new LoopInputError(`Unexpected tuning source path for ${candidate.id}`);
+      }
+      const expectedResults = path.join(path.dirname(expectedSource), ".candidate-results", state.runId, candidate.id);
+      if (path.resolve(candidate.resultDirectory ?? "") !== expectedResults) {
+        throw new LoopInputError(`Unexpected tuning result path for ${candidate.id}`);
+      }
+    }
+    return;
+  }
   for (const candidate of generation.candidates) {
     const expected = path.join(
       WORKTREE_ROOT,
@@ -645,11 +829,16 @@ export async function archiveGeneration(options) {
     validateCandidatePaths(state, generation);
     if (!options.summariesPath) throw new LoopInputError("Successful archive requires --summaries");
     const summaries = await readJson(path.resolve(options.summariesPath), "worker summaries");
+    const tuneSummary = generation.mode === "tune" ? summaries[generation.designer.id] : null;
+    if (generation.mode === "tune" && (typeof tuneSummary !== "string" || !tuneSummary.trim())) {
+      throw new LoopInputError(`Worker summary for ${generation.designer.id} must be a non-empty string`);
+    }
     for (const candidate of generation.candidates) {
-      if (typeof summaries[candidate.id] !== "string" || !summaries[candidate.id].trim()) {
+      const summary = generation.mode === "tune" ? tuneSummary : summaries[candidate.id];
+      if (typeof summary !== "string" || !summary.trim()) {
         throw new LoopInputError(`Worker summary for ${candidate.id} must be a non-empty string`);
       }
-      candidate.implementationSummary = summaries[candidate.id].trim();
+      candidate.implementationSummary = summary.trim();
     }
     if (!options.analysisPath) throw new LoopInputError("Successful archive requires --analysis");
     const analysis = await readJson(path.resolve(options.analysisPath), "post-evaluation analysis");
@@ -670,17 +859,102 @@ export async function archiveGeneration(options) {
     const selection = evaluationPaths.length
       ? await selectFromFiles(evaluationPaths)
       : { schemaVersion: 1, promotion: false, winner: null, reason: "No valid candidate was evaluated" };
+    const baseline = await readJson(paths.baselinePath, "best baseline");
+    const registry = await loadRegistry(paths.repo, baseline);
+    for (const candidate of generation.candidates) cacheEvaluation(registry, candidate.evaluation);
     if (selection.promotion) {
       const winner = generation.candidates.find(({ id }) => id === selection.winner.candidateId);
       selection.winner.sourcePath = winner.archivedSourcePath;
       selection.winner.evaluationPath = winner.evaluationPath;
     }
+    if (generation.mode === "explore" && analysis.challenger !== undefined) {
+      const decision = analysis.challenger;
+      if (typeof decision?.candidateId !== "string" || typeof decision?.rationale !== "string" || !decision.rationale.trim()) {
+        throw new LoopInputError("Explore challenger decision requires candidateId and rationale");
+      }
+      if (selection.winner?.candidateId === decision.candidateId) {
+        throw new LoopInputError("The promoted winner cannot also enter the challenger pool");
+      }
+      const candidate = generation.candidates.find(({ id }) => id === decision.candidateId);
+      if (!candidate?.evaluation?.valid) throw new LoopInputError("Only a valid evaluated candidate can enter the pool");
+      const challengerId = `${state.runId}-g${String(generation.number).padStart(2, "0")}-${candidate.id}`;
+      await storeRevision({
+        repo: paths.repo,
+        registry,
+        challengerId,
+        sourcePath: candidate.archivedSourcePath,
+        evaluation: candidate.evaluation,
+        method: generation.method,
+        origin: "explore",
+        rationale: decision.rationale.trim(),
+      });
+      generation.challengerUpdate = `admitted ${challengerId}`;
+    }
+    if (generation.mode === "tune") {
+      const challenger = activeChallenger(registry, generation.challengerId);
+      if (!challenger) throw new LoopInputError("Tune challenger is no longer active");
+      const parent = currentRevision(challenger);
+      challenger.tuningAttempts += 1;
+      const validCandidates = generation.candidates.filter(({ evaluation }) => evaluation?.valid);
+      const best = [...validCandidates].sort((first, second) => compareStrategy(first.evaluation, second.evaluation))[0] ?? null;
+      const improved = best && compareStrategy(best.evaluation, parent.evaluation) < 0;
+      const manifestArchive = path.join(
+        paths.challengersPath,
+        challenger.id,
+        "tuning",
+        `${state.runId}-g${String(generation.number).padStart(2, "0")}.json`,
+      );
+      await fs.mkdir(path.dirname(manifestArchive), { recursive: true });
+      await fs.copyFile(generation.manifestPath, manifestArchive);
+      challenger.tuningHistory.push({
+        runId: state.runId,
+        generation: generation.number,
+        manifestPath: path.relative(paths.repo, manifestArchive),
+        bestCandidateId: best?.id ?? null,
+        improved: Boolean(improved),
+      });
+      if (!selection.promotion && improved) {
+        await storeRevision({
+          repo: paths.repo,
+          registry,
+          challengerId: challenger.id,
+          sourcePath: best.archivedSourcePath,
+          evaluation: best.evaluation,
+          method: challenger.method,
+          origin: challenger.origin,
+          rationale: challenger.rationale,
+        });
+        generation.challengerUpdate = `updated ${challenger.id} to ${best.id}`;
+      }
+      if (!selection.promotion && challenger.tuningAttempts >= state.config.maxTuningAttempts) {
+        challenger.status = "retired";
+        generation.challengerUpdate = `${challenger.id} retired after ${challenger.tuningAttempts} tuning attempts`;
+      }
+      generation.bestTuningCandidateId = best?.id ?? null;
+    }
+    await saveRegistry(paths.repo, registry);
+    state.challengerPool = registry.challengers.filter(({ status }) => status === "active").map(({ id }) => id);
     generation.selection = selection;
     generation.status = selection.promotion ? "archived" : "not-promoted";
-    if (!selection.promotion) state.consecutiveNoPromotion += 1;
     await writeJson(path.join(paths.runDirectory, `g${String(generation.number).padStart(2, "0")}`, "selection.json"), selection);
     await saveState(paths, state);
     await cleanupWorktrees(paths, state, generation);
+    if (!selection.promotion) {
+      const managed = [paths.registryPath, paths.reportPath];
+      try {
+        await fs.access(paths.challengersPath);
+        managed.push(paths.challengersPath);
+      } catch (error) {
+        if (error.code !== "ENOENT") throw error;
+      }
+      const commit = await stageAndCommit(paths.repo, managed, `strategy: update challenger pool g${String(generation.number).padStart(2, "0")}`);
+      if (commit) {
+        state.baseline.gitCommit = commit;
+        state.commits.push(commit);
+        await saveState(paths, state);
+      }
+      return { paths, state, generation, commit };
+    }
     return { paths, state, generation };
   } catch (error) {
     generation.status = "failed";
@@ -705,16 +979,25 @@ export async function resumeRun(options) {
   generation.previousFailure = generation.failure;
   delete generation.failure;
   await saveState(paths, state);
-  if (generation.previousFailure.kind === "setup") await ensureWorktrees(paths, state, generation);
+  if (generation.previousFailure.kind === "setup") {
+    await ensureWorktrees(paths, state, generation);
+    if (generation.mode === "tune") {
+      await fs.copyFile(
+        path.join(paths.repo, generation.parentRevision.sourcePath),
+        path.join(generation.designer.worktreePath, SOURCE),
+      );
+    }
+  }
   return { paths, state, generation, resumed: true };
 }
 
 function baselineMarkdown(baseline) {
   return [
-    "# Current Baseline",
+    "# Champion Compatibility Pointer",
     "",
-    `- Current baseline: \`${baseline.strategy}\``,
-    `- Result file: \`${path.basename(baseline.resultArtifact)}\``,
+    `- Current champion: \`${baseline.strategy}\``,
+    "- Canonical record: `results/champion/champion.json`",
+    `- Result file: \`${baseline.resultArtifact}\``,
     `- Source SHA-256: \`${baseline.sourceSha256}\``,
     `- Experiment: \`${baseline.experiment.runId}\`, generation ${baseline.experiment.generation}, candidate \`${baseline.experiment.candidateId}\``,
     `- SCORED points: ${formatHundredths(baseline.summary.scoredPointsHundredths)}/16.00`,
@@ -723,6 +1006,19 @@ function baselineMarkdown(baseline) {
     "- Observed runs: 1",
     "",
   ].join("\n");
+}
+
+function championRecord(baseline) {
+  return {
+    schemaVersion: 1,
+    id: baseline.strategy,
+    sourcePath: SOURCE,
+    sourceSha256: baseline.sourceSha256,
+    resultArtifact: baseline.resultArtifact,
+    experimentId: baseline.experimentId,
+    experiment: structuredClone(baseline.experiment),
+    summary: structuredClone(baseline.summary),
+  };
 }
 
 async function stageAndCommit(repo, files, message) {
@@ -761,6 +1057,7 @@ async function promotionPreflight(paths, state) {
     "--",
     SOURCE,
     "results/baselines",
+    "results/champion",
   );
   if (dirty.trim()) throw new LoopInputError(`Promotion rejected because managed files are dirty:\n${dirty.trim()}`);
 }
@@ -769,7 +1066,7 @@ function promotedBaseline(state, generation, winner) {
   return {
     schemaVersion: 2,
     strategy: winner.id,
-    resultArtifact: `results/baselines/${state.runId}-g${String(generation.number).padStart(2, "0")}-${winner.id}.md`,
+    resultArtifact: "results/champion/result.md",
     sourceSha256: winner.sourceSha256,
     experimentId: `${state.runId}:g${String(generation.number).padStart(2, "0")}:${winner.id}`,
     experiment: { runId: state.runId, generation: generation.number, candidateId: winner.id },
@@ -789,7 +1086,6 @@ function finalizePromotion(state, generation, winner, baseline, commit) {
     gitCommit: commit,
     legacyBaseline: false,
   };
-  state.consecutiveNoPromotion = 0;
   state.scoreTrend.push(baseline.summary.scoredPointsHundredths);
   if (commit && !state.commits.includes(commit)) state.commits.push(commit);
 }
@@ -801,9 +1097,9 @@ async function gitFile(repo, revision, filePath) {
 async function expectedArtifact(winner) {
   const rawDirectory = path.join(winner.archiveDirectory, "raw");
   const rawMarkdown = (await fs.readdir(rawDirectory)).find((name) => /^hackerrank-run-.*\.md$/.test(name));
-  return rawMarkdown
-    ? fs.readFile(path.join(rawDirectory, rawMarkdown), "utf8")
-    : `# ${winner.id}\n\n${summaryLine(winner.evaluation.summary)}\n`;
+  if (!rawMarkdown) return `# ${winner.id}\n\n${summaryLine(winner.evaluation.summary)}\n`;
+  const contents = await fs.readFile(path.join(rawDirectory, rawMarkdown), "utf8");
+  return contents.replace(/^- Source: .*$/m, `- Source: \`${SOURCE}\``);
 }
 
 async function reconcilePromotion(paths, state, generation, winner, baseline, head) {
@@ -812,6 +1108,7 @@ async function reconcilePromotion(paths, state, generation, winner, baseline, he
     const committedBaseline = JSON.parse(await gitFile(paths.repo, head, "results/baselines/best.json"));
     const artifact = await gitFile(paths.repo, head, baseline.resultArtifact);
     const bestMarkdown = await gitFile(paths.repo, head, "results/baselines/best.md");
+    const committedChampion = JSON.parse(await gitFile(paths.repo, head, "results/champion/champion.json"));
     const report = await gitFile(paths.repo, head, path.relative(paths.repo, paths.reportPath));
     const sourceHash = createHash("sha256").update(source).digest("hex");
     if (
@@ -819,6 +1116,7 @@ async function reconcilePromotion(paths, state, generation, winner, baseline, he
       || JSON.stringify(committedBaseline) !== JSON.stringify(baseline)
       || artifact !== await expectedArtifact(winner)
       || bestMarkdown !== baselineMarkdown(baseline)
+      || JSON.stringify(committedChampion) !== JSON.stringify(championRecord(baseline))
       || report !== renderReportText(state)
     ) {
       throw new Error("committed promotion files do not match the pending transaction");
@@ -831,6 +1129,7 @@ async function reconcilePromotion(paths, state, generation, winner, baseline, he
       "--",
       SOURCE,
       "results/baselines",
+      "results/champion",
       path.relative(paths.repo, paths.reportPath),
     );
     if (dirty.trim()) throw new Error("committed promotion files are dirty");
@@ -838,6 +1137,8 @@ async function reconcilePromotion(paths, state, generation, winner, baseline, he
     throw new LoopInputError(`Promotion transaction cannot reconcile HEAD drift: ${error.message}`);
   }
   finalizePromotion(state, generation, winner, baseline, head);
+  const registry = await loadRegistry(paths.repo, baseline);
+  state.challengerPool = registry.challengers.filter(({ status }) => status === "active").map(({ id }) => id);
   await saveState(paths, state);
   return { paths, state, generation, commit: head };
 }
@@ -881,13 +1182,60 @@ export async function promoteGeneration(options) {
   if (![state.baseline.sourceSha256, winner.sourceSha256].includes(currentSourceHash)) {
     throw new LoopInputError("Promotion retry rejected because the strategy is neither the baseline nor the pending winner");
   }
+  await fs.mkdir(paths.championDirectory, { recursive: true });
   await fs.writeFile(artifactPath, await expectedArtifact(winner));
+  const currentBaseline = await readJson(paths.baselinePath, "best baseline");
+  const registry = await loadRegistry(paths.repo, currentBaseline);
+  const demotedId = `${state.runId}-g${String(generation.number).padStart(2, "0")}-champion-${state.baseline.strategy}`;
+  if (!registry.challengers.some(({ id }) => id === demotedId)) {
+    if (currentSourceHash !== state.baseline.sourceSha256) {
+      throw new LoopInputError("Cannot archive the displaced champion after source replacement");
+    }
+    await storeRevision({
+      repo: paths.repo,
+      registry,
+      challengerId: demotedId,
+      sourcePath: paths.sourcePath,
+      evaluation: {
+        schemaVersion: 1,
+        candidateId: state.baseline.strategy,
+        valid: true,
+        eligible: false,
+        sourcePath: paths.sourcePath,
+        sourceSha256: state.baseline.sourceSha256,
+        modifiedLines: 0,
+        summary: structuredClone(state.baseline.summary),
+        baselineDelta: { scoredPointsHundredths: 0, combinedPnlCents: 0 },
+        reasons: ["Demoted champion"],
+      },
+      method: generation.method,
+      origin: "demoted-champion",
+      rationale: `Champion displaced by ${winner.id}`,
+    });
+  }
+  if (generation.mode === "tune") {
+    const promoted = registry.challengers.find(({ id }) => id === generation.challengerId);
+    if (promoted) promoted.status = "promoted";
+  }
+  syncChampion(registry, baseline);
+  await saveRegistry(paths.repo, registry);
   await fs.copyFile(winner.archivedSourcePath, paths.sourcePath);
   if (await sha256(paths.sourcePath) !== winner.sourceSha256) throw new LoopInputError("Promoted source SHA-256 verification failed");
   await writeJson(paths.baselinePath, baseline);
+  await writeJson(paths.championRecordPath, championRecord(baseline));
   await fs.writeFile(path.join(paths.repo, "results", "baselines", "best.md"), baselineMarkdown(baseline));
-  const commit = await stageAndCommit(paths.repo, [paths.sourcePath, artifactPath, paths.baselinePath, path.join(paths.repo, "results", "baselines", "best.md"), paths.reportPath], `strategy: promote ${winner.id}`);
+  const commit = await stageAndCommit(paths.repo, [
+    paths.sourcePath,
+    artifactPath,
+    paths.baselinePath,
+    path.join(paths.repo, "results", "baselines", "best.md"),
+    paths.championRecordPath,
+    paths.registryPath,
+    paths.challengersPath,
+    paths.reportPath,
+  ], `strategy: promote ${winner.id}`);
   finalizePromotion(state, generation, winner, baseline, commit);
+  state.challengerPool = registry.challengers.filter(({ status }) => status === "active").map(({ id }) => id);
   await saveState(paths, state);
   return { paths, state, generation, commit };
 }
@@ -962,7 +1310,7 @@ export async function statusRun(options) {
 
 function parseCli(argumentsList) {
   const [action, ...rest] = argumentsList;
-  if (!action) throw new LoopInputError("Usage: loop.sh <start|prepare|archive|promote|finish|status|resume> --run-id ID");
+  if (!action) throw new LoopInputError("Usage: loop.sh <start|prepare|register-tuning|archive|promote|finish|status|resume> --run-id ID");
   const options = { invalidIds: [] };
   for (let index = 0; index < rest.length; index += 2) {
     const flag = rest[index];
@@ -971,17 +1319,17 @@ function parseCli(argumentsList) {
     if (flag === "--run-id") options.runId = value;
     else if (flag === "--repo") options.repo = value;
     else if (flag === "--plan") options.planPath = value;
+    else if (flag === "--manifest") options.manifestPath = value;
     else if (flag === "--summaries") options.summariesPath = value;
     else if (flag === "--analysis") options.analysisPath = value;
     else if (flag === "--invalid") options.invalidIds.push(value);
     else if (flag === "--failure") options.failure = value;
     else if (flag === "--failure-kind") options.failureKind = value;
     else if (flag === "--max-generations") options.maxGenerations = Number(value);
-    else if (flag === "--stall-generations") options.stallGenerations = Number(value);
     else if (flag === "--target") options.targetPointsHundredths = Number(value);
     else throw new LoopInputError(`Unknown option: ${flag}`);
   }
-  for (const name of ["maxGenerations", "stallGenerations", "targetPointsHundredths"]) {
+  for (const name of ["maxGenerations", "targetPointsHundredths"]) {
     if (options[name] !== undefined && (!Number.isSafeInteger(options[name]) || options[name] <= 0)) throw new LoopInputError(`${name} must be a positive integer`);
   }
   if (options.failureKind && !options.failure) throw new LoopInputError("--failure-kind requires --failure");
@@ -994,6 +1342,7 @@ async function main() {
   const actions = {
     start: startRun,
     prepare: prepareGeneration,
+    "register-tuning": registerTuning,
     archive: archiveGeneration,
     promote: promoteGeneration,
     finish: finishRun,

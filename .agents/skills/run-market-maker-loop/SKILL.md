@@ -1,63 +1,60 @@
 ---
 name: run-market-maker-loop
-description: Run or resume the repository's autonomous, scored MarketMaker experiment loop. Use only when explicitly invoked to improve quote, respond_to_fok, or warm_up by planning three distinct candidates per generation, delegating implementations to isolated worktrees, evaluating them through HackerRank, promoting strict improvements, and writing the experiment report.
+description: Run or resume the repository's autonomous champion/challenger MarketMaker experiment loop. Use only when explicitly invoked to explore structural changes or tune a saved challenger through the fixed HackerRank grader.
 ---
 
 # Run the Market-Maker Loop
 
-Operate as the lead agent. Continue without interaction until the deterministic pipeline reports a stopping condition or a hard failure.
+Operate as the lead agent. Continue without interaction until the pipeline reports a stopping condition or the same source fails extraction twice consecutively.
 
 ## Start or resume
 
-For a new run, choose a lowercase, hyphenated run ID and execute `candidate_pipeline/loop.sh start --run-id <run-id>`. For `resume <run-id>`, inspect `candidate_pipeline/loop.sh status --run-id <run-id>`, then execute `candidate_pipeline/loop.sh resume --run-id <run-id>`. Read `results/runs/<run-id>/state.json` and continue at the first incomplete candidate. Treat a candidate as completed only when its result directory contains `evaluation.json` whose candidate ID and source SHA-256 match the current worktree source. Never rerun that completed evaluation. Resume locally re-evaluates legacy `valid=false` records caused only by failed tests or bankruptcy from their saved raw report, preserving the old evaluation as a backup and consuming no new HackerRank run.
+Start with `candidate_pipeline/loop.sh start --run-id <run-id>`. For an existing run, inspect `status`, execute `resume` only when it is failed, and continue the first incomplete generation. Read `AGENTS.MD`, the challenge, the complete `MarketMaker`, `results/champion/champion.json`, `results/strategy-state.json`, recent evidence, and `candidate_pipeline/README.md` before choosing a mode. `results/baselines/best.*` is only a compatibility view.
 
-Before each generation, read `AGENTS.MD`, the challenge documentation, the complete `MarketMaker` class, `results/baselines/best.json`, `results/baselines/best.md`, recent candidate evaluations, prior `results/experiments/` reports, and `candidate_pipeline/README.md`.
+The fixed grader is evaluated once per unique source SHA-256. Never rerun a completed or cached source. A run stops at 15.00/16.00 or after six completed generations; there is no stall stop.
 
-## Plan and prepare
+## Choose a generation mode
 
-Choose exactly one target from `quote`, `respond_to_fok`, or `warm_up`. Base the choice on current code and measured evidence; allow repeats when justified. Store transient input JSON under the ignored `results/runs/<run-id>/inputs/` directory so it cannot pollute the repository root. Write a version-1 plan JSON there with `method`, a concise `rationale`, and exactly three distinct candidates. Give each candidate a lowercase hyphenated `id`, `hypothesis`, and `implementationPlan` describing its implementation brief and expected tradeoff. Record decision summaries, not private chain-of-thought.
+Choose `explore` when the champion needs a structural idea. Choose `tune` only when an active challenger has explicit parameter upside. Save every plan below the run's ignored `inputs/` directory.
 
-Execute `candidate_pipeline/loop.sh prepare --run-id <run-id> --plan <plan-json>`. Read the three detached `worktreePath` and `resultDirectory` values from the updated state file.
+### Explore
 
-## Delegate three candidates
+Write a schema-version-2 plan with `mode: "explore"`, one target method, a rationale, and exactly three structurally distinct candidates. Prepare it with `loop.sh prepare`.
 
-Call `spawn_agent` three times before waiting, once for each prepared worktree, then use `wait_agent` until all three finish. Give each worker its path, candidate ID, hypothesis, baseline summary, repository constraints, and local-check commands. Permit changes only inside `MarketMaker` plus required imports. Preserve challenge public signatures and code outside the class.
+Spawn three workers using `model: "gpt-5.6-luna"`, `reasoning_effort: "medium"`, and `fork_turns: "none"`. Give each worker its complete worktree path, hypothesis, implementation plan, repository constraints, and checks. Workers may change only `MarketMaker` plus required imports, must validate scope and compile, and must not run HackerRank or commit.
 
-Require `candidate_pipeline/validate-candidate.sh --baseline <main-repo>/Market_making_binary_option.py --candidate <worktree>/Market_making_binary_option.py`, `python3 -m py_compile Market_making_binary_option.py`, and focused local checks. The validator permits import changes and `MarketMaker` internals while pinning challenge code and public signatures. Require a short implementation summary and actual check outcomes. Prohibit workers from running HackerRank, invoking `candidate.sh`, or committing.
+### Tune
 
-If a worker fails local checks, call `followup_task` once for that worker with the failure output and wait once more. After one failed repair, record the candidate invalid and continue only when another candidate remains valid.
+Select one active challenger from `results/strategy-state.json`. Tune its complete current revision without merging any champion methods into it. Write a schema-version-2 plan containing:
 
-## Evaluate, archive, and select
+- `mode: "tune"`, `challengerId`, `parentSourceSha256`, `method`, optional `helpers`, rationale, and `sampleCount` N;
+- one or more parameters with `name`, `type`, `direction`, `parentValue`, inclusive `minimum`/`maximum`, and literal `bindings`;
+- each binding identifies a `MarketMaker` method and the zero-based numeric/bool constant ordinal visited in source order.
 
-From the lead session, launch all valid candidates together through the cancellation-aware dispatcher:
+Run `loop.sh prepare`. It creates one designer worktree initialized from the full challenger revision. Spawn exactly one Luna/medium worker with no inherited turns. The worker must design exactly N unique joint vectors containing coarse, medium, and fine granularities, with no parent vector and no post-result adaptation. Save the draft manifest in the designer tuning directory, then run:
 
 ```bash
-candidate_pipeline/run-generation.sh \
-  --state <main-repo>/results/runs/<run-id>/state.json \
-  --baseline <main-repo>/results/baselines/best.json \
-  --output <main-repo>/results/runs/<run-id>/gNN/statuses.json
+candidate_pipeline/materialize-tuning.sh \
+  --source <designer-worktree>/Market_making_binary_option.py \
+  --plan <absolute-plan-path> \
+  --manifest <absolute-draft-manifest> \
+  --output-root <designer-variants-root>
 ```
 
-Add one `--invalid <candidate-id>` for each worker that exhausted its repair pass. Never let workers access the browser runner. The dispatcher starts the remaining `candidate.sh` processes concurrently, relies on the central browser lock for serialization, skips already evaluated candidates on resume, and terminates queued siblings after the first runner or integrity failure.
+The materializer enforces directions, bounds, unique vectors, AST-only constant changes, compilation, and scope. It writes `materialized-manifest.json`. From the lead, register that exact path with `loop.sh register-tuning --run-id <run-id> --manifest <path>`. Do not ask the worker to revise after seeing HackerRank results.
 
-Interpret the dispatcher status and saved per-candidate codes exactly: candidate `0` means eligible; candidate `2` means trustworthy evidence but ineligible performance, including failed tests or bankruptcy; dispatcher `3` means malformed, incomplete, or hash-invalid evidence; and dispatcher `1` means runner or pipeline failure. On `1`, stop immediately without selection or promotion, preserve worktrees and state, and direct recovery through `./auto_extract_result/login.sh`. On `3`, hard-stop for integrity review. Resume the same run after repair.
+## Evaluate and archive
 
-Save the workers' actual summaries as a JSON object keyed by candidate ID. Save a post-evaluation analysis JSON with a non-empty `finding` and, when another generation is useful, a non-empty `nextGenerationRationale`. Execute `candidate_pipeline/loop.sh archive --run-id <run-id> --summaries <summaries-json> --analysis <analysis-json>`, adding one `--invalid <candidate-id>` for each candidate that exhausted its repair pass. `archive` copies and hash-verifies the evidence, runs selection, records `selection.json`, and cleans up only verified registered worktrees. If a browser command failed, instead execute `candidate_pipeline/loop.sh archive --run-id <run-id> --failure <message> --failure-kind <authentication|browser|runner>`; do not select, promote, or clean up. Record an evidence failure with `--failure-kind integrity`.
+Run the prepared candidates through `candidate_pipeline/run-generation.sh`. The dispatcher is serial because the browser is single-session. It skips completed and cached sources. A runner/browser/authentication failure automatically records the failure, resumes, and retries the same source once. A successful retry resets that source's counter. A second consecutive failure preserves the worktree and stops. Integrity status `3` never retries.
 
-Interpret archive status `3` as an input or integrity failure and `1` as an unexpected pipeline failure. Never override its selector. The gate requires 20/20 passes, zero bankruptcies, and strictly better points or equal points with a better minimum-capital ratio; ranking is points, minimum-capital ratio, combined PnL, modified lines, then candidate ID.
+For Explore, summaries are keyed by the three candidate IDs. For Tune, provide one summary keyed by the designer ID. Save a post-evaluation analysis with a non-empty `finding`; an Explore analysis may include at most one `challenger` object with a non-winner `candidateId` and tuning-upside `rationale`. Valid but currently bankrupt or failing structural candidates may enter the pool, but promotion still requires 20/20 and zero bankruptcies.
 
-## Promote and continue
+Archive with `loop.sh archive`. It hash-verifies full sources and evidence, caches every valid source SHA, and cleans worktrees only after verified archival. Tune selects the best of N, compares it with the parent challenger, creates a new immutable revision only when it improves, and retires the lineage after its second unsuccessful tuning batch.
 
-For a verified winner, execute `candidate_pipeline/loop.sh promote --run-id <run-id>`. Let it update the strategy, immutable baseline, `best.json`, `best.md`, report, and scoped `strategy: promote <candidate-id>` commit. Do not stage unrelated changes. Never push, tag, deploy, or submit.
+## Promote and finish
 
-Remove only pipeline-registered worktrees with successfully archived, hash-verified evidence. Preserve worktrees after any archive or integrity failure.
+If archive reports a winner, run `loop.sh promote`. The full winner source becomes champion, the full old champion becomes a new challenger, and a Tune parent is marked promoted. The loop updates the baseline, strategy registry, challenger revisions, report, and scoped Git commit without staging unrelated files. Never push, tag, deploy, or submit.
 
-Continue with the promoted baseline or, when no candidate qualifies, the unchanged baseline. Stop when state reports at least 15.00/16.00, five completed generations, or two consecutive generations without promotion.
+Continue until `status` recommends stopping, then run `finish`. Return the run ID, generations and modes, champion promotions, challenger admissions/updates/retirements, final score, report path, verification, and any preserved failed worktree.
 
-## Finish
-
-Execute `candidate_pipeline/loop.sh finish --run-id <run-id>` after `status` reports a recommended stop. Let it create `results/experiments/<run-id>.md` and a report-only `experiment: finish <run-id>` commit when needed; do not create an empty commit.
-
-Ensure the report includes starting and final baselines, stop reason, score trend, each generation's method and rationale, candidate hypotheses and implementation summaries, evaluation metrics and baseline deltas, selections, promotions, commits, findings, and recovery instructions. Return the run ID, stop reason, promoted candidates and commits, final score, report path, verification, and preserved worktrees. State that each candidate received one HackerRank run and that stochastic variation remains possible.
-
-Do not execute this live lifecycle while validating the skill. Exercise `candidate_pipeline` tests and temporary-repository fixture evaluations instead; never represent fixtures as live evidence or promote them in the real repository. Use `$review-hackerrank-results` only as the manual fallback for an already completed HackerRank run.
+Do not execute the live lifecycle while validating this skill. Use pipeline fixtures only.

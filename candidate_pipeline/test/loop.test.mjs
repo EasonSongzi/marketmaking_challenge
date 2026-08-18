@@ -13,6 +13,7 @@ import {
   getStopReason,
   prepareGeneration,
   promoteGeneration,
+  registerTuning,
   renderReportText,
   resumeRun,
   startRun,
@@ -162,9 +163,10 @@ test("start accepts an unrelated unstaged file and supports v1 and v2 baselines"
       try {
         await fs.appendFile(path.join(repo, "AGENTS.MD"), "user edit\n");
         const { state } = await startRun({ repo, runId: id });
-        assert.equal(state.config.candidateCount, 3);
-        assert.equal(state.config.maxGenerations, 5);
-        assert.equal(state.config.stallGenerations, 2);
+        assert.equal(state.schemaVersion, 2);
+        assert.equal(state.config.exploreCandidateCount, 3);
+        assert.equal(state.config.maxTuningAttempts, 2);
+        assert.equal(state.config.maxGenerations, 6);
         assert.equal(state.config.targetPointsHundredths, 1500);
         assert.equal(state.baseline.legacyBaseline, schemaVersion === 1);
       } finally {
@@ -174,20 +176,20 @@ test("start accepts an unrelated unstaged file and supports v1 and v2 baselines"
   }
 });
 
-test("stop rules cover target score, generation limit, and consecutive stalls", () => {
+test("stop rules cover target score and generation limit without stalls", () => {
   const state = {
     baseline: { summary: { scoredPointsHundredths: 1500 } },
-    config: { targetPointsHundredths: 1500, maxGenerations: 5, stallGenerations: 2 },
+    config: { targetPointsHundredths: 1500, maxGenerations: 6 },
     generations: [],
     consecutiveNoPromotion: 0,
   };
   assert.equal(getStopReason(state), "target score reached");
   state.baseline.summary.scoredPointsHundredths = 1400;
-  state.generations = Array.from({ length: 5 }, (_, index) => ({ number: index + 1, status: "promoted" }));
+  state.generations = Array.from({ length: 6 }, (_, index) => ({ number: index + 1, status: "promoted" }));
   assert.equal(getStopReason(state), "generation limit reached");
   state.generations = [];
   state.consecutiveNoPromotion = 2;
-  assert.equal(getStopReason(state), "stall limit reached");
+  assert.equal(getStopReason(state), null);
 });
 
 test("start rejects staged changes and a dirty managed source", async () => {
@@ -221,6 +223,149 @@ test("prepare validates plans and creates exactly three detached worktrees", asy
       assert.ok(candidate.worktreePath.startsWith(`${worktreeRoot}/${id}/`));
       assert.equal((await git(candidate.worktreePath, "symbolic-ref", "-q", "HEAD").catch((error) => error)).code, 1);
     }
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("tune prepare creates one designer worktree and registers exactly N variants", async () => {
+  const repo = await createRepo(2);
+  const id = runId("tune-prepare");
+  try {
+    const realSourcePath = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../Market_making_binary_option.py");
+    const realSource = await fs.readFile(realSourcePath, "utf8");
+    const mainSourcePath = path.join(repo, "Market_making_binary_option.py");
+    await fs.writeFile(mainSourcePath, realSource);
+    const championSha = createHash("sha256").update(realSource).digest("hex");
+    const fixtureBaseline = baseline(2, championSha);
+    await fs.writeFile(path.join(repo, "results", "baselines", "best.json"), JSON.stringify(fixtureBaseline));
+    const challengerId = "challenger-one";
+    const challengerDirectory = path.join(repo, "results", "challengers", challengerId);
+    const challengerSource = path.join(challengerDirectory, "r00.py");
+    await fs.mkdir(challengerDirectory, { recursive: true });
+    await fs.writeFile(challengerSource, `${realSource}\n# challenger\n`);
+    const sourceSha256 = createHash("sha256").update(await fs.readFile(challengerSource)).digest("hex");
+    const challengerEvaluation = evaluation("challenger-one", challengerSource, sourceSha256, 850);
+    const best = JSON.parse(await fs.readFile(path.join(repo, "results", "baselines", "best.json")));
+    await fs.writeFile(path.join(repo, "results", "strategy-state.json"), JSON.stringify({
+      schemaVersion: 1,
+      champion: { id: best.strategy, sourceSha256: best.sourceSha256, summary: best.summary },
+      challengers: [{
+        id: challengerId,
+        status: "active",
+        method: "quote",
+        origin: "explore",
+        rationale: "fixture",
+        tuningAttempts: 0,
+        currentRevision: 0,
+        revisions: [{ number: 0, sourcePath: path.relative(repo, challengerSource), sourceSha256, evaluation: challengerEvaluation }],
+        tuningHistory: [],
+      }],
+      evaluations: {},
+    }));
+    await git(repo, "add", "Market_making_binary_option.py", "results");
+    await git(repo, "commit", "-qm", "add challenger");
+    await startRun({ repo, runId: id });
+    const tunePlan = {
+      schemaVersion: 2,
+      mode: "tune",
+      challengerId,
+      parentSourceSha256: sourceSha256,
+      method: "quote",
+      rationale: "Tune the complete challenger.",
+      sampleCount: 3,
+      parameters: [{
+        name: "width",
+        type: "int",
+        direction: "both",
+        parentValue: 3,
+        minimum: 1,
+        maximum: 5,
+        bindings: [{ method: "quote", ordinal: 1 }, { method: "quote", ordinal: 4 }],
+      }],
+    };
+    const prepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo, tunePlan) });
+    assert.equal(prepared.generation.mode, "tune");
+    assert.equal(prepared.generation.candidates.length, 0);
+    assert.equal(await fs.readFile(path.join(prepared.generation.designer.worktreePath, "Market_making_binary_option.py"), "utf8"), await fs.readFile(challengerSource, "utf8"));
+    const variants = [
+      { id: "coarse-one", granularity: "coarse", parameters: { width: 5 } },
+      { id: "medium-one", granularity: "medium", parameters: { width: 4 } },
+      { id: "fine-one", granularity: "fine", parameters: { width: 2 } },
+    ];
+    await fs.mkdir(path.dirname(prepared.generation.designer.manifestPath), { recursive: true });
+    await fs.writeFile(prepared.generation.designer.manifestPath, JSON.stringify({ schemaVersion: 1, parentSourceSha256: sourceSha256, variants }));
+    const registered = await registerTuning({
+      repo,
+      runId: id,
+      manifestPath: prepared.generation.designer.manifestPath,
+      materializerPath: path.resolve(path.dirname(new URL(import.meta.url).pathname), "../materialize-tuning.sh"),
+    });
+    assert.equal(registered.generation.candidates.length, 3);
+    assert.equal(new Set(registered.generation.candidates.map(({ worktreePath }) => worktreePath)).size, 1);
+    for (const [index, candidate] of registered.generation.candidates.entries()) {
+      const candidateSha = createHash("sha256").update(await fs.readFile(candidate.sourcePath)).digest("hex");
+      await fs.mkdir(candidate.resultDirectory, { recursive: true });
+      await fs.writeFile(path.join(candidate.resultDirectory, "hackerrank-run-fixture.md"), `# ${candidate.id}\n`);
+      await fs.writeFile(path.join(candidate.resultDirectory, "hackerrank-run-fixture.json"), JSON.stringify({ label: candidate.id }));
+      await fs.writeFile(
+        path.join(candidate.resultDirectory, "evaluation.json"),
+        JSON.stringify(evaluation(candidate.id, candidate.sourcePath, candidateSha, [800, 870, 860][index])),
+      );
+    }
+    const summariesPath = path.join(repo, "tune-summaries.json");
+    const analysisPath = path.join(repo, "tune-analysis.json");
+    await fs.writeFile(summariesPath, JSON.stringify({ [registered.generation.designer.id]: "Designed three tuning vectors." }));
+    await fs.writeFile(analysisPath, JSON.stringify({ finding: "The medium vector improved the challenger." }));
+    const archived = await archiveGeneration({ repo, runId: id, summariesPath, analysisPath });
+    assert.equal(archived.generation.selection.promotion, false);
+    const updatedRegistry = JSON.parse(await fs.readFile(path.join(repo, "results", "strategy-state.json")));
+    const updated = updatedRegistry.challengers.find(({ id: candidateId }) => candidateId === challengerId);
+    assert.equal(updated.tuningAttempts, 1);
+    assert.equal(updated.revisions.length, 2);
+    assert.equal(updated.revisions.at(-1).evaluation.summary.scoredPointsHundredths, 870);
+    await assert.rejects(fs.access(registered.generation.designer.worktreePath));
+
+    const secondPlan = {
+      ...tunePlan,
+      parentSourceSha256: updated.revisions.at(-1).sourceSha256,
+      parameters: [{ ...tunePlan.parameters[0], parentValue: 4 }],
+    };
+    const secondPrepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo, secondPlan) });
+    await fs.mkdir(path.dirname(secondPrepared.generation.designer.manifestPath), { recursive: true });
+    await fs.writeFile(secondPrepared.generation.designer.manifestPath, JSON.stringify({
+      schemaVersion: 1,
+      parentSourceSha256: secondPlan.parentSourceSha256,
+      variants: [
+        { id: "coarse-two", granularity: "coarse", parameters: { width: 1 } },
+        { id: "medium-two", granularity: "medium", parameters: { width: 2 } },
+        { id: "fine-two", granularity: "fine", parameters: { width: 3 } },
+      ],
+    }));
+    const secondRegistered = await registerTuning({
+      repo,
+      runId: id,
+      manifestPath: secondPrepared.generation.designer.manifestPath,
+      materializerPath: path.resolve(path.dirname(new URL(import.meta.url).pathname), "../materialize-tuning.sh"),
+    });
+    for (const [index, candidate] of secondRegistered.generation.candidates.entries()) {
+      const candidateSha = createHash("sha256").update(await fs.readFile(candidate.sourcePath)).digest("hex");
+      await fs.mkdir(candidate.resultDirectory, { recursive: true });
+      await fs.writeFile(path.join(candidate.resultDirectory, "hackerrank-run-fixture.md"), `# ${candidate.id}\n`);
+      await fs.writeFile(path.join(candidate.resultDirectory, "hackerrank-run-fixture.json"), JSON.stringify({ label: candidate.id }));
+      await fs.writeFile(path.join(candidate.resultDirectory, "evaluation.json"), JSON.stringify(
+        evaluation(candidate.id, candidate.sourcePath, candidateSha, [700, 800, 750][index]),
+      ));
+    }
+    const secondSummaries = path.join(repo, "tune-summaries-two.json");
+    const secondAnalysis = path.join(repo, "tune-analysis-two.json");
+    await fs.writeFile(secondSummaries, JSON.stringify({ [secondRegistered.generation.designer.id]: "Designed the second batch." }));
+    await fs.writeFile(secondAnalysis, JSON.stringify({ finding: "The second batch did not improve the challenger." }));
+    await archiveGeneration({ repo, runId: id, summariesPath: secondSummaries, analysisPath: secondAnalysis });
+    const retiredRegistry = JSON.parse(await fs.readFile(path.join(repo, "results", "strategy-state.json")));
+    const retired = retiredRegistry.challengers.find(({ id: candidateId }) => candidateId === challengerId);
+    assert.equal(retired.tuningAttempts, 2);
+    assert.equal(retired.status, "retired");
   } finally {
     await cleanup(repo, id);
   }
@@ -433,12 +578,16 @@ test("archive verifies sources, selects the winner, archives evidence, and clean
     await fs.writeFile(analysisPath, JSON.stringify({
       finding: "Candidate B improved score without reducing minimum capital.",
       nextGenerationRationale: "Test whether the winning width generalizes to FOK inventory.",
+      challenger: { candidateId: "candidate-a", rationale: "The structure has tuning upside." },
     }));
     const { generation } = await archiveGeneration({ repo, runId: id, summariesPath, analysisPath });
     assert.equal(generation.selection.winner.candidateId, "candidate-b");
     assert.equal(generation.candidates[0].implementationSummary, "Implemented candidate A.");
     assert.equal(generation.finding, "Candidate B improved score without reducing minimum capital.");
     assert.equal(generation.nextGenerationRationale, "Test whether the winning width generalizes to FOK inventory.");
+    const registry = JSON.parse(await fs.readFile(path.join(repo, "results", "strategy-state.json")));
+    assert.equal(registry.challengers.length, 1);
+    assert.equal(registry.challengers[0].status, "active");
     const report = await fs.readFile(path.join(repo, "results", "experiments", `${id}.md`), "utf8");
     assert.match(report, /Finding: Candidate B improved score/);
     assert.match(report, /Next-generation rationale: Test whether/);
@@ -525,6 +674,20 @@ test("promotion migrates v1 to v2 and commits only loop outputs", async () => {
     assert.equal(migrated.experimentId, `${id}:g01:candidate-b`);
     assert.equal(migrated.experiment.runId, id);
     assert.equal(migrated.strategy, "candidate-b");
+    assert.equal(migrated.resultArtifact, "results/champion/result.md");
+    const champion = JSON.parse(await fs.readFile(path.join(repo, "results", "champion", "champion.json")));
+    assert.equal(champion.id, "candidate-b");
+    assert.equal(champion.sourcePath, "Market_making_binary_option.py");
+    assert.equal(champion.sourceSha256, migrated.sourceSha256);
+    await fs.access(path.join(repo, champion.resultArtifact));
+    const registry = JSON.parse(await fs.readFile(path.join(repo, "results", "strategy-state.json")));
+    const demoted = registry.challengers.find(({ origin }) => origin === "demoted-champion");
+    assert.ok(demoted);
+    assert.equal(demoted.status, "active");
+    assert.equal(
+      createHash("sha256").update(await fs.readFile(path.join(repo, demoted.revisions[0].sourcePath))).digest("hex"),
+      demoted.revisions[0].sourceSha256,
+    );
     const { stdout: names } = await git(repo, "show", "--pretty=format:", "--name-only", promoted.commit);
     assert.ok(!names.split("\n").includes("AGENTS.MD"));
     assert.match((await git(repo, "status", "--short", "--", "AGENTS.MD")).stdout, /^ M AGENTS\.MD/);
@@ -549,6 +712,8 @@ test("promotion preflights the baseline and retries after a commit failure", asy
 
     await fs.rm(path.join(repo, "results", "runs", preflightId), { recursive: true });
     await fs.rm(path.join(repo, "results", "experiments", `${preflightId}.md`));
+    await fs.rm(path.join(repo, "results", "strategy-state.json"), { force: true });
+    await fs.rm(path.join(repo, "results", "challengers"), { recursive: true, force: true });
     await startRun({ repo, runId: retryId });
     prepared = await prepareGeneration({ repo, runId: retryId, planPath: await writePlan(repo) });
     await populateEvaluations(prepared.generation);
@@ -588,7 +753,17 @@ test("promotion reconciles a commit completed before transaction state was final
     await fs.rm(hook);
     const pending = (await statusRun({ repo, runId: id })).state;
     const transaction = pending.generations[0].promotionTransaction;
-    await git(repo, "add", "--", "Market_making_binary_option.py", "results/baselines", `results/experiments/${id}.md`);
+    await git(
+      repo,
+      "add",
+      "--",
+      "Market_making_binary_option.py",
+      "results/baselines",
+      "results/champion",
+      "results/challengers",
+      "results/strategy-state.json",
+      `results/experiments/${id}.md`,
+    );
     await git(repo, "commit", "-qm", "strategy: promote candidate-b");
     const { stdout: committedHead } = await git(repo, "rev-parse", "HEAD");
     const reconciled = await promoteGeneration({ repo, runId: id });
@@ -679,7 +854,7 @@ test("finish ignores arbitrary reasons until a configured stop is reached", asyn
   }
 });
 
-test("two non-promoting generations trigger the stall stop and finish report commit", async () => {
+test("two non-promoting generations do not stop the run", async () => {
   const repo = await createRepo();
   const id = runId("finish");
   try {
@@ -693,11 +868,8 @@ test("two non-promoting generations trigger the stall stop and finish report com
         ...await archiveInputs(repo, `finish-${generationNumber}`),
       });
     }
-    assert.equal((await statusRun({ repo, runId: id })).recommendedStop, "stall limit reached");
-    const finished = await finishRun({ repo, runId: id });
-    assert.equal(finished.state.status, "complete");
-    assert.equal(finished.state.stopReason, "stall limit reached");
-    assert.ok(finished.commit);
+    assert.equal((await statusRun({ repo, runId: id })).recommendedStop, null);
+    await assert.rejects(finishRun({ repo, runId: id }), /No stop condition/);
   } finally {
     await cleanup(repo, id);
   }

@@ -65,7 +65,7 @@ def non_import_top_level(module: ast.Module) -> list[ast.stmt]:
 
 
 def node_dump(node: ast.AST | None) -> str:
-    return ast.dump(node, include_attributes=False)
+    return "None" if node is None else ast.dump(node, include_attributes=False)
 
 
 def statement_label(statement: ast.stmt | None) -> str:
