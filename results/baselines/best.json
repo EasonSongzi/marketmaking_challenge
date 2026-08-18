@@ -1,22 +1,22 @@
 {
   "schemaVersion": 2,
-  "strategy": "g3-half-cap",
-  "resultArtifact": "results/baselines/market-loop-20260818-g03-g3-half-cap.md",
-  "sourceSha256": "436fcc5a163fca0ad443f265c5b16d137c616cc28dccf60bcf519fcd951c1dfd",
-  "experimentId": "market-loop-20260818:g03:g3-half-cap",
+  "strategy": "g5-wide-three-two",
+  "resultArtifact": "results/baselines/market-loop-20260818-g05-g5-wide-three-two.md",
+  "sourceSha256": "f19704494d5edc6cff65eac13240ce2fe32ca4afef87d1e414573eac694630a0",
+  "experimentId": "market-loop-20260818:g05:g5-wide-three-two",
   "experiment": {
     "runId": "market-loop-20260818",
-    "generation": 3,
-    "candidateId": "g3-half-cap"
+    "generation": 5,
+    "candidateId": "g5-wide-three-two"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
-    "scoredPointsHundredths": 1200,
-    "combinedPnlCents": 5584,
+    "scoredPointsHundredths": 1230,
+    "combinedPnlCents": 7549,
     "minimumCapital": {
-      "endingCashCents": 548,
+      "endingCashCents": 592,
       "startingCapitalCents": 1000
     }
   }

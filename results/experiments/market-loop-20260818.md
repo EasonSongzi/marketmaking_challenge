@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T05:29:44.743Z
 - Starting baseline: rfq-only-v1 (9.00/16.00)
-- Current baseline: g2-cross-one (11.70/16.00)
+- Current baseline: g3-half-cap (12.00/16.00)
 - Stop condition: not reached
-- Score trend: 9.00 → 11.40 → 11.70
+- Score trend: 9.00 → 11.40 → 11.70 → 12.00
 
 A normal promoted candidate is based on one HackerRank run; stochastic score risk remains. Fixture-only validation uses stubbed evidence.
 
@@ -118,8 +118,79 @@ The two-cent edge with a one-dollar cap improved the baseline to 11.70, while a 
 - Baseline delta: -0.30 points; PnL -6.07
 
 Selection: g3-half-cap.
-Promotion: none.
+Promotion: g3-half-cap (36931514b971968e1fc708cf29d1a09aa0d86de5).
 Finding: All candidates passed 20/20 without bankruptcy. Lowering the FOK worst-case-loss cap to fifty cents improved points from 11.70 to 12.00, despite reducing combined PnL by 25.48 and producing a lower observed minimum-capital ratio. Moving the price edge to one or three cents with the one-dollar cap reduced points to 11.10 and 11.40, confirming the two-cent margin is the stronger center.
 Next-generation rationale: Promote the fifty-cent-cap winner and refine risk around that new boundary. Test quarter-dollar and seventy-five-cent caps at the proven two-cent edge, plus a three-cent edge under the fifty-cent cap to check whether stronger filtering interacts differently at lower exposure.
 Previous failure (runner): Generation 3 runner failed before any candidate completed: browser automation reported Unexpected end of JSON input; queued siblings were cancelled.
 Recovery instruction: Repair the HackerRank browser profile with `auto_extract_result/login.sh`, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+
+## Generation 4: respond_to_fok
+
+The fifty-cent cap at a two-cent edge improved the baseline to 12.00, while one-dollar edge variants underperformed. This generation brackets the new risk boundary with quarter-dollar and seventy-five-cent caps and tests whether a three-cent margin works better when paired with the lower fifty-cent exposure.
+
+### g4-quarter-cap
+
+- Hypothesis: A twenty-five-cent worst-case-loss cap at the proven two-cent edge will further improve rank by accepting only the safest favorable FOKs.
+- Implementation plan: Preserve the side-aware two-cent edge and lower both total worst-case-loss caps from 0.50 to 0.25. This sharply reduces participation and capital usage.
+- Worker summary: Reduced both side-aware FOK worst-case-loss caps from fifty cents to twenty-five cents while preserving the two-cent edge. Scope validation, Python compilation, focused acceptance and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.40/16.00 points; PnL 36.68; minimum capital 5.48/10.00
+- Baseline delta: -0.60 points; PnL -19.16
+
+### g4-threequarter-cap
+
+- Hypothesis: A seventy-five-cent cap at the proven two-cent edge will recover useful FOK volume while remaining materially safer than the underperforming one-dollar cap.
+- Implementation plan: Preserve the side-aware two-cent edge and raise both total worst-case-loss caps from 0.50 to 0.75. This increases participation moderately.
+- Worker summary: Raised both side-aware FOK worst-case-loss caps from fifty cents to seventy-five cents while preserving the two-cent edge. Scope validation, Python compilation, focused acceptance and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 66.02; minimum capital 24.04/40.00
+- Baseline delta: -0.30 points; PnL 10.18
+
+### g4-half-edge-three
+
+- Hypothesis: A three-cent favorable edge paired with the fifty-cent cap will improve trade quality without the larger exposure that hurt the earlier three-cent test.
+- Implementation plan: Keep the fifty-cent loss cap and raise the side-aware acceptance margin from two cents to three cents. This isolates the margin interaction under lower exposure.
+- Worker summary: Raised the side-aware FOK acceptance margin from two cents to three cents while preserving the fifty-cent cap. Scope validation, Python compilation, focused acceptance and cap assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.00/16.00 points; PnL 57.00; minimum capital 5.48/10.00
+- Baseline delta: 0.00 points; PnL 1.16
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All candidates passed 20/20 without bankruptcy, but none qualified. The quarter-dollar cap fell to 11.40, the seventy-five-cent cap reached 11.70, and the three-cent edge with the fifty-cent cap tied the 12.00 baseline with the same minimum-capital ratio, so its slightly higher combined PnL could not pass the promotion gate. The fifty-cent cap and two-cent edge remain the measured center.
+Next-generation rationale: Use the fifth and final generation on quote, an orthogonal lever that produced the largest earlier improvement. Starting from the FOK-enhanced 12.00 baseline, compare a three-cent width at size two, size three at the current two-cent width, and their combination to test spread-versus-participation interaction.
+
+## Generation 5: quote
+
+Generation 4 found no FOK improvement around the 12.00 baseline. Quote width and size produced the largest earlier gain, so the final generation tests the next wider and larger settings while preserving the successful two-cent-edge, fifty-cent-cap FOK policy.
+
+### g5-wide-three-two
+
+- Hypothesis: Widening quotes from two cents to three cents at size two will increase spread capture enough to improve rank without added inventory size.
+- Implementation plan: Change bid and offer prices to rounded theoretical value plus or minus three cents while keeping both quantities at two. This sacrifices competitiveness for per-fill edge.
+- Worker summary: Widened quote prices from two cents to three cents while preserving bid and offer quantities at two and leaving FOK logic unchanged. Scope validation, Python compilation, centered and boundary quote assertions, and git diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 75.49; minimum capital 5.92/10.00
+- Baseline delta: 0.30 points; PnL 19.65
+
+### g5-wide-two-three
+
+- Hypothesis: Keeping the two-cent quote width while increasing both quantities from two to three will improve participation and PnL enough to beat the baseline.
+- Implementation plan: Keep prices two cents from rounded theoretical value and raise bid and offer quantities to three. This increases inventory and capital exposure.
+- Worker summary: Raised bid and offer quantities from two to three while preserving the two-cent quote width and FOK logic. Scope validation, Python compilation, centered and boundary quote assertions, and git diff checks passed.
+- Status: archived
+- Result: 18/20 passed; 2 bankruptcies; 11.20/16.00 points; PnL 51.84; minimum capital -1.98/10.00
+- Baseline delta: -0.80 points; PnL -4.00
+
+### g5-wide-three-three
+
+- Hypothesis: Combining a three-cent quote width with size three will reproduce the earlier positive spread-size interaction at a higher scale.
+- Implementation plan: Set prices three cents from rounded theoretical value and both quantities to three. This maximizes per-fill spread and participation among the candidates, with the highest capital risk.
+- Worker summary: Combined a three-cent quote width with bid and offer quantities of three while leaving FOK logic unchanged. Scope validation, Python compilation, centered and boundary quote assertions, and git diff checks passed.
+- Status: archived
+- Result: 18/20 passed; 2 bankruptcies; 11.70/16.00 points; PnL 74.22; minimum capital -1.69/10.00
+- Baseline delta: -0.30 points; PnL 18.38
+
+Selection: g5-wide-three-two.
+Promotion: none.
+Finding: Widening quotes to three cents while keeping size two passed 20/20, avoided bankruptcy, and improved the 12.00 baseline to 12.30 with +19.65 combined PnL and a higher observed minimum-capital ratio. Both size-three variants went bankrupt in cases 7 and 12, showing that larger quote quantity exceeded safe capital capacity regardless of the two- or three-cent width.
