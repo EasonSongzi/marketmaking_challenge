@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-loss-side-five",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-5-g03-champion-g6-loss-side-five/r00.py",
+  "sourceSha256": "dba7b8040efb4f1e71a2ef19245f9573d2a7b46570726ff7f869a964eb09847b",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1260,
+    "combinedPnlCents": 12228,
+    "minimumCapital": {
+      "endingCashCents": 677,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}

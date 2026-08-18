@@ -380,12 +380,8 @@ class MarketMaker:
         offer_price: float = min(fair_value_cents + 4, 100) / 100
         if bid_price > 0.50:
             bid_price = max(bid_price - 0.01, 0.0)
-            if fair_value_cents > 75:
-                bid_price = max(bid_price - 0.01, 0.0)
         if 1.0 - offer_price > 0.50:
             offer_price = min(offer_price + 0.01, 1.0)
-            if fair_value_cents < 25:
-                offer_price = min(offer_price + 0.01, 1.0)
         return Quote(
             bid_price=bid_price,
             bid_quantity=2,
@@ -922,9 +918,9 @@ class MarketMaker:
                 log_likelihood += math.log(transition_probability)
             score: float = (
                 log_likelihood
-                - 10.0 * (rate_up_probability - smoothed_up_probability) ** 2
-                - 10.0 * (rate_down_probability - smoothed_down_probability) ** 2
-                - 1.0 * (reversion_strength - moment_reversion_strength) ** 2
+                - 400.0 * (rate_up_probability - smoothed_up_probability) ** 2
+                - 400.0 * (rate_down_probability - smoothed_down_probability) ** 2
+                - 64.0 * (reversion_strength - moment_reversion_strength) ** 2
             )
             if score > best_score:
                 best_score = score
