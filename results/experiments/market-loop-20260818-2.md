@@ -1,10 +1,10 @@
 # Market-Maker Experiment: market-loop-20260818-2
 
-- Status: active
+- Status: failed
 - Started: 2026-08-18T17:11:09.865Z
 - Starting baseline: g5-wide-three-two (12.30/16.00)
 - Current baseline: g5-wide-three-two (12.30/16.00)
-- Stop condition: not reached
+- Stop condition: integrity failure
 - Score trend: 12.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
@@ -48,3 +48,59 @@ Challenger update: admitted market-loop-20260818-2-g01-g1-inventory-skew.
 Previous failure (setup): git -C /Users/easonhao/Documents/dev/Akuna_challenge worktree add --detach /tmp/akuna-market-maker/market-loop-20260818-2/g01/g1-inventory-skew ba6bd315a89417b051e28a0d3c42b00989e72ee9 failed: Preparing worktree (detached HEAD ba6bd31)
 fatal: could not create leading directories of '.git/worktrees/g1-inventory-skew': Operation not permitted
 Recovery instruction: Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+
+## Generation 2: tune quote
+
+The one-cent inventory skew matched the 12.30 champion and improved combined PnL. Tune only its symmetric center-shift magnitude while preserving the challenger's full source, fixed three-cent width, size two, and immediate nonzero-position activation.
+
+### skew-zero-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
+- Implementation plan: {"skewCents":0}
+- Worker summary: Materialized fine tuning vector.
+- Status: evaluated
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 75.49; minimum capital 5.92/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+### skew-two-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
+- Implementation plan: {"skewCents":2}
+- Worker summary: Materialized fine tuning vector.
+- Status: evaluated
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 75.64; minimum capital 5.88/10.00
+- Baseline delta: 0.00 points; PnL 0.15
+
+### skew-three-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
+- Implementation plan: {"skewCents":3}
+- Worker summary: Materialized medium tuning vector.
+- Status: evaluated
+- Result: 5/20 passed; 0 bankruptcies; 0.70/16.00 points; PnL 0.40; minimum capital 20.00/20.00
+- Baseline delta: -11.60 points; PnL -75.09
+
+### skew-four-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
+- Implementation plan: {"skewCents":4}
+- Worker summary: Materialized medium tuning vector.
+- Status: prepared
+- Result: not evaluated
+- Baseline delta: n/a
+
+### skew-six-coarse
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-2-g01-g1-inventory-skew
+- Implementation plan: {"skewCents":6}
+- Worker summary: Materialized coarse tuning vector.
+- Status: prepared
+- Result: not evaluated
+- Baseline delta: n/a
+
+
+Failure (integrity): skew-three-medium integrity failure after retry
+
+## Recovery
+
+Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
