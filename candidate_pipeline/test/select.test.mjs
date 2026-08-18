@@ -1,0 +1,102 @@
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import fs from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import test from "node:test";
+
+import { selectCandidates, selectFromFiles } from "../src/select.mjs";
+import { evaluation } from "./fixtures/run-data.mjs";
+
+function candidate(candidateId, summary = {}, overrides = {}) {
+  const base = evaluation({ candidateId });
+  return {
+    ...base,
+    ...overrides,
+    summary: { ...base.summary, ...summary },
+    evaluationPath: `/tmp/${candidateId}/evaluation.json`,
+  };
+}
+
+test("selectCandidates selects one eligible candidate", () => {
+  const selection = selectCandidates([candidate("candidate-a")]);
+  assert.equal(selection.promotion, true);
+  assert.equal(selection.winner.candidateId, "candidate-a");
+});
+
+test("selectCandidates orders multiple candidates by points", () => {
+  const selection = selectCandidates([
+    candidate("lower", { scoredPointsHundredths: 1000 }),
+    candidate("higher", { scoredPointsHundredths: 1100 }),
+  ]);
+  assert.equal(selection.winner.candidateId, "higher");
+});
+
+test("selectCandidates breaks point ties by minimum capital ratio", () => {
+  const selection = selectCandidates([
+    candidate("lower", { minimumCapital: { endingCashCents: 799, startingCapitalCents: 1000 } }),
+    candidate("higher", { minimumCapital: { endingCashCents: 4, startingCapitalCents: 5 } }),
+  ]);
+  assert.equal(selection.winner.candidateId, "higher");
+});
+
+test("selectCandidates then breaks ties by PnL and modified lines", () => {
+  const pnlWinner = selectCandidates([
+    candidate("lower-pnl", { combinedPnlCents: 99 }),
+    candidate("higher-pnl", { combinedPnlCents: 100 }),
+  ]);
+  assert.equal(pnlWinner.winner.candidateId, "higher-pnl");
+
+  const diffWinner = selectCandidates([
+    candidate("larger-diff", {}, { modifiedLines: 11 }),
+    candidate("smaller-diff", {}, { modifiedLines: 10 }),
+  ]);
+  assert.equal(diffWinner.winner.candidateId, "smaller-diff");
+});
+
+test("selectCandidates uses candidate ID as the final deterministic tie-break", () => {
+  const selection = selectCandidates([candidate("candidate-b"), candidate("candidate-a")]);
+  assert.equal(selection.winner.candidateId, "candidate-a");
+});
+
+test("selectCandidates records no promotion when nobody is eligible", () => {
+  const selection = selectCandidates([
+    candidate("valid-but-lower", {}, { eligible: false }),
+    candidate("invalid", {}, { valid: false, eligible: false }),
+  ]);
+  assert.deepEqual(selection, {
+    schemaVersion: 1,
+    promotion: false,
+    winner: null,
+    reason: "No candidate passed the promotion gate",
+  });
+});
+
+test("selectFromFiles rejects damaged evaluation JSON", async () => {
+  const directory = await fs.mkdtemp(path.join(tmpdir(), "akuna-select-bad-"));
+  const evaluationPath = path.join(directory, "evaluation.json");
+  try {
+    await fs.writeFile(evaluationPath, "not json");
+    await assert.rejects(selectFromFiles([evaluationPath]), /Cannot read evaluation/);
+  } finally {
+    await fs.rm(directory, { recursive: true });
+  }
+});
+
+test("selectFromFiles rejects a candidate whose source SHA changed", async () => {
+  const directory = await fs.mkdtemp(path.join(tmpdir(), "akuna-select-sha-"));
+  const sourcePath = path.join(directory, "Market_making_binary_option.py");
+  const evaluationPath = path.join(directory, "evaluation.json");
+  try {
+    const source = "tested source\n";
+    const sourceSha256 = createHash("sha256").update(source).digest("hex");
+    await fs.writeFile(sourcePath, "changed source\n");
+    await fs.writeFile(
+      evaluationPath,
+      JSON.stringify(evaluation({ sourcePath, sourceSha256 })),
+    );
+    await assert.rejects(selectFromFiles([evaluationPath]), /Source SHA-256 changed/);
+  } finally {
+    await fs.rm(directory, { recursive: true });
+  }
+});

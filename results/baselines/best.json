@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "strategy": "rfq-only-v1",
+  "resultArtifact": "results/baselines/rfq-only-v1.md",
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 900,
+    "combinedPnlCents": -273,
+    "minimumCapital": {
+      "endingCashCents": 769,
+      "startingCapitalCents": 1000
+    }
+  }
+}

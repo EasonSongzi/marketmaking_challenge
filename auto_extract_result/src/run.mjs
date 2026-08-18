@@ -11,7 +11,13 @@ import {
 } from "./config.mjs";
 import { acquireRunnerLock } from "./lock.mjs";
 import { matchesQuestionUrl, retryEditor } from "./question.mjs";
-import { buildReport, casePassed, extractCaseNumbers, reportTimestamp } from "./report.mjs";
+import {
+  buildRawReport,
+  buildReport,
+  casePassed,
+  extractCaseNumbers,
+  reportTimestamp,
+} from "./report.mjs";
 import { parseRunOptions, snapshotSource } from "./run-options.mjs";
 
 class AuthenticationError extends Error {}
@@ -105,9 +111,18 @@ async function runCases(page, runButton) {
 
 async function saveReport(cases, request) {
   const createdAt = new Date();
-  const filename = `hackerrank-run-${reportTimestamp(createdAt)}.md`;
-  const reportPath = path.join(request.resultDirectory, filename);
+  const filename = `hackerrank-run-${reportTimestamp(createdAt)}`;
+  const markdownPath = path.join(request.resultDirectory, `${filename}.md`);
+  const jsonPath = path.join(request.resultDirectory, `${filename}.json`);
   const report = buildReport({
+    createdAt,
+    questionUrl,
+    label: request.label,
+    sourcePath: request.sourcePath,
+    sourceSha256: request.sourceSha256,
+    cases,
+  });
+  const rawReport = buildRawReport({
     createdAt,
     questionUrl,
     label: request.label,
@@ -117,8 +132,9 @@ async function saveReport(cases, request) {
   });
 
   await fs.mkdir(request.resultDirectory, { recursive: true });
-  await fs.writeFile(reportPath, report, { flag: "wx" });
-  return reportPath;
+  await fs.writeFile(jsonPath, `${JSON.stringify(rawReport, null, 2)}\n`, { flag: "wx" });
+  await fs.writeFile(markdownPath, report, { flag: "wx" });
+  return { jsonPath, markdownPath };
 }
 
 async function main() {
@@ -143,10 +159,11 @@ async function main() {
     const question = await openQuestion(context, page);
     await replaceEditor(question.page, request.source);
     const cases = await runCases(question.page, question.runButton);
-    const reportPath = await saveReport(cases, request);
+    const reportPaths = await saveReport(cases, request);
     const passedCases = cases.filter(({ text }) => casePassed(text)).length;
 
-    console.log(`Saved ${cases.length} test cases to ${reportPath}`);
+    console.log(`Saved ${cases.length} test cases to ${reportPaths.markdownPath}`);
+    console.log(`Saved raw JSON to ${reportPaths.jsonPath}`);
     console.log(`Passed: ${passedCases}/${cases.length}`);
     if (passedCases !== cases.length) {
       process.exitCode = 2;

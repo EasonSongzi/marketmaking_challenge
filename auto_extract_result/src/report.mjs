@@ -45,3 +45,15 @@ export function buildReport({ createdAt, questionUrl, label, sourcePath, sourceS
 
   return `${lines.join("\n")}\n`;
 }
+
+export function buildRawReport({ createdAt, questionUrl, label, sourcePath, sourceSha256, cases }) {
+  return {
+    schemaVersion: 1,
+    createdAt: createdAt.toISOString(),
+    questionUrl,
+    label,
+    sourcePath,
+    sourceSha256,
+    cases,
+  };
+}

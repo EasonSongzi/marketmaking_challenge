@@ -2,8 +2,10 @@
 
 This utility copies a snapshotted `Market_making_binary_option.py` into the
 Akuna HackerRank question, runs every available case, and saves each case's raw
-result. The main worktree owns the Playwright installation, authentication
-state, browser profile, and a cross-process lock shared by every worktree.
+result as both Markdown and JSON. The main worktree owns the Playwright
+installation, authentication state, browser profile, and a cross-process lock
+shared by every worktree. Candidate evaluation and winner selection live in
+the repository-level `candidate_pipeline/` module.
 
 ## One-time setup
 
@@ -66,8 +68,8 @@ behavior.
 
 ## Run a worktree candidate
 
-Worktree agents call the **main worktree's** runner rather than copying its
-dependencies or private state. All paths must be absolute:
+The main agent calls the **main worktree's** runner for worktree candidates
+rather than asking subagents to launch Chromium. All paths must be absolute:
 
 ```bash
 /absolute/path/to/main/auto_extract_result/run.sh \
@@ -92,10 +94,11 @@ The command opens a visible Chromium browser, verifies that the complete local
 source matches the HackerRank editor, runs the tests, and writes a timestamped
 report. Each Monaco initialization attempt waits up to three seconds, and the
 script opens a fresh question page for up to ten total attempts before failing.
-A report path looks like:
+A report pair looks like:
 
 ```text
 auto_extract_result/results/hackerrank-run-2026-08-17-221530.md
+auto_extract_result/results/hackerrank-run-2026-08-17-221530.json
 ```
 
 Exit status `0` means every accessible case passed. Status `2` means the report
