@@ -43,7 +43,7 @@ export async function launchAuthenticatedBrowser() {
     origins: authentication.storageState.origins,
     sessionStorage: authentication.sessionStorage,
   });
-  return { browser: context.browser(), context };
+  return context;
 }
 
 export function activePage(context) {

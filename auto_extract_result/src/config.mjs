@@ -9,6 +9,7 @@ export const authenticationStateFile = path.join(automationDirectory, ".auth-sta
 export const browserProfileDirectory = path.join(automationDirectory, ".browser-profile");
 export const invitationUrlFile = path.join(automationDirectory, ".invite-url");
 export const resultsDirectory = path.join(automationDirectory, "results");
+export const runnerLockDirectory = path.join(automationDirectory, ".runner-lock");
 export const sourceFile = path.join(repositoryDirectory, "Market_making_binary_option.py");
 
 export const questionUrl =

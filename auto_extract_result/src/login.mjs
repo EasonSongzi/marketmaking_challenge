@@ -1,14 +1,17 @@
 import { activePage, launchBrowser, saveAuthentication } from "./browser.mjs";
 import { editorAttempts, editorTimeoutMs, questionUrl, runTimeoutMs } from "./config.mjs";
 import { readInvitationUrl } from "./invitation.mjs";
+import { acquireRunnerLock } from "./lock.mjs";
 import { retryEditor, waitForQuestion } from "./question.mjs";
 
 async function main() {
   const invitationUrl = await readInvitationUrl();
-  const context = await launchBrowser();
-  const page = await activePage(context);
+  const releaseLock = await acquireRunnerLock("login");
+  let context;
 
   try {
+    context = await launchBrowser();
+    const page = await activePage(context);
     await page.goto(invitationUrl, { waitUntil: "domcontentloaded", timeout: 60_000 });
     console.log("The HackerRank invitation flow is open in the dedicated browser.");
     console.log("Complete every redirect, profile field, and agreement yourself.");
@@ -24,7 +27,11 @@ async function main() {
     await saveAuthentication(context, question.page);
     console.log("Onboarding verified. Future runs will open the coding question directly.");
   } finally {
-    await context.close();
+    try {
+      await context?.close();
+    } finally {
+      await releaseLock();
+    }
   }
 }
 

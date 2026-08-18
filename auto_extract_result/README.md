@@ -1,8 +1,9 @@
 # HackerRank Result Automation
 
-This utility copies the repository's `Market_making_binary_option.py` into the
+This utility copies a snapshotted `Market_making_binary_option.py` into the
 Akuna HackerRank question, runs every available case, and saves each case's raw
-result under `auto_extract_result/results/`.
+result. The main worktree owns the Playwright installation, authentication
+state, browser profile, and a cross-process lock shared by every worktree.
 
 ## One-time setup
 
@@ -48,11 +49,44 @@ that combined state no longer reaches the question, rerun `login.sh` and
 complete the onboarding flow manually; `run.sh` never accepts agreements on
 your behalf.
 
+`login.sh` and `run.sh` acquire the same `.runner-lock/`. If another agent is
+using HackerRank, later processes wait instead of starting another browser.
+The lock records its owning process and automatically recovers when that process
+no longer exists.
+
 ## Run an experiment
 
 ```bash
 ./auto_extract_result/run.sh
 ```
+
+With no arguments, the runner snapshots the main worktree source and saves the
+report under the main `auto_extract_result/results/`, preserving the original
+behavior.
+
+## Run a worktree candidate
+
+Worktree agents call the **main worktree's** runner rather than copying its
+dependencies or private state. All paths must be absolute:
+
+```bash
+/absolute/path/to/main/auto_extract_result/run.sh \
+  --source /absolute/path/to/candidate/Market_making_binary_option.py \
+  --result-dir /absolute/path/to/candidate/auto_extract_result/results \
+  --label agent-name
+```
+
+`--source`, `--result-dir`, and `--label` are optional. A custom source without
+a label defaults to the source worktree directory name. Before waiting for the
+shared lock, the runner reads the complete source into memory and calculates
+its SHA-256. Later edits in that worktree cannot change the queued run. The
+report is written to the requested result directory and records the label,
+absolute source path, and source SHA-256.
+
+Multiple agents may invoke the command concurrently. Their source snapshots are
+taken independently, but the shared lock serializes all HackerRank browser,
+editor, run, and extraction operations. Reports use timestamped names and are
+created without overwriting existing files.
 
 The command opens a visible Chromium browser, verifies that the complete local
 source matches the HackerRank editor, runs the tests, and writes a timestamped

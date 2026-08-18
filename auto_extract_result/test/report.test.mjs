@@ -29,15 +29,19 @@ test("buildReport preserves raw output and records failed runs", () => {
   const report = buildReport({
     createdAt: new Date("2026-08-17T12:00:00.000Z"),
     questionUrl: "https://www.hackerrank.com/example",
-    sourceName: "Market_making_binary_option.py",
+    label: "agent-a",
+    sourcePath: "/tmp/worktree-a/Market_making_binary_option.py",
+    sourceSha256: "abc123",
     cases: [
       { number: 1, text: "Compiler Message\nResult: PASS" },
       { number: 2, text: "Traceback\nResult: FAIL" },
     ],
   });
 
+  assert.match(report, /Label: agent-a/);
+  assert.match(report, /Source: `\/tmp\/worktree-a\/Market_making_binary_option\.py`/);
+  assert.match(report, /Source SHA-256: `abc123`/);
   assert.match(report, /Overall: One or more test cases failed/);
   assert.match(report, /Passed: 1\/2/);
   assert.match(report, /## Test Case 2[\s\S]*Traceback[\s\S]*Result: FAIL/);
 });
-

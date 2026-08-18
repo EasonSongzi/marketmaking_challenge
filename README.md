@@ -12,7 +12,8 @@ one-time setup and login, then run:
 
 Timestamped reports are written to `auto_extract_result/results/`. See
 `auto_extract_result/README.md` for setup, authentication, exit codes, and the
-manual fallback.
+central-runner arguments used to test candidate worktrees without copying
+Playwright or authentication files.
 
 Planning and implementation happen in a normal Codex session. The project skill begins only after the local code has been copied to HackerRank and all test cases have run, either through the automation above or the manual fallback below.
 

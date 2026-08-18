@@ -23,7 +23,7 @@ export function reportTimestamp(date = new Date()) {
   return `${parts.slice(0, 3).join("-")}-${parts.slice(3).join("")}`;
 }
 
-export function buildReport({ createdAt, questionUrl, sourceName, cases }) {
+export function buildReport({ createdAt, questionUrl, label, sourcePath, sourceSha256, cases }) {
   const passedCases = cases.filter(({ text }) => casePassed(text)).length;
   const allPassed = cases.length > 0 && passedCases === cases.length;
   const lines = [
@@ -31,7 +31,9 @@ export function buildReport({ createdAt, questionUrl, sourceName, cases }) {
     "",
     `- Date: ${createdAt.toISOString()}`,
     `- Question: ${questionUrl}`,
-    `- Source: \`${sourceName}\``,
+    `- Label: ${label}`,
+    `- Source: \`${sourcePath}\``,
+    `- Source SHA-256: \`${sourceSha256}\``,
     `- Overall: ${allPassed ? "All available test cases passed" : "One or more test cases failed"}`,
     `- Passed: ${passedCases}/${cases.length}`,
     "",
@@ -43,4 +45,3 @@ export function buildReport({ createdAt, questionUrl, sourceName, cases }) {
 
   return `${lines.join("\n")}\n`;
 }
-

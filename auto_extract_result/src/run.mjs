@@ -7,12 +7,12 @@ import {
   editorAttempts,
   editorTimeoutMs,
   questionUrl,
-  resultsDirectory,
   runTimeoutMs,
-  sourceFile,
 } from "./config.mjs";
+import { acquireRunnerLock } from "./lock.mjs";
 import { matchesQuestionUrl, retryEditor } from "./question.mjs";
 import { buildReport, casePassed, extractCaseNumbers, reportTimestamp } from "./report.mjs";
+import { parseRunOptions, snapshotSource } from "./run-options.mjs";
 
 class AuthenticationError extends Error {}
 
@@ -103,31 +103,37 @@ async function runCases(page, runButton) {
   return cases;
 }
 
-async function saveReport(cases) {
+async function saveReport(cases, request) {
   const createdAt = new Date();
   const filename = `hackerrank-run-${reportTimestamp(createdAt)}.md`;
-  const reportPath = path.join(resultsDirectory, filename);
+  const reportPath = path.join(request.resultDirectory, filename);
   const report = buildReport({
     createdAt,
     questionUrl,
-    sourceName: path.basename(sourceFile),
+    label: request.label,
+    sourcePath: request.sourcePath,
+    sourceSha256: request.sourceSha256,
     cases,
   });
 
-  await fs.mkdir(resultsDirectory, { recursive: true });
+  await fs.mkdir(request.resultDirectory, { recursive: true });
   await fs.writeFile(reportPath, report, { flag: "wx" });
   return reportPath;
 }
 
 async function main() {
-  if (!(await profileExists())) {
-    throw new AuthenticationError("No saved HackerRank browser profile was found");
-  }
-
-  const source = await fs.readFile(sourceFile, "utf8");
-  const { browser, context } = await launchAuthenticatedBrowser();
+  const request = await snapshotSource(parseRunOptions(process.argv.slice(2)));
+  console.log(
+    `Prepared HackerRank run for ${request.label}: ${request.sourcePath} (${request.sourceSha256})`,
+  );
+  const releaseLock = await acquireRunnerLock(request.label);
+  let context;
 
   try {
+    if (!(await profileExists())) {
+      throw new AuthenticationError("No saved HackerRank browser profile was found");
+    }
+    context = await launchAuthenticatedBrowser();
     const page = await context.newPage();
     for (const stalePage of context.pages()) {
       if (stalePage !== page) {
@@ -135,9 +141,9 @@ async function main() {
       }
     }
     const question = await openQuestion(context, page);
-    await replaceEditor(question.page, source);
+    await replaceEditor(question.page, request.source);
     const cases = await runCases(question.page, question.runButton);
-    const reportPath = await saveReport(cases);
+    const reportPath = await saveReport(cases, request);
     const passedCases = cases.filter(({ text }) => casePassed(text)).length;
 
     console.log(`Saved ${cases.length} test cases to ${reportPath}`);
@@ -146,7 +152,11 @@ async function main() {
       process.exitCode = 2;
     }
   } finally {
-    await browser.close();
+    try {
+      await context?.close();
+    } finally {
+      await releaseLock();
+    }
   }
 }
 

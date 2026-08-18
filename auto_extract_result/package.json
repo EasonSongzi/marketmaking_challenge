@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "check": "node --check src/config.mjs && node --check src/browser.mjs && node --check src/invitation.mjs && node --check src/question.mjs && node --check src/login.mjs && node --check src/report.mjs && node --check src/run.mjs"
+    "check": "node --check src/config.mjs && node --check src/browser.mjs && node --check src/invitation.mjs && node --check src/lock.mjs && node --check src/question.mjs && node --check src/run-options.mjs && node --check src/login.mjs && node --check src/report.mjs && node --check src/run.mjs"
   },
   "dependencies": {
     "playwright": "1.62.0"

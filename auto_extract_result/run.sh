@@ -8,5 +8,4 @@ if [[ ! -d "$script_dir/node_modules/playwright" ]]; then
   exit 1
 fi
 
-exec node "$script_dir/src/run.mjs"
-
+exec node "$script_dir/src/run.mjs" "$@"
