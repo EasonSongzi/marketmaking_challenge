@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260818-4
 
-- Status: active
+- Status: complete
 - Started: 2026-08-18T21:49:07.026Z
 - Starting baseline: g2-rate-smoothing (12.30/16.00)
-- Current baseline: g5-uniform-four (12.30/16.00)
-- Stop condition: not reached
-- Score trend: 12.30 → 12.30 → 12.30 → 12.30 → 12.30 → 12.30
+- Current baseline: g6-loss-side-five (12.60/16.00)
+- Stop condition: generation limit reached
+- Score trend: 12.30 → 12.30 → 12.30 → 12.30 → 12.30 → 12.30 → 12.60
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -279,6 +279,6 @@ Parent: champion `g5-uniform-four` (`95adc0b6da346bd74db7e6bd8ae01c7843076807e23
 - Baseline delta: 0.10 points; PnL 0.43
 
 Selection: g6-loss-side-five.
-Promotion: none.
+Promotion: g6-loss-side-five (027bdee26dd4510f6c3deb943eadb905952e5f16).
 Finding: All three fifth-cent placements passed 20/20 without bankruptcy or runtime errors and improved score by winning case 15. Uniform five-cent quotes reached 12.40 points, 129.81 PnL, and 6.89/10.00 minimum capital. Central-only five cents reached 12.40, 122.80, and 6.49/10.00. Maximum-loss-side-only widening uniquely preserved every other rank and led at 12.60 points with 122.28 PnL and 6.77/10.00 minimum capital, a 0.30-point improvement over the four-cent parent despite 0.09 lower aggregate PnL.
 Next-generation rationale: Promote the maximum-loss-side fifth-cent quote. The configured six-generation limit is reached, so finish the run with the 12.60 champion; case 15 is now first while cases 9 and 16 remain first, and case 17 remains the next explicit rank boundary for a future loop.
