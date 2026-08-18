@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260818-5
 
-- Status: active
+- Status: complete
 - Started: 2026-08-18T22:47:46.574Z
 - Starting baseline: g6-loss-side-five (12.60/16.00)
-- Current baseline: g3-tail-loss-six (12.80/16.00)
-- Stop condition: not reached
-- Score trend: 12.60 → 12.80
+- Current baseline: g6-contract-rfq-wide (12.80/16.00)
+- Stop condition: generation limit reached
+- Score trend: 12.60 → 12.80 → 12.80
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -240,6 +240,6 @@ Parent: champion `g3-tail-loss-six` (`8d61104514e06c4d5e213399e5f60033b19024f643
 - Baseline delta: -2.40 points; PnL -34.22
 
 Selection: g6-contract-rfq-wide.
-Promotion: none.
+Promotion: g6-contract-rfq-wide (1f65d9479c742933b16b0d2c286b6f2d9278dd89).
 Finding: All three RFQ-memory policies passed 20/20 without bankruptcy or runtime errors. Contract-specific repeat widening uniquely passed the promotion gate: it preserved 12.80 points, raised PnL from 105.78 to 105.88, and improved minimum capital from 7.32 to 7.38. It kept cases 9, 15, and 16 first, case 13 second by 0.30, and case 17 second by 0.73. Widening every later RFQ from a counterparty scored only 12.40 because cases 13 and 17 fell to third, despite lifting minimum capital to 7.68. Reducing repeat sizes was strongly harmful, falling to 10.40 points and 71.56 PnL by losing rank in cases 9, 13, 15, and 17. The useful counterparty signal is therefore narrow contract-specific repetition, not broad identity-level defensiveness.
 Next-generation rationale: Promote contract-specific repeat widening. The configured six-generation limit is reached; finish the run with the 12.80 champion and retain the verified evidence that only same-counterparty, same-option repetition supports a small RFQ adjustment.
