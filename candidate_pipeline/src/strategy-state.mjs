@@ -106,7 +106,9 @@ export function cachedEvaluation(registry, sourceSha256, candidateId, sourcePath
   if (!cached?.valid) return null;
   const eligible = promotionEligible(cached.summary, baseline.summary);
   const performanceReasons = cached.reasons.filter((reason) => (
-    reason.startsWith("Cases did not pass:") || reason.startsWith("Bankruptcy reported in cases:")
+    reason.startsWith("Cases did not pass:")
+    || reason.startsWith("Bankruptcy reported in cases:")
+    || reason.startsWith("Candidate runtime error in cases ")
   ));
   if (!eligible && performanceReasons.length === 0) {
     performanceReasons.push("Candidate did not strictly exceed the baseline");
@@ -123,7 +125,9 @@ export function cachedEvaluation(registry, sourceSha256, candidateId, sourcePath
     baselineDelta: {
       scoredPointsHundredths:
         cached.summary.scoredPointsHundredths - baseline.summary.scoredPointsHundredths,
-      combinedPnlCents: cached.summary.combinedPnlCents - baseline.summary.combinedPnlCents,
+      combinedPnlCents: cached.summary.combinedPnlCents === null
+        ? null
+        : cached.summary.combinedPnlCents - baseline.summary.combinedPnlCents,
     },
     reasons: performanceReasons,
     cached: true,
@@ -134,15 +138,29 @@ function safeSummary(summary) {
   return summary?.passed === 20 && summary?.total === 20 && summary?.bankruptcies === 0;
 }
 
+function compareOptionalCapital(first, second) {
+  if (first === null || second === null) {
+    return first === second ? 0 : first === null ? -1 : 1;
+  }
+  return compareCapital(first, second);
+}
+
+function compareOptionalNumber(first, second) {
+  if (first === null || second === null) {
+    return first === second ? 0 : first === null ? -1 : 1;
+  }
+  return first === second ? 0 : first > second ? 1 : -1;
+}
+
 export function compareStrategy(first, second) {
   const safeDelta = Number(safeSummary(second.summary)) - Number(safeSummary(first.summary));
   if (safeDelta !== 0) return safeDelta;
   const pointDelta = second.summary.scoredPointsHundredths - first.summary.scoredPointsHundredths;
   if (pointDelta !== 0) return pointDelta;
-  const capital = compareCapital(first.summary.minimumCapital, second.summary.minimumCapital);
+  const capital = compareOptionalCapital(first.summary.minimumCapital, second.summary.minimumCapital);
   if (capital !== 0) return -capital;
-  const pnlDelta = second.summary.combinedPnlCents - first.summary.combinedPnlCents;
-  if (pnlDelta !== 0) return pnlDelta;
+  const pnl = compareOptionalNumber(first.summary.combinedPnlCents, second.summary.combinedPnlCents);
+  if (pnl !== 0) return -pnl;
   const passDelta = second.summary.passed - first.summary.passed;
   if (passDelta !== 0) return passDelta;
   return first.candidateId.localeCompare(second.candidateId);
@@ -165,14 +183,17 @@ function nextRevision(challenger) {
 
 function revisionMarkdown(challengerId, revision, evaluation) {
   const summary = evaluation.summary;
+  const pnl = summary.combinedPnlCents === null
+    ? "n/a"
+    : (summary.combinedPnlCents / 100).toFixed(2);
   return [
     `# Challenger ${challengerId} r${String(revision).padStart(2, "0")}`,
     "",
     `- Source SHA-256: \`${evaluation.sourceSha256}\``,
     `- Passed: ${summary.passed}/${summary.total}`,
-    `- Bankruptcies: ${summary.bankruptcies}`,
+    `- Bankruptcies: ${summary.bankruptcies ?? "n/a"}`,
     `- SCORED points: ${(summary.scoredPointsHundredths / 100).toFixed(2)}/16.00`,
-    `- Combined PnL: ${(summary.combinedPnlCents / 100).toFixed(2)}`,
+    `- Combined PnL: ${pnl}`,
     "",
   ].join("\n");
 }

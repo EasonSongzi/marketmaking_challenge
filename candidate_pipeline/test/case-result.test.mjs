@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { compareCapital, parseCaseResult } from "../src/case-result.mjs";
-import { rawCase } from "./fixtures/run-data.mjs";
+import { rawCase, runtimeErrorCase } from "./fixtures/run-data.mjs";
 
 test("parseCaseResult parses THEO, VERBOSE, and SCORED cases", () => {
   assert.deepEqual(parseCaseResult(rawCase(1)), {
@@ -33,6 +33,16 @@ test("parseCaseResult parses both bankruptcy values", () => {
   assert.equal(parseCaseResult(rawCase(5, { bankrupt: true })).bankrupt, true);
 });
 
+test("parseCaseResult treats an explicit HackerRank runtime error as a scored failure", () => {
+  assert.deepEqual(parseCaseResult(runtimeErrorCase(5)), {
+    number: 5,
+    type: "SCORED",
+    passed: false,
+    scoreHundredths: 0,
+    runtimeError: "ValueError: Quote bid price must be less than offer price",
+  });
+});
+
 test("parseCaseResult rejects missing score and cash fields", () => {
   assert.throws(
     () => parseCaseResult(rawCase(5, {
@@ -54,6 +64,10 @@ test("parseCaseResult rejects malformed and duplicate Result fields", () => {
   assert.throws(
     () => parseCaseResult(rawCase(1, { text: "Result: PASS\nResult: FAIL" })),
     /exactly one Result/,
+  );
+  assert.throws(
+    () => parseCaseResult(rawCase(5, { text: "Compiler Message\nTraceback (most recent call last):" })),
+    /outcome/,
   );
 });
 

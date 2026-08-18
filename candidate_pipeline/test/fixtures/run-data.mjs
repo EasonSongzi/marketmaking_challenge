@@ -50,6 +50,22 @@ export function rawCase(number, options = {}) {
   };
 }
 
+export function runtimeErrorCase(number, message = "ValueError: Quote bid price must be less than offer price") {
+  return {
+    number,
+    text: [
+      "Compiler Message",
+      "",
+      `Testcase ${number - 1} failed with an unhandled error and is scored 0.`,
+      message,
+      "",
+      "Traceback (most recent call last):",
+      "  fixture traceback",
+      message,
+    ].join("\n"),
+  };
+}
+
 export function rawReport(overrides = {}) {
   return {
     schemaVersion: 1,

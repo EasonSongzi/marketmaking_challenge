@@ -100,3 +100,36 @@ test("selectFromFiles rejects a candidate whose source SHA changed", async () =>
     await fs.rm(directory, { recursive: true });
   }
 });
+
+test("selectFromFiles accepts a valid ineligible runtime failure with unavailable ranking data", async () => {
+  const directory = await fs.mkdtemp(path.join(tmpdir(), "akuna-select-runtime-"));
+  const sourcePath = path.join(directory, "Market_making_binary_option.py");
+  const evaluationPath = path.join(directory, "evaluation.json");
+  try {
+    const source = "runtime failure source\n";
+    const sourceSha256 = createHash("sha256").update(source).digest("hex");
+    const runtimeEvaluation = evaluation({
+      eligible: false,
+      sourcePath,
+      sourceSha256,
+      summary: {
+        passed: 5,
+        total: 20,
+        bankruptcies: null,
+        scoredPointsHundredths: 70,
+        combinedPnlCents: null,
+        minimumCapital: null,
+        runtimeErrors: 15,
+      },
+      baselineDelta: { scoredPointsHundredths: -1160, combinedPnlCents: null },
+      reasons: ["Candidate runtime error in cases 5: ValueError: invalid quote"],
+    });
+    await fs.writeFile(sourcePath, source);
+    await fs.writeFile(evaluationPath, JSON.stringify(runtimeEvaluation));
+
+    const selection = await selectFromFiles([evaluationPath]);
+    assert.equal(selection.promotion, false);
+  } finally {
+    await fs.rm(directory, { recursive: true });
+  }
+});

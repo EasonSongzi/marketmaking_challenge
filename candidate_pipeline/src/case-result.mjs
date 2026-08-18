@@ -1,5 +1,6 @@
 const RESULT_LINE = /^Result:[^\r\n]*$/gm;
 const BANKRUPTCY_LINE = /^Mola mola bankrupt:[^\r\n]*$/gm;
+const RUNTIME_ERROR_LINE = /^Testcase\s+\d+\s+failed with (?:an unhandled|a runtime) error and is scored 0\.[^\r\n]*$/gim;
 
 function caseType(number) {
   if (number === 1) {
@@ -40,13 +41,42 @@ function onlyMatch(text, expression, field) {
   return matches[0][0];
 }
 
+function runtimeMessage(text, runtimeLine) {
+  const remainder = text.slice(text.indexOf(runtimeLine) + runtimeLine.length);
+  return remainder
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => /(?:Error|Exception):\s*\S/.test(line)) ?? runtimeLine;
+}
+
 export function parseCaseResult(rawCase) {
   if (!Number.isInteger(rawCase?.number) || typeof rawCase?.text !== "string") {
     throw new Error("Case must contain an integer number and text");
   }
 
   const type = caseType(rawCase.number);
-  const resultLine = onlyMatch(rawCase.text, RESULT_LINE, "Result field");
+  const resultLines = [...rawCase.text.matchAll(RESULT_LINE)].map(([line]) => line);
+  const runtimeLines = [...rawCase.text.matchAll(RUNTIME_ERROR_LINE)].map(([line]) => line);
+  if (resultLines.length > 1) {
+    throw new Error(`Expected exactly one Result field, found ${resultLines.length}`);
+  }
+  if (runtimeLines.length > 1) {
+    throw new Error(`Expected exactly one runtime-error field, found ${runtimeLines.length}`);
+  }
+  if (resultLines.length + runtimeLines.length !== 1) {
+    throw new Error(`Expected exactly one case outcome, found ${resultLines.length + runtimeLines.length}`);
+  }
+  if (runtimeLines.length === 1) {
+    return {
+      number: rawCase.number,
+      type,
+      passed: false,
+      scoreHundredths: 0,
+      runtimeError: runtimeMessage(rawCase.text, runtimeLines[0]),
+    };
+  }
+
+  const resultLine = resultLines[0];
   const result = resultLine.match(/^Result:\s*(PASS|FAIL)\b/);
   if (result === null) {
     throw new Error(`Malformed Result field in case ${rawCase.number}`);

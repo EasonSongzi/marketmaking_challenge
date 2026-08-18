@@ -46,6 +46,13 @@ test("runCandidate also evaluates after runner status 2", async () => {
   );
 });
 
+test("runCandidate returns 2 when intact evidence proves a candidate failure", async () => {
+  const fake = fakeExecution([2, 2]);
+  const status = await runCandidate(options, { execute: fake.execute });
+  assert.equal(status, 2);
+  assert.equal(fake.calls.length, 2);
+});
+
 test("runCandidate stops after runner status 1", async () => {
   const fake = fakeExecution([1]);
   const status = await runCandidate(options, { execute: fake.execute });

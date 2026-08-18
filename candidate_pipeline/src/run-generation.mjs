@@ -120,9 +120,15 @@ function candidateArguments(candidate, baselinePath) {
   ];
 }
 
+export function failureMessage(candidateId, { final, integrity = false }) {
+  const kind = integrity ? "integrity" : "runner";
+  const suffix = integrity ? "" : final ? " after retry" : "; automatic retry requested";
+  return `${candidateId} ${kind} failure${suffix}`;
+}
+
 async function recoverFailure({ repo, runId, candidateId, final, integrity = false }) {
   const kind = integrity ? "integrity" : "runner";
-  const message = `${candidateId} ${kind} failure${final ? " after retry" : "; automatic retry requested"}`;
+  const message = failureMessage(candidateId, { final, integrity });
   await archiveGeneration({ repo, runId, failure: message, failureKind: kind });
   if (!final && !integrity) await resumeRun({ repo, runId });
 }

@@ -19,7 +19,7 @@ import {
   startRun,
   statusRun,
 } from "../src/loop.mjs";
-import { rawCase, rawReport } from "./fixtures/run-data.mjs";
+import { rawCase, rawReport, runtimeErrorCase } from "./fixtures/run-data.mjs";
 
 const execFile = promisify(execFileCallback);
 const worktreeRoot = "/tmp/akuna-market-maker";
@@ -444,6 +444,93 @@ test("resume locally reclassifies legacy failed and bankrupt evidence without an
     assert.match(refreshed.reasons.join("\n"), /Bankruptcy reported in cases: 7/);
     await fs.access(path.join(candidate.resultDirectory, "evaluation.legacy-invalid.json"));
     assert.equal(resumed.generation.candidates[0].evaluation.valid, true);
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("resume locally reclassifies legacy runtime-error evidence and corrects its failure text", async () => {
+  const repo = await createRepo();
+  const id = runId("legacy-runtime");
+  try {
+    await startRun({ repo, runId: id });
+    const prepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo) });
+    const candidate = prepared.generation.candidates[0];
+    const sourcePath = path.join(candidate.worktreePath, "Market_making_binary_option.py");
+    const sourceSha256 = createHash("sha256").update(await fs.readFile(sourcePath)).digest("hex");
+    const cases = Array.from({ length: 20 }, (_, index) => (
+      index === 4 ? runtimeErrorCase(index + 1) : rawCase(index + 1)
+    ));
+    await fs.mkdir(candidate.resultDirectory, { recursive: true });
+    await fs.writeFile(
+      path.join(candidate.resultDirectory, "hackerrank-run-fixture.json"),
+      JSON.stringify(rawReport({ label: candidate.id, sourcePath, sourceSha256, cases })),
+    );
+    await fs.writeFile(
+      path.join(candidate.resultDirectory, "evaluation.json"),
+      JSON.stringify({
+        ...evaluation(candidate.id, sourcePath, sourceSha256, 0),
+        valid: false,
+        eligible: false,
+        reasons: [
+          "Case 5 cannot be parsed: Expected exactly one Result field, found 0",
+          "Expected bankruptcy data for 19 cases, found 18",
+          "Expected exactly 16 SCORED results, found 15",
+        ],
+      }),
+    );
+
+    await archiveGeneration({
+      repo,
+      runId: id,
+      failure: `${candidate.id} integrity failure after retry`,
+      failureKind: "integrity",
+    });
+    const resumed = await resumeRun({ repo, runId: id });
+    const refreshed = JSON.parse(await fs.readFile(path.join(candidate.resultDirectory, "evaluation.json")));
+    assert.equal(refreshed.valid, true);
+    assert.equal(refreshed.eligible, false);
+    assert.equal(refreshed.summary.runtimeErrors, 1);
+    assert.equal(refreshed.summary.combinedPnlCents, null);
+    assert.match(refreshed.reasons.join("\n"), /runtime error in cases 5/i);
+    assert.equal(resumed.generation.previousFailure.message, `${candidate.id} integrity failure`);
+    await fs.access(path.join(candidate.resultDirectory, "evaluation.legacy-invalid.json"));
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("resume keeps genuinely truncated evidence stopped as an integrity failure", async () => {
+  const repo = await createRepo();
+  const id = runId("truncated-integrity");
+  try {
+    await startRun({ repo, runId: id });
+    const prepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo) });
+    const candidate = prepared.generation.candidates[0];
+    const sourcePath = path.join(candidate.worktreePath, "Market_making_binary_option.py");
+    const sourceSha256 = createHash("sha256").update(await fs.readFile(sourcePath)).digest("hex");
+    const report = rawReport({ label: candidate.id, sourcePath, sourceSha256 });
+    report.cases.pop();
+    await fs.mkdir(candidate.resultDirectory, { recursive: true });
+    await fs.writeFile(
+      path.join(candidate.resultDirectory, "hackerrank-run-fixture.json"),
+      JSON.stringify(report),
+    );
+    await fs.writeFile(
+      path.join(candidate.resultDirectory, "evaluation.json"),
+      JSON.stringify({
+        ...evaluation(candidate.id, sourcePath, sourceSha256, 0),
+        valid: false,
+        eligible: false,
+        reasons: ["Expected exactly 20 cases, found 19"],
+      }),
+    );
+
+    await archiveGeneration({ repo, runId: id, failure: "truncated evidence", failureKind: "integrity" });
+    await assert.rejects(resumeRun({ repo, runId: id }), /remains invalid.*exactly 20 cases/s);
+    const stopped = await statusRun({ repo, runId: id });
+    assert.equal(stopped.state.status, "failed");
+    assert.equal(stopped.state.stopReason, "integrity failure");
   } finally {
     await cleanup(repo, id);
   }

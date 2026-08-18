@@ -226,7 +226,10 @@ function summaryLine(summary) {
   const capital = summary.minimumCapital
     ? `${formatHundredths(summary.minimumCapital.endingCashCents)}/${formatHundredths(summary.minimumCapital.startingCapitalCents)}`
     : "n/a";
-  return `${summary.passed}/${summary.total} passed; ${summary.bankruptcies} bankruptcies; ${formatHundredths(summary.scoredPointsHundredths)}/16.00 points; PnL ${formatHundredths(summary.combinedPnlCents)}; minimum capital ${capital}`;
+  const bankruptcies = summary.bankruptcies ?? "n/a";
+  const pnl = summary.combinedPnlCents === null ? "n/a" : formatHundredths(summary.combinedPnlCents);
+  const runtimeErrors = summary.runtimeErrors > 0 ? `; ${summary.runtimeErrors} runtime errors` : "";
+  return `${summary.passed}/${summary.total} passed; ${bankruptcies} bankruptcies; ${formatHundredths(summary.scoredPointsHundredths)}/16.00 points; PnL ${pnl}; minimum capital ${capital}${runtimeErrors}`;
 }
 
 function recoveryInstruction(kind) {
@@ -265,7 +268,7 @@ export function renderReportText(state) {
         `- Worker summary: ${candidate.implementationSummary ?? "not supplied"}`,
         `- Status: ${candidate.status}`,
         `- Result: ${summaryLine(candidate.evaluation?.summary)}`,
-        `- Baseline delta: ${candidate.evaluation?.baselineDelta ? `${formatHundredths(candidate.evaluation.baselineDelta.scoredPointsHundredths)} points; PnL ${formatHundredths(candidate.evaluation.baselineDelta.combinedPnlCents)}` : "n/a"}`,
+        `- Baseline delta: ${candidate.evaluation?.baselineDelta ? `${formatHundredths(candidate.evaluation.baselineDelta.scoredPointsHundredths)} points; PnL ${candidate.evaluation.baselineDelta.combinedPnlCents === null ? "n/a" : formatHundredths(candidate.evaluation.baselineDelta.combinedPnlCents)}` : "n/a"}`,
         "",
       );
     }
@@ -706,31 +709,44 @@ async function scanEvaluations(generation) {
   }
 }
 
-function isLegacyPerformanceInvalid(evaluation) {
-  const performancePrefixes = ["Cases did not pass:", "Bankruptcy reported in cases:"];
+function isRefreshableInvalid(evaluation) {
   return evaluation?.schemaVersion === 1
     && evaluation.valid === false
-    && evaluation.eligible === false
-    && Array.isArray(evaluation.reasons)
-    && evaluation.reasons.length > 0
-    && evaluation.reasons.every((reason) => (
-      typeof reason === "string" && performancePrefixes.some((prefix) => reason.startsWith(prefix))
-    ));
+    && evaluation.eligible === false;
 }
 
 async function refreshLegacyEvaluations(paths, generation) {
   for (const candidate of generation.candidates) {
-    if (candidate.status !== "evaluated") continue;
     const evaluationPath = path.join(candidate.resultDirectory, "evaluation.json");
+    if (candidate.status !== "evaluated") {
+      if (generation.failure?.kind !== "integrity") continue;
+      try {
+        await fs.access(evaluationPath);
+      } catch (error) {
+        if (error.code === "ENOENT") continue;
+        throw error;
+      }
+    }
     const previous = await readJson(evaluationPath, `evaluation for ${candidate.id}`);
-    if (!isLegacyPerformanceInvalid(previous)) continue;
+    if (!isRefreshableInvalid(previous)) continue;
 
     const refreshed = await evaluateRun({
       runDirectory: candidate.resultDirectory,
       baselinePath: paths.baselinePath,
     });
-    if (!refreshed.valid || refreshed.eligible) {
+    if (!refreshed.valid) {
+      if (generation.failure?.kind === "integrity") {
+        throw new LoopInputError(`Evidence for ${candidate.id} remains invalid: ${refreshed.reasons.join("; ")}`);
+      }
+      continue;
+    }
+    if (refreshed.eligible) {
       throw new LoopInputError(`Legacy performance evaluation for ${candidate.id} could not be safely reclassified`);
+    }
+    const sourcePath = candidate.sourcePath ?? path.join(candidate.worktreePath, SOURCE);
+    const sourceSha256 = await sha256(sourcePath);
+    if (refreshed.candidateId !== candidate.id || refreshed.sourceSha256 !== sourceSha256) {
+      throw new LoopInputError(`Refreshed evaluation identity or source SHA-256 changed for ${candidate.id}`);
     }
     const backupPath = path.join(candidate.resultDirectory, "evaluation.legacy-invalid.json");
     try {
@@ -740,6 +756,8 @@ async function refreshLegacyEvaluations(paths, generation) {
       await writeJson(backupPath, previous);
     }
     await writeJson(evaluationPath, refreshed);
+    candidate.status = "evaluated";
+    candidate.sourceSha256 = sourceSha256;
     candidate.evaluation = refreshed;
     candidate.evaluationPath = evaluationPath;
   }
@@ -976,7 +994,10 @@ export async function resumeRun(options) {
   state.status = "active";
   state.stopReason = null;
   generation.status = "prepared";
-  generation.previousFailure = generation.failure;
+  generation.previousFailure = structuredClone(generation.failure);
+  if (generation.previousFailure.kind === "integrity") {
+    generation.previousFailure.message = generation.previousFailure.message.replace(/ after retry$/, "");
+  }
   delete generation.failure;
   await saveState(paths, state);
   if (generation.previousFailure.kind === "setup") {

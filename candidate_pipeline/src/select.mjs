@@ -54,17 +54,35 @@ function evaluationReason(evaluation) {
   }
 
   const summary = evaluation.summary;
-  const values = [
-    summary?.scoredPointsHundredths,
-    summary?.combinedPnlCents,
-    summary?.minimumCapital?.endingCashCents,
-    summary?.minimumCapital?.startingCapitalCents,
-  ];
+  const runtimeErrors = summary?.runtimeErrors ?? 0;
+  const capital = summary?.minimumCapital;
+  const capitalComplete = capital !== null
+    && Number.isSafeInteger(capital?.endingCashCents)
+    && Number.isSafeInteger(capital?.startingCapitalCents)
+    && capital.startingCapitalCents > 0;
+  const rankingComplete = Number.isSafeInteger(summary?.bankruptcies)
+    && Number.isSafeInteger(summary?.combinedPnlCents)
+    && capitalComplete;
+  const unavailableRankingValid = runtimeErrors > 0
+    && (summary?.bankruptcies === null || Number.isSafeInteger(summary?.bankruptcies))
+    && (summary?.combinedPnlCents === null || Number.isSafeInteger(summary?.combinedPnlCents))
+    && (capital === null || capitalComplete);
   if (
     typeof evaluation.sourcePath !== "string"
     || !/^[a-f0-9]{64}$/i.test(evaluation.sourceSha256 ?? "")
-    || !values.every(Number.isSafeInteger)
-    || summary.minimumCapital.startingCapitalCents <= 0
+    || !Number.isSafeInteger(summary?.passed)
+    || !Number.isSafeInteger(summary?.total)
+    || summary.total !== 20
+    || summary.passed < 0
+    || summary.passed > summary.total
+    || !Number.isSafeInteger(summary?.scoredPointsHundredths)
+    || !Number.isSafeInteger(runtimeErrors)
+    || runtimeErrors < 0
+    || runtimeErrors > summary.total - summary.passed
+    || (!rankingComplete && !unavailableRankingValid)
+    || (evaluation.eligible && (
+      !rankingComplete || summary.passed !== 20 || summary.bankruptcies !== 0
+    ))
     || (evaluation.modifiedLines != null
       && (!Number.isSafeInteger(evaluation.modifiedLines) || evaluation.modifiedLines < 0))
   ) {

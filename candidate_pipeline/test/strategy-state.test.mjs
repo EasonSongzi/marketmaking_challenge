@@ -104,3 +104,35 @@ test("cached evidence is rebound to the current champion", () => {
   assert.equal(rebound.eligible, true);
   assert.equal(rebound.cached, true);
 });
+
+test("runtime-failure cache preserves unavailable ranking data and remains comparable", () => {
+  const registry = { evaluations: {} };
+  const runtime = evaluation("runtime", "c".repeat(64), 70);
+  runtime.summary = {
+    passed: 5,
+    total: 20,
+    bankruptcies: null,
+    scoredPointsHundredths: 70,
+    combinedPnlCents: null,
+    minimumCapital: null,
+    runtimeErrors: 15,
+  };
+  runtime.reasons = [
+    "Cases did not pass: 5",
+    "Candidate runtime error in cases 5: ValueError: invalid quote",
+  ];
+  cacheEvaluation(registry, runtime);
+
+  const rebound = cachedEvaluation(
+    registry,
+    runtime.sourceSha256,
+    "runtime-rebound",
+    "/tmp/runtime.py",
+    { summary: summary(900) },
+  );
+  assert.equal(rebound.eligible, false);
+  assert.equal(rebound.summary.combinedPnlCents, null);
+  assert.equal(rebound.baselineDelta.combinedPnlCents, null);
+  assert.match(rebound.reasons.join("\n"), /runtime error/);
+  assert.equal([runtime, evaluation("safe", "d".repeat(64), 60)].sort(compareStrategy)[0].candidateId, "safe");
+});

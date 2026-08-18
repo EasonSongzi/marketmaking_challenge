@@ -133,10 +133,12 @@ candidate_pipeline/loop.sh archive --run-id <run-id> \
 candidate_pipeline/loop.sh resume --run-id <run-id>
 ```
 
-On resume, legacy evaluations marked invalid solely because cases failed or
-reported bankruptcy are recalculated locally from the saved raw report. The
-old evaluation is retained as `evaluation.legacy-invalid.json`; no HackerRank
-case is rerun.
+On resume, legacy invalid evaluations are recalculated locally from the saved
+raw report and current source hash. A replacement is accepted only when the
+same evidence now proves a valid, ineligible candidate result; genuinely
+truncated, malformed, identity-mismatched, or hash-invalid evidence remains a
+hard stop. The old evaluation is retained as
+`evaluation.legacy-invalid.json`; no HackerRank case is rerun.
 
 Pass `--summaries <json-path>` to a successful `archive` call to store actual
 worker implementation summaries keyed by candidate ID for Explore or by the
@@ -169,6 +171,12 @@ Candidate exit statuses are:
   bankruptcy, or not strictly exceeding the baseline;
 - `3`: evidence is malformed or incomplete, or the source SHA changed;
 - `1`: runner or pipeline failure.
+
+A HackerRank case that explicitly says the testcase failed with an unhandled/runtime error and
+was scored zero is a complete failed outcome even when HackerRank omits its normal `Result:` line.
+The evaluator records the runtime error, counts the case as failed with score zero, and leaves
+unavailable bankruptcy, PnL, and minimum-capital aggregates as `null`. It returns `2`; only an
+ambiguous, missing, hash-invalid, or identity-invalid outcome returns `3`.
 
 Each unique source SHA receives at most one live HackerRank run. Cached evidence
 is rebound to the current champion before selection.
@@ -218,6 +226,13 @@ If the autonomous lifecycle is unsuitable, run a candidate directly and use
 does not commit.
 
 ## Local checks
+
+The scope validator and tuning materializer compile candidate source but do not execute an
+arbitrary `MarketMaker`. A universal dynamic quote preflight would need realistic warm-up state,
+underlyings, options, positions, and strategy-specific attributes; synthetic objects can miss live
+paths or reject a valid strategy, while importing arbitrary candidate code is itself executable.
+Use focused local invariant fixtures for the strategy being tuned. The inventory-skew regression
+fixture covers boundary fair values, long/short/flat inventory, and the 0/1/2/3/4/6-cent grid.
 
 ```bash
 cd candidate_pipeline

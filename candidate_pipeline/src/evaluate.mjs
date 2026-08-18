@@ -121,7 +121,20 @@ function emptySummary() {
     scoredPointsHundredths: 0,
     combinedPnlCents: 0,
     minimumCapital: null,
+    runtimeErrors: 0,
   };
+}
+
+function runtimeReasons(runtimeCases) {
+  const casesByMessage = new Map();
+  for (const result of runtimeCases) {
+    const numbers = casesByMessage.get(result.runtimeError) ?? [];
+    numbers.push(result.number);
+    casesByMessage.set(result.runtimeError, numbers);
+  }
+  return [...casesByMessage].map(([message, numbers]) => (
+    `Candidate runtime error in cases ${numbers.join(", ")}: ${message}`
+  ));
 }
 
 export function evaluateCandidate(rawReport, baseline, currentSourceSha256, lineCount = null) {
@@ -182,10 +195,15 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
   if (failed.length > 0) {
     performanceReasons.push(`Cases did not pass: ${failed.map(({ number }) => number).join(", ")}`);
   }
-  const financialCases = parsedCases.filter(({ number }) => number >= 2 && number <= 20);
-  if (financialCases.length !== 19) {
-    evidenceReasons.push(`Expected bankruptcy data for 19 cases, found ${financialCases.length}`);
+  const runtimeCases = parsedCases.filter(({ runtimeError }) => typeof runtimeError === "string");
+  performanceReasons.push(...runtimeReasons(runtimeCases));
+  const financialOutcomes = parsedCases.filter(({ number }) => number >= 2 && number <= 20);
+  if (financialOutcomes.length !== 19) {
+    evidenceReasons.push(`Expected complete outcomes for 19 financial cases, found ${financialOutcomes.length}`);
   }
+  const financialCases = financialOutcomes.filter(({ startingCapitalCents }) => (
+    Number.isSafeInteger(startingCapitalCents)
+  ));
   const bankruptcies = financialCases.filter(({ bankrupt }) => bankrupt);
   if (bankruptcies.length > 0) {
     performanceReasons.push(`Bankruptcy reported in cases: ${bankruptcies.map(({ number }) => number).join(", ")}`);
@@ -201,16 +219,21 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
     (minimum, result) => minimum === null || compareCapital(result, minimum) < 0 ? result : minimum,
     null,
   );
+  const financialDataMissing = runtimeCases.some(({ number }) => number >= 2 && number <= 20);
+  const scoredDataMissing = runtimeCases.some(({ number }) => number >= 5 && number <= 20);
   const summary = {
     passed: parsedCases.filter(({ passed }) => passed).length,
     total: rawCases.length,
-    bankruptcies: bankruptcies.length,
+    bankruptcies: financialDataMissing ? null : bankruptcies.length,
     scoredPointsHundredths: scoredCases.reduce((total, result) => total + result.scoreHundredths, 0),
-    combinedPnlCents: scoredCases.reduce((total, result) => total + result.pnlCents, 0),
-    minimumCapital: minimumCapital === null ? null : {
+    combinedPnlCents: scoredDataMissing
+      ? null
+      : scoredCases.reduce((total, result) => total + result.pnlCents, 0),
+    minimumCapital: financialDataMissing || minimumCapital === null ? null : {
       endingCashCents: minimumCapital.endingCashCents,
       startingCapitalCents: minimumCapital.startingCapitalCents,
     },
+    runtimeErrors: runtimeCases.length,
   };
 
   const invalidBaseline = baselineReason(baseline);
@@ -243,7 +266,9 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
     baselineDelta: invalidBaseline === null ? {
       scoredPointsHundredths:
         summary.scoredPointsHundredths - baseline.summary.scoredPointsHundredths,
-      combinedPnlCents: summary.combinedPnlCents - baseline.summary.combinedPnlCents,
+      combinedPnlCents: summary.combinedPnlCents === null
+        ? null
+        : summary.combinedPnlCents - baseline.summary.combinedPnlCents,
     } : null,
     reasons,
   };

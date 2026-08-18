@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { GenerationInputError, runGeneration } from "../src/run-generation.mjs";
+import { GenerationInputError, failureMessage, runGeneration } from "../src/run-generation.mjs";
 
 function summary(points = 900) {
   return {
@@ -81,6 +81,21 @@ test("runs candidates serially and preserves successful exit codes", async (t) =
   ]);
 });
 
+test("continues after an explicit candidate failure exits 2", async (t) => {
+  const input = await fixture();
+  t.after(() => removeFixture(input));
+  const order = [];
+  const result = await runGeneration(input, {
+    async executeCandidate(_command, _arguments, candidate) {
+      order.push(candidate.id);
+      return candidate.id === "candidate-a" ? 2 : 0;
+    },
+  });
+
+  assert.equal(result.exitCode, 0);
+  assert.deepEqual(order, ["candidate-a", "candidate-b", "candidate-c"]);
+});
+
 test("retries the same candidate once and resets after success", async (t) => {
   const input = await fixture();
   t.after(() => removeFixture(input));
@@ -131,6 +146,11 @@ test("integrity failure does not retry and skipped candidates stay skipped", asy
   assert.deepEqual(result.output.candidates.map(({ status }) => status), [
     "skipped-evaluated", "skipped-invalid", "hard-failure",
   ]);
+});
+
+test("integrity failure text does not claim an unperformed retry", () => {
+  assert.equal(failureMessage("candidate-a", { integrity: true, final: true }), "candidate-a integrity failure");
+  assert.equal(failureMessage("candidate-a", { integrity: false, final: true }), "candidate-a runner failure after retry");
 });
 
 test("reuses a cached source SHA without executing the runner", async (t) => {

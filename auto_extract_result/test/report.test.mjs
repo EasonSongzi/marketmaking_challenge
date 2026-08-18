@@ -19,6 +19,7 @@ test("extractCaseNumbers returns unique sorted test cases", () => {
 test("casePassed only accepts an explicit PASS result", () => {
   assert.equal(casePassed("Result: PASS (score=1.00)"), true);
   assert.equal(casePassed("Result: FAIL"), false);
+  assert.equal(casePassed("Testcase 4 failed with an unhandled error and is scored 0."), false);
   assert.equal(casePassed("All available test cases passed"), false);
 });
 
