@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T22:47:46.574Z
 - Starting baseline: g6-loss-side-five (12.60/16.00)
-- Current baseline: g6-loss-side-five (12.60/16.00)
+- Current baseline: g3-tail-loss-six (12.80/16.00)
 - Stop condition: not reached
-- Score trend: 12.60
+- Score trend: 12.60 → 12.80
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -126,6 +126,44 @@ Parent: challenger `market-loop-20260818-5-g02-g2-loss-side-six r00` (`0781de889
 - Baseline delta: -0.30 points; PnL -5.04
 
 Selection: g3-tail-loss-six.
-Promotion: none.
+Promotion: g3-tail-loss-six (75c72b7b4e6ac963a903ae050d3fab6128393972).
 Finding: All three second-cent gates passed 20/20 without bankruptcy or runtime errors. Tail-only six cents achieved the documented 12.80 milestone and passed the promotion gate: case 9 remained first by 0.81, case 13 returned to second by 0.26, case 15 remained first by 0.77, case 16 remained first, and case 17 remained second by 0.95. It scored 12.80 with 105.78 PnL and 7.32/10.00 minimum capital, improving the champion by 0.20 points. Extreme-loss-only six cents kept cases 15 and 17 but left case 13 third, scoring 12.60 with 105.68 PnL. Direct-FED-only six cents restored case 13 but lost cases 15 and 17, scoring 12.30 with 117.24 PnL. The complementary central/tail evidence is decisive: the sixth cent must remain on high-loss tail quotes, while central quotes need the fifth-cent behavior.
 Next-generation rationale: Promote tail-only six cents. The 12.80 rank envelope identified by the research notes is now achieved, so use the remaining generations for post-milestone structural estimation ideas rather than adjacent quote-width constants: hold the complete execution stack fixed and explore joint or state-aware rate-transition estimation in warm_up.
+
+## Generation 4: explore warm_up
+
+The promoted 12.80 champion reaches the full historical rank envelope, and the research notes explicitly place true joint rate likelihood/MAP after the low-penalty recross. The current helper still grids only reversion and derives up/down probabilities from moment equations. Hold the complete tail-six execution stack fixed and test three genuinely joint estimators that optimize or regularize all three transition parameters together.
+
+Parent: champion `g3-tail-loss-six` (`8d61104514e06c4d5e213399e5f60033b19024f64370cd7a55a912f7019ee66a`).
+
+### g4-joint-map
+
+- Hypothesis: A bounded coarse-to-fine coordinate MAP fit over up probability, down probability, and reversion can improve penny decisions beyond the profiled moment fit while the 10/1 anchors preserve the newly won rank boundaries.
+- Implementation plan: Replace the one-dimensional reversion grid with deterministic coordinate refinement of all three feasible rate parameters. Initialize from the existing smoothed/moment values, score the full clipped transition likelihood with the current 10/1 quadratic anchors, use coarse through fine step sizes, and project candidates to positive probabilities with sum at most one and reversion in [0,1]. Preserve company estimation and every execution method.
+- Worker summary: Replaced the profiled reversion grid with deterministic coarse-to-fine coordinate refinement over feasible up/down/reversion vectors under the full 10/1 MAP objective. Scope validation, compilation, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.40/16.00 points; PnL 89.11; minimum capital 26.79/40.00
+- Baseline delta: -0.40 points; PnL -16.67
+
+### g4-joint-neighborhood
+
+- Hypothesis: Joint neighborhood moves can escape coordinate-wise plateaus created by clipping tilted probabilities, finding a different stable MAP solution without weakening the 10/1 protection.
+- Implementation plan: Use a bounded coarse-to-fine neighborhood search that evaluates feasible simultaneous up/down/reversion moves around the current best vector, retains the best 10/1 penalized full-likelihood vector, and shrinks the neighborhood across coarse, medium, and fine resolutions. Keep the search deterministic and preserve all non-warm_up behavior.
+- Worker summary: Replaced the profiled fit with bounded joint 27-neighbor improvement over all three parameters at three resolutions, retaining the 10/1 full-likelihood objective. Scope validation, compilation, feasibility, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.40/16.00 points; PnL 87.88; minimum capital 26.79/40.00
+- Baseline delta: -0.40 points; PnL -17.90
+
+### g4-joint-ridge
+
+- Hypothesis: A jointly regularized transition regression may be more stable than clipped likelihood on short histories, using both up and down equations together while retaining the moment anchors that protect cases 9 and 13.
+- Implementation plan: Replace the profiled likelihood helper with a small deterministic alternating ridge fit of the two indicator equations: jointly update base up/down probabilities and their shared signed target-gap slope, shrink toward smoothed probabilities and moment reversion, then project to the MarketParameters feasibility region. Use fixed iterations with no nested high-dimensional grid and preserve all execution behavior.
+- Worker summary: Replaced the likelihood profile with six alternating ridge updates for the two transition-indicator equations and shared reversion slope, followed by feasibility projection. Scope validation, compilation, and diff checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 107.12; minimum capital 7.07/10.00
+- Baseline delta: -0.50 points; PnL 1.34
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three joint estimators passed 20/20 without bankruptcy or runtime errors, but none preserved the 12.80 rank envelope. Coordinate MAP scored 12.40 with 89.11 PnL and neighborhood MAP scored 12.40 with 87.88; both retained cases 9, 13, 15, and 16 at the champion ranks but moved case 17 from second to fourth with -13.21 PnL. Joint ridge scored 12.30 with 107.12 PnL, losing case 15 from first to second and case 17 from second to third. The current profiled 10/1 estimator is therefore materially better on the remaining discrete boundaries than these fully joint fits, even though ridge slightly raised aggregate PnL. No joint candidate has focused tuning upside sufficient to justify displacing or extending it in the remaining two generations.
+Next-generation rationale: Keep the 12.80 champion unchanged. With adjacent estimator structure now tested and rejected, use generation 5 on the research notes' highest-priority unused feature: counterparty-aware adverse-selection control for FOK orders. Make only small online, ID-agnostic adjustments derived from prior orders from the same counterparty, preserving the fair-value inventory unwind and all quote behavior.

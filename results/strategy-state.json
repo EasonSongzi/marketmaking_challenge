@@ -2810,6 +2810,63 @@
       "reasons": [
         "Candidate did not strictly exceed the baseline"
       ]
+    },
+    "048a011a8ef095a70546b0d8fb77e974b4de94c4ff03cb4c5decbede4963452b": {
+      "valid": true,
+      "modifiedLines": 73,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1240,
+        "combinedPnlCents": 8911,
+        "minimumCapital": {
+          "endingCashCents": 2679,
+          "startingCapitalCents": 4000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "1bfe3a95058ebc8f5616f333c4433af1d04c1f07be8f9f3400d5a3db4ae8d169": {
+      "valid": true,
+      "modifiedLines": 93,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1240,
+        "combinedPnlCents": 8788,
+        "minimumCapital": {
+          "endingCashCents": 2679,
+          "startingCapitalCents": 4000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "5a7281519b09cd33ca948d004df1715efe4139474c72bc567aa0824bed108f71": {
+      "valid": true,
+      "modifiedLines": 89,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1230,
+        "combinedPnlCents": 10712,
+        "minimumCapital": {
+          "endingCashCents": 707,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
     }
   }
 }
