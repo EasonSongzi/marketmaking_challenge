@@ -119,6 +119,11 @@ candidate_pipeline/loop.sh archive --run-id <run-id> \
 candidate_pipeline/loop.sh resume --run-id <run-id>
 ```
 
+On resume, legacy evaluations marked invalid solely because cases failed or
+reported bankruptcy are recalculated locally from the saved raw report. The
+old evaluation is retained as `evaluation.legacy-invalid.json`; no HackerRank
+case is rerun.
+
 Pass `--summaries <json-path>` to a successful `archive` call to store actual
 worker implementation summaries keyed by candidate ID. Pass `--analysis
 <json-path>` with a required `finding` and optional `nextGenerationRationale`
@@ -145,8 +150,9 @@ writes `evaluation.json` beside the worktree's raw Markdown and JSON.
 Candidate exit statuses are:
 
 - `0`: valid and strictly exceeds the baseline;
-- `2`: valid but does not exceed the baseline;
-- `3`: incomplete input, parse failure, or changed source SHA;
+- `2`: evidence is valid but performance is ineligible, including failed tests,
+  bankruptcy, or not strictly exceeding the baseline;
+- `3`: evidence is malformed or incomplete, or the source SHA changed;
 - `1`: runner or pipeline failure.
 
 Each candidate receives one live HackerRank run. Historical unpromoted results

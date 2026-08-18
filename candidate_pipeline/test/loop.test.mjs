@@ -18,6 +18,7 @@ import {
   startRun,
   statusRun,
 } from "../src/loop.mjs";
+import { rawCase, rawReport } from "./fixtures/run-data.mjs";
 
 const execFile = promisify(execFileCallback);
 const worktreeRoot = "/tmp/akuna-market-maker";
@@ -255,6 +256,49 @@ test("failure preserves worktrees and the same generation can resume", async () 
     const report = await fs.readFile(path.join(repo, "results", "experiments", `${id}.md`), "utf8");
     assert.match(report, /Previous failure \(authentication\): authentication expired/);
     assert.match(report, /Recovery instruction: Repair the HackerRank browser profile/);
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("resume locally reclassifies legacy failed and bankrupt evidence without another run", async () => {
+  const repo = await createRepo();
+  const id = runId("legacy-performance");
+  try {
+    await startRun({ repo, runId: id });
+    const prepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo) });
+    const candidate = prepared.generation.candidates[0];
+    const sourcePath = path.join(candidate.worktreePath, "Market_making_binary_option.py");
+    const sourceSha256 = createHash("sha256").update(await fs.readFile(sourcePath)).digest("hex");
+    const cases = Array.from({ length: 20 }, (_, index) => (
+      index === 6
+        ? rawCase(index + 1, { passed: false, bankrupt: true, endingCashCents: -255 })
+        : rawCase(index + 1)
+    ));
+    await fs.mkdir(candidate.resultDirectory, { recursive: true });
+    await fs.writeFile(
+      path.join(candidate.resultDirectory, "hackerrank-run-fixture.json"),
+      JSON.stringify(rawReport({ label: candidate.id, sourcePath, sourceSha256, cases })),
+    );
+    await fs.writeFile(
+      path.join(candidate.resultDirectory, "evaluation.json"),
+      JSON.stringify({
+        ...evaluation(candidate.id, sourcePath, sourceSha256, 1130),
+        valid: false,
+        eligible: false,
+        reasons: ["Cases did not pass: 7", "Bankruptcy reported in cases: 7"],
+      }),
+    );
+
+    await archiveGeneration({ repo, runId: id, failure: "legacy integrity failure", failureKind: "integrity" });
+    const resumed = await resumeRun({ repo, runId: id });
+    const refreshed = JSON.parse(await fs.readFile(path.join(candidate.resultDirectory, "evaluation.json")));
+    assert.equal(refreshed.valid, true);
+    assert.equal(refreshed.eligible, false);
+    assert.match(refreshed.reasons.join("\n"), /Cases did not pass: 7/);
+    assert.match(refreshed.reasons.join("\n"), /Bankruptcy reported in cases: 7/);
+    await fs.access(path.join(candidate.resultDirectory, "evaluation.legacy-invalid.json"));
+    assert.equal(resumed.generation.candidates[0].evaluation.valid, true);
   } finally {
     await cleanup(repo, id);
   }

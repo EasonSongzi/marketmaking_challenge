@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
 import { compareCapital } from "./case-result.mjs";
+import { evaluateRun } from "./evaluate.mjs";
 import { selectFromFiles } from "./select.mjs";
 
 const execFile = promisify(execFileCallback);
@@ -544,6 +545,45 @@ async function scanEvaluations(generation) {
   }
 }
 
+function isLegacyPerformanceInvalid(evaluation) {
+  const performancePrefixes = ["Cases did not pass:", "Bankruptcy reported in cases:"];
+  return evaluation?.schemaVersion === 1
+    && evaluation.valid === false
+    && evaluation.eligible === false
+    && Array.isArray(evaluation.reasons)
+    && evaluation.reasons.length > 0
+    && evaluation.reasons.every((reason) => (
+      typeof reason === "string" && performancePrefixes.some((prefix) => reason.startsWith(prefix))
+    ));
+}
+
+async function refreshLegacyEvaluations(paths, generation) {
+  for (const candidate of generation.candidates) {
+    if (candidate.status !== "evaluated") continue;
+    const evaluationPath = path.join(candidate.resultDirectory, "evaluation.json");
+    const previous = await readJson(evaluationPath, `evaluation for ${candidate.id}`);
+    if (!isLegacyPerformanceInvalid(previous)) continue;
+
+    const refreshed = await evaluateRun({
+      runDirectory: candidate.resultDirectory,
+      baselinePath: paths.baselinePath,
+    });
+    if (!refreshed.valid || refreshed.eligible) {
+      throw new LoopInputError(`Legacy performance evaluation for ${candidate.id} could not be safely reclassified`);
+    }
+    const backupPath = path.join(candidate.resultDirectory, "evaluation.legacy-invalid.json");
+    try {
+      await fs.access(backupPath);
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+      await writeJson(backupPath, previous);
+    }
+    await writeJson(evaluationPath, refreshed);
+    candidate.evaluation = refreshed;
+    candidate.evaluationPath = evaluationPath;
+  }
+}
+
 async function cleanupWorktrees(paths, state, generation) {
   const registered = await registeredWorktrees(paths.repo);
   for (const candidate of generation.candidates) {
@@ -658,6 +698,7 @@ export async function resumeRun(options) {
   if (state.status !== "failed" || generation?.status !== "failed") {
     throw new LoopInputError("Only a failed generation can be resumed");
   }
+  await refreshLegacyEvaluations(paths, generation);
   state.status = "active";
   state.stopReason = null;
   generation.status = "prepared";

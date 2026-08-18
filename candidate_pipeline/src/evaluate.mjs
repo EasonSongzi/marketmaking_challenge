@@ -125,7 +125,8 @@ function emptySummary() {
 }
 
 export function evaluateCandidate(rawReport, baseline, currentSourceSha256, lineCount = null) {
-  const reasons = [];
+  const evidenceReasons = [];
+  const performanceReasons = [];
   const candidateId = typeof rawReport?.label === "string" && rawReport.label.length > 0
     ? rawReport.label
     : null;
@@ -138,34 +139,34 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
     : null;
 
   if (rawReport?.schemaVersion !== 1) {
-    reasons.push("Raw report schemaVersion is not supported");
+    evidenceReasons.push("Raw report schemaVersion is not supported");
   }
   if (candidateId === null) {
-    reasons.push("Raw report label is missing");
+    evidenceReasons.push("Raw report label is missing");
   }
   if (sourcePath === null || sourceSha256 === null) {
-    reasons.push("Raw report source path or SHA-256 is missing");
+    evidenceReasons.push("Raw report source path or SHA-256 is missing");
   } else if (currentSourceSha256 !== sourceSha256) {
-    reasons.push("Source SHA-256 no longer matches the tested source");
+    evidenceReasons.push("Source SHA-256 no longer matches the tested source");
   }
 
   const rawCases = Array.isArray(rawReport?.cases) ? rawReport.cases : [];
   if (!Array.isArray(rawReport?.cases)) {
-    reasons.push("Raw report cases must be an array");
+    evidenceReasons.push("Raw report cases must be an array");
   }
   if (rawCases.length !== 20) {
-    reasons.push(`Expected exactly 20 cases, found ${rawCases.length}`);
+    evidenceReasons.push(`Expected exactly 20 cases, found ${rawCases.length}`);
   }
 
   const numbers = rawCases.map((rawCase) => rawCase?.number);
   const uniqueNumbers = new Set(numbers);
   if (uniqueNumbers.size !== numbers.length) {
-    reasons.push("Raw report contains duplicate case numbers");
+    evidenceReasons.push("Raw report contains duplicate case numbers");
   }
   const missingNumbers = Array.from({ length: 20 }, (_, index) => index + 1)
     .filter((number) => !uniqueNumbers.has(number));
   if (missingNumbers.length > 0) {
-    reasons.push(`Raw report is missing case numbers: ${missingNumbers.join(", ")}`);
+    evidenceReasons.push(`Raw report is missing case numbers: ${missingNumbers.join(", ")}`);
   }
 
   const parsedCases = [];
@@ -173,27 +174,27 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
     try {
       parsedCases.push(parseCaseResult(rawCase));
     } catch (error) {
-      reasons.push(`Case ${rawCase?.number ?? "unknown"} cannot be parsed: ${error.message}`);
+      evidenceReasons.push(`Case ${rawCase?.number ?? "unknown"} cannot be parsed: ${error.message}`);
     }
   }
 
   const failed = parsedCases.filter((result) => !result.passed);
   if (failed.length > 0) {
-    reasons.push(`Cases did not pass: ${failed.map(({ number }) => number).join(", ")}`);
+    performanceReasons.push(`Cases did not pass: ${failed.map(({ number }) => number).join(", ")}`);
   }
   const financialCases = parsedCases.filter(({ number }) => number >= 2 && number <= 20);
   if (financialCases.length !== 19) {
-    reasons.push(`Expected bankruptcy data for 19 cases, found ${financialCases.length}`);
+    evidenceReasons.push(`Expected bankruptcy data for 19 cases, found ${financialCases.length}`);
   }
   const bankruptcies = financialCases.filter(({ bankrupt }) => bankrupt);
   if (bankruptcies.length > 0) {
-    reasons.push(`Bankruptcy reported in cases: ${bankruptcies.map(({ number }) => number).join(", ")}`);
+    performanceReasons.push(`Bankruptcy reported in cases: ${bankruptcies.map(({ number }) => number).join(", ")}`);
   }
   const scoredCases = parsedCases.filter(({ number, scoreHundredths }) => (
     number >= 5 && number <= 20 && Number.isSafeInteger(scoreHundredths)
   ));
   if (scoredCases.length !== 16) {
-    reasons.push(`Expected exactly 16 SCORED results, found ${scoredCases.length}`);
+    evidenceReasons.push(`Expected exactly 16 SCORED results, found ${scoredCases.length}`);
   }
 
   const minimumCapital = financialCases.reduce(
@@ -214,20 +215,21 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
 
   const invalidBaseline = baselineReason(baseline);
   if (invalidBaseline !== null) {
-    reasons.push(invalidBaseline);
+    evidenceReasons.push(invalidBaseline);
   }
-  const valid = reasons.length === 0;
+  const valid = evidenceReasons.length === 0;
   let eligible = false;
-  if (valid) {
+  if (valid && performanceReasons.length === 0) {
     const pointComparison = summary.scoredPointsHundredths - baseline.summary.scoredPointsHundredths;
     eligible = pointComparison > 0 || (
       pointComparison === 0
       && compareCapital(summary.minimumCapital, baseline.summary.minimumCapital) > 0
     );
     if (!eligible) {
-      reasons.push("Candidate did not strictly exceed the baseline");
+      performanceReasons.push("Candidate did not strictly exceed the baseline");
     }
   }
+  const reasons = [...evidenceReasons, ...performanceReasons];
 
   return {
     schemaVersion: 1,
