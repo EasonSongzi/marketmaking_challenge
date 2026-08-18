@@ -1,17 +1,22 @@
 {
   "schemaVersion": 2,
-  "strategy": "rfq-only-v1",
-  "sourceSha256": "71502da93165c3bfaf62ffbbaf7e8eb021c1f3f349e5a5c4efaf7bec4693b064",
-  "experimentId": "rfq-only-v1",
-  "resultArtifact": "results/baselines/rfq-only-v1.md",
+  "strategy": "g1-wide-two",
+  "resultArtifact": "results/baselines/market-loop-20260818-g01-g1-wide-two.md",
+  "sourceSha256": "1f253f98153437ce3d2cf19e69555cf1bf131ffe6ecb9080fbb113e8dde43c42",
+  "experimentId": "market-loop-20260818:g01:g1-wide-two",
+  "experiment": {
+    "runId": "market-loop-20260818",
+    "generation": 1,
+    "candidateId": "g1-wide-two"
+  },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
-    "scoredPointsHundredths": 900,
-    "combinedPnlCents": -273,
+    "scoredPointsHundredths": 1140,
+    "combinedPnlCents": 3035,
     "minimumCapital": {
-      "endingCashCents": 769,
+      "endingCashCents": 550,
       "startingCapitalCents": 1000
     }
   }

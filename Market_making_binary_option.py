@@ -376,13 +376,13 @@ class MarketMaker:
 
     def quote(self, option: BinaryOption, counterparty_id: int) -> Quote:  # type: ignore[empty-body]
         fair_value_cents: int = round(self.price_option(option) * 100)
-        bid_price: float = max(fair_value_cents - 1, 0) / 100
-        offer_price: float = min(fair_value_cents + 1, 100) / 100
+        bid_price: float = max(fair_value_cents - 2, 0) / 100
+        offer_price: float = min(fair_value_cents + 2, 100) / 100
         return Quote(
             bid_price=bid_price,
-            bid_quantity=1,
+            bid_quantity=2,
             offer_price=offer_price,
-            offer_quantity=1,
+            offer_quantity=2,
         )
 
     def respond_to_fok(self, option: BinaryOption, fok_order: FokOrder) -> bool:  # type: ignore[empty-body]
