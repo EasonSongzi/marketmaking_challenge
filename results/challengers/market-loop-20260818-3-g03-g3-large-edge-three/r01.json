@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "q2-edge032-fine",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-3-g03-g3-large-edge-three/r01.py",
+  "sourceSha256": "76112022ba4694af5319ff9105022bb421e36442bad80c9b7ad9c9f31bfed3b3",
+  "modifiedLines": null,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1230,
+    "combinedPnlCents": 7899,
+    "minimumCapital": {
+      "endingCashCents": 598,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 177
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

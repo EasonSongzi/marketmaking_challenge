@@ -147,3 +147,85 @@ Promotion: none.
 Finding: All three confidence gates passed 20/20 without bankruptcy or runtime errors and preserved the champion's 12.30 points and 5.98/10.00 minimum capital, so none qualified for promotion. A one-cent pure-rate edge exactly reproduced the champion. Requiring three cents beyond three days added 0.47 combined PnL, while requiring three cents on quantities above one led the batch with a 1.43 PnL gain.
 Next-generation rationale: Admit the quantity-tier FOK gate as a challenger and tune its large-order edge plus activation threshold. It preserved every promotion-gate metric while improving economics, and both literals define bounded axes that can test whether stricter filtering on only genuinely large orders lifts minimum capital or score.
 Challenger update: admitted market-loop-20260818-3-g03-g3-large-edge-three.
+
+## Generation 4: tune respond_to_fok
+
+The quantity-tier FOK challenger tied the smoothed champion's 12.30 points and 5.98 minimum capital while adding 1.43 combined PnL. Jointly tune only the stricter large-order edge and the quantity threshold that activates it, preserving the full smoothed warm-up revision, two-cent small-order edge, and half-dollar loss cap.
+
+### q0-edge022-coarse
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":0,"largeOrderEdge":0.022}
+- Worker summary: Designed eight immutable joint quantity-threshold and large-order-edge vectors spanning coarse, medium, and fine granularities. The AST materializer changed only the two bound literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy; quantity above two at a 3.2-cent edge was the strongest tied-score result.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 77.70; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 0.48
+
+### q2-edge050-coarse
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":2,"largeOrderEdge":0.05}
+- Worker summary: Designed eight immutable joint quantity-threshold and large-order-edge vectors spanning coarse, medium, and fine granularities. The AST materializer changed only the two bound literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy; quantity above two at a 3.2-cent edge was the strongest tied-score result.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 57.89; minimum capital 5.98/10.00
+- Baseline delta: -0.60 points; PnL -19.33
+
+### q0-edge030-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":0,"largeOrderEdge":0.03}
+- Worker summary: Designed eight immutable joint quantity-threshold and large-order-edge vectors spanning coarse, medium, and fine granularities. The AST materializer changed only the two bound literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy; quantity above two at a 3.2-cent edge was the strongest tied-score result.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 78.68; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 1.46
+
+### q2-edge030-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":2,"largeOrderEdge":0.03}
+- Worker summary: Designed eight immutable joint quantity-threshold and large-order-edge vectors spanning coarse, medium, and fine granularities. The AST materializer changed only the two bound literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy; quantity above two at a 3.2-cent edge was the strongest tied-score result.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 78.61; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 1.39
+
+### q1-edge022-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":1,"largeOrderEdge":0.022}
+- Worker summary: Designed eight immutable joint quantity-threshold and large-order-edge vectors spanning coarse, medium, and fine granularities. The AST materializer changed only the two bound literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy; quantity above two at a 3.2-cent edge was the strongest tied-score result.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 77.70; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 0.48
+
+### q1-edge050-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":1,"largeOrderEdge":0.05}
+- Worker summary: Designed eight immutable joint quantity-threshold and large-order-edge vectors spanning coarse, medium, and fine granularities. The AST materializer changed only the two bound literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy; quantity above two at a 3.2-cent edge was the strongest tied-score result.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 57.93; minimum capital 5.98/10.00
+- Baseline delta: -0.60 points; PnL -19.29
+
+### q0-edge028-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":0,"largeOrderEdge":0.028}
+- Worker summary: Designed eight immutable joint quantity-threshold and large-order-edge vectors spanning coarse, medium, and fine granularities. The AST materializer changed only the two bound literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy; quantity above two at a 3.2-cent edge was the strongest tied-score result.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 78.63; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 1.41
+
+### q2-edge032-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":2,"largeOrderEdge":0.032}
+- Worker summary: Designed eight immutable joint quantity-threshold and large-order-edge vectors spanning coarse, medium, and fine granularities. The AST materializer changed only the two bound literals, compiled and scope-validated every variant, and all eight completed 20/20 without bankruptcy; quantity above two at a 3.2-cent edge was the strongest tied-score result.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 78.99; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 1.77
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All eight variants passed 20/20 without bankruptcy or runtime errors. Six variants retained 12.30 points and 5.98/10.00 minimum capital. The best was a 3.2-cent strict edge only above quantity two, producing 78.99 combined PnL: 0.34 above the challenger parent and 1.77 above the champion. Applying three cents to all quantities reached 78.68, while either five-cent variant fell to 11.70 and roughly 57.9 PnL.
+Next-generation rationale: Update the quantity-tier challenger to the quantity-above-two, 3.2-cent revision. The sharp loss at five cents and improvement at 3.2 cents leave explicit fine-grained upside between 3.2 and five cents and around activation thresholds two to three, suitable for the challenger's second and final tuning batch.
+Challenger update: updated market-loop-20260818-3-g03-g3-large-edge-three to q2-edge032-fine.
