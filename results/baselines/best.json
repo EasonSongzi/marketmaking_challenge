@@ -1,22 +1,22 @@
 {
   "schemaVersion": 2,
-  "strategy": "g4-full-unwind",
+  "strategy": "g5-uniform-four",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "ae87114fbbc3b8680533db3b609bd16fcb6b9410dbbc41b077b7594919747548",
-  "experimentId": "market-loop-20260818-4:g04:g4-full-unwind",
+  "sourceSha256": "95adc0b6da346bd74db7e6bd8ae01c7843076807e23d18ef5ed938526f3cb6d5",
+  "experimentId": "market-loop-20260818-4:g05:g5-uniform-four",
   "experiment": {
     "runId": "market-loop-20260818-4",
-    "generation": 4,
-    "candidateId": "g4-full-unwind"
+    "generation": 5,
+    "candidateId": "g5-uniform-four"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1230,
-    "combinedPnlCents": 9880,
+    "combinedPnlCents": 12237,
     "minimumCapital": {
-      "endingCashCents": 601,
+      "endingCashCents": 645,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0

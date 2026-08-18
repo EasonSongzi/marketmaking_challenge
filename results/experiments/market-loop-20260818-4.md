@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T21:49:07.026Z
 - Starting baseline: g2-rate-smoothing (12.30/16.00)
-- Current baseline: coarse-400-64 (12.30/16.00)
+- Current baseline: g4-full-unwind (12.30/16.00)
 - Stop condition: not reached
-- Score trend: 12.30 → 12.30 → 12.30 → 12.30
+- Score trend: 12.30 → 12.30 → 12.30 → 12.30 → 12.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -203,6 +203,44 @@ Parent: champion `coarse-400-64` (`44b91f8acec677de3a6eb56eedcfd0b9497e2e77c2293
 - Baseline delta: 0.00 points; PnL 0.00
 
 Selection: g4-full-unwind.
-Promotion: none.
+Promotion: g4-full-unwind (bf8a68eaad6d03c5e45da14cb3624b5496486b26).
 Finding: All three inventory-aware FOK policies passed 20/20 without bankruptcy or runtime errors and preserved 12.30 points with 6.01/10.00 minimum capital. Full position-bounded fair-value unwind led at 98.80 PnL, 2.70 above the tuned-estimator parent. Near-expiry-only unwind added 0.58 PnL, while proportional edge scaling exactly reproduced the parent at 96.10.
 Next-generation rationale: Promote full fair-value unwind. Next test the research plan's RFQ-risk interactions on this complete estimator-plus-unwind source: proven one-sided loss shading, aggressive uniform four-cent quotes, and a targeted central-probability uncertainty width, holding warm_up and FOK logic fixed.
+
+## Generation 5: explore quote
+
+The complete tuned-estimator plus fair-unwind strategy reaches 98.80 PnL at 12.30 points. The research notes next prioritize pairing improved fair values with RFQ risk controls that previously increased economics but lost case-17 rank. Test the proven one-sided maximum-loss shade, the aggressive uniform four-cent width, and a targeted four-cent width only for central-probability contracts, holding the estimator, FOK entry tier, and unwind fixed.
+
+Parent: champion `g4-full-unwind` (`ae87114fbbc3b8680533db3b609bd16fcb6b9410dbbc41b077b7594919747548`).
+
+### g5-loss-side-shade
+
+- Hypothesis: The tuned estimator can restore the prior one-sided loss shade's case-17 routing while its extra cent on only the capital-intensive side preserves the structure's large PnL and capital gains.
+- Implementation plan: Start from the champion's three-cent bid and offer at size two. Move the bid one additional cent down when bid price exceeds 0.50, and move the offer one additional cent up when 1.0 minus offer price exceeds 0.50. Clamp both sides to valid boundaries exactly as the archived g6-loss-side-shade source does.
+- Worker summary: Added the proven one-cent shade only to the quote side whose per-contract maximum loss exceeds fifty cents, on top of the full tuned-estimator and unwind source. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 116.92; minimum capital 6.33/10.00
+- Baseline delta: 0.00 points; PnL 18.12
+
+### g5-uniform-four
+
+- Hypothesis: Uniform four-cent quotes may retain their previously large economic gain while the tuned rate estimator and unwind repair the single lost rank boundary.
+- Implementation plan: Change the quote half-width uniformly from three cents to four cents, retain size two on both sides, and preserve valid boundary-clamped penny prices and a strict two-sided quote.
+- Worker summary: Changed the quote half-width uniformly from three cents to four cents at size two while preserving strict boundary-clamped penny quotes and all estimator/FOK behavior. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 122.37; minimum capital 6.45/10.00
+- Baseline delta: 0.00 points; PnL 23.57
+
+### g5-central-four
+
+- Hypothesis: Adding a fourth cent only for fair values from 0.25 through 0.75 will filter the contracts most exposed to estimator uncertainty while preserving competitive three-cent quotes for high-confidence tail events.
+- Implementation plan: Round fair value to cents, use half-width four when the rounded value is between 25 and 75 inclusive and half-width three otherwise, retain size two, and clamp to valid strict penny quotes at zero and one.
+- Worker summary: Used a four-cent half-width only for rounded fair values from 25 through 75 cents and retained three cents in the tails, with focused band and endpoint assertions. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 113.33; minimum capital 6.05/10.00
+- Baseline delta: 0.00 points; PnL 14.53
+
+Selection: g5-uniform-four.
+Promotion: none.
+Finding: All three RFQ-risk interactions passed 20/20 without bankruptcy or runtime errors and preserved 12.30 points. Uniform four-cent quotes led at 122.37 PnL and 6.45/10.00 minimum capital, improving the estimator-plus-unwind parent by 23.57 PnL and the run's starting champion by 45.15. One-sided loss shading reached 116.92 PnL and 6.33/10.00 capital; central-only widening reached 113.33 and 6.05/10.00. Uniform width kept cases 9 and 16 first and improved case 17 to +6.32, still 4.53 behind second.
+Next-generation rationale: Promote uniform four-cent quotes. Use the sixth and final generation to target the remaining case-17 RFQ boundary with three structural refinements from the complete promoted source: uniform five cents, a fifth cent only on the capital-intensive side, and a fifth cent only in the central-probability band.

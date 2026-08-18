@@ -376,8 +376,8 @@ class MarketMaker:
 
     def quote(self, option: BinaryOption, counterparty_id: int) -> Quote:  # type: ignore[empty-body]
         fair_value_cents: int = round(self.price_option(option) * 100)
-        bid_price: float = max(fair_value_cents - 4, 0) / 100
-        offer_price: float = min(fair_value_cents + 4, 100) / 100
+        bid_price: float = max(fair_value_cents - 3, 0) / 100
+        offer_price: float = min(fair_value_cents + 3, 100) / 100
         return Quote(
             bid_price=bid_price,
             bid_quantity=2,
