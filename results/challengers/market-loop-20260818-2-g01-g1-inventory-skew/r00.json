@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g1-inventory-skew",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-2-g01-g1-inventory-skew/r00.py",
+  "sourceSha256": "137d9cfbc203f61ec30e224d5e0472faaf1206339e45ece6fe9c6ff80aad5f8b",
+  "modifiedLines": 5,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1230,
+    "combinedPnlCents": 7669,
+    "minimumCapital": {
+      "endingCashCents": 590,
+      "startingCapitalCents": 1000
+    }
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 120
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
