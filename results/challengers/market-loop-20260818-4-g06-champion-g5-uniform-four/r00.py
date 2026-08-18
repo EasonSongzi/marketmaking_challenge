@@ -378,10 +378,6 @@ class MarketMaker:
         fair_value_cents: int = round(self.price_option(option) * 100)
         bid_price: float = max(fair_value_cents - 4, 0) / 100
         offer_price: float = min(fair_value_cents + 4, 100) / 100
-        if bid_price > 0.50:
-            bid_price = max(bid_price - 0.01, 0.0)
-        if 1.0 - offer_price > 0.50:
-            offer_price = min(offer_price + 0.01, 1.0)
         return Quote(
             bid_price=bid_price,
             bid_quantity=2,

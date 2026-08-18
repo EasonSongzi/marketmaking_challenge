@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "id": "g5-uniform-four",
+  "id": "g6-loss-side-five",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "95adc0b6da346bd74db7e6bd8ae01c7843076807e23d18ef5ed938526f3cb6d5",
+  "sourceSha256": "dba7b8040efb4f1e71a2ef19245f9573d2a7b46570726ff7f869a964eb09847b",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260818-4:g05:g5-uniform-four",
+  "experimentId": "market-loop-20260818-4:g06:g6-loss-side-five",
   "experiment": {
     "runId": "market-loop-20260818-4",
-    "generation": 5,
-    "candidateId": "g5-uniform-four"
+    "generation": 6,
+    "candidateId": "g6-loss-side-five"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
-    "scoredPointsHundredths": 1230,
-    "combinedPnlCents": 12237,
+    "scoredPointsHundredths": 1260,
+    "combinedPnlCents": 12228,
     "minimumCapital": {
-      "endingCashCents": 645,
+      "endingCashCents": 677,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0

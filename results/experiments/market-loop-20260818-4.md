@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T21:49:07.026Z
 - Starting baseline: g2-rate-smoothing (12.30/16.00)
-- Current baseline: g4-full-unwind (12.30/16.00)
+- Current baseline: g5-uniform-four (12.30/16.00)
 - Stop condition: not reached
-- Score trend: 12.30 → 12.30 → 12.30 → 12.30 → 12.30
+- Score trend: 12.30 → 12.30 → 12.30 → 12.30 → 12.30 → 12.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -241,6 +241,44 @@ Parent: champion `g4-full-unwind` (`ae87114fbbc3b8680533db3b609bd16fcb6b9410dbbc
 - Baseline delta: 0.00 points; PnL 14.53
 
 Selection: g5-uniform-four.
-Promotion: none.
+Promotion: g5-uniform-four (d6ebc36c55afff54d76497fb61920faf4a7ec921).
 Finding: All three RFQ-risk interactions passed 20/20 without bankruptcy or runtime errors and preserved 12.30 points. Uniform four-cent quotes led at 122.37 PnL and 6.45/10.00 minimum capital, improving the estimator-plus-unwind parent by 23.57 PnL and the run's starting champion by 45.15. One-sided loss shading reached 116.92 PnL and 6.33/10.00 capital; central-only widening reached 113.33 and 6.05/10.00. Uniform width kept cases 9 and 16 first and improved case 17 to +6.32, still 4.53 behind second.
 Next-generation rationale: Promote uniform four-cent quotes. Use the sixth and final generation to target the remaining case-17 RFQ boundary with three structural refinements from the complete promoted source: uniform five cents, a fifth cent only on the capital-intensive side, and a fifth cent only in the central-probability band.
+
+## Generation 6: explore quote
+
+Five generations converted the docs' estimator-policy hypothesis into a 45.15-PnL gain while preserving 12.30 points. The remaining score milestone is case 17, where the promoted four-cent strategy is third at 6.32, 4.53 behind second. Use the final generation to test three distinct fifth-cent placements that may remove the adverse RFQ fills responsible for that gap without disturbing the proven estimator, FOK tier, or fair-value unwind.
+
+Parent: champion `g5-uniform-four` (`95adc0b6da346bd74db7e6bd8ae01c7843076807e23d18ef5ed938526f3cb6d5`).
+
+### g6-uniform-five
+
+- Hypothesis: A uniform fifth cent will further filter marginal RFQ flow and may cross the case-17 second-place boundary while the improved estimator preserves the cases previously harmed by widening.
+- Implementation plan: Change the quote half-width uniformly from four cents to five cents, keep quantities at two, and preserve strict boundary-clamped penny prices.
+- Worker summary: Changed the quote half-width uniformly from four cents to five cents at size two, preserving strict boundary-clamped penny prices and the complete estimator/FOK strategy. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.40/16.00 points; PnL 129.81; minimum capital 6.89/10.00
+- Baseline delta: 0.10 points; PnL 7.44
+
+### g6-loss-side-five
+
+- Hypothesis: Adding a fifth cent only to the capital-intensive side of the current four-cent quote will target adverse high-loss fills while preserving the safer side's competitiveness.
+- Implementation plan: Start with the current four-cent bid and offer. Shade the bid down one more cent only when bid price exceeds 0.50, and shade the offer up one more cent only when 1.0 minus offer price exceeds 0.50. Clamp at zero and one, retain size two, and preserve strict penny quotes.
+- Worker summary: Kept the promoted four-cent quote on the safer side and added one cent only when the quoted side's per-contract maximum loss exceeded fifty cents. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 122.28; minimum capital 6.77/10.00
+- Baseline delta: 0.30 points; PnL -0.09
+
+### g6-central-five
+
+- Hypothesis: Using five cents only for fair values from 0.25 through 0.75 will reduce uncertain central-contract RFQ exposure while retaining the promoted four-cent tail quotes that protect high-confidence trades.
+- Implementation plan: Round fair value to cents, use half-width five when the rounded value is between 25 and 75 inclusive and half-width four otherwise, retain size two, and clamp to valid strict penny quotes.
+- Worker summary: Used a five-cent half-width only for rounded fair values from 25 through 75 cents and retained four cents in the tails, with focused band and endpoint assertions. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.40/16.00 points; PnL 122.80; minimum capital 6.49/10.00
+- Baseline delta: 0.10 points; PnL 0.43
+
+Selection: g6-loss-side-five.
+Promotion: none.
+Finding: All three fifth-cent placements passed 20/20 without bankruptcy or runtime errors and improved score by winning case 15. Uniform five-cent quotes reached 12.40 points, 129.81 PnL, and 6.89/10.00 minimum capital. Central-only five cents reached 12.40, 122.80, and 6.49/10.00. Maximum-loss-side-only widening uniquely preserved every other rank and led at 12.60 points with 122.28 PnL and 6.77/10.00 minimum capital, a 0.30-point improvement over the four-cent parent despite 0.09 lower aggregate PnL.
+Next-generation rationale: Promote the maximum-loss-side fifth-cent quote. The configured six-generation limit is reached, so finish the run with the 12.60 champion; case 15 is now first while cases 9 and 16 remain first, and case 17 remains the next explicit rank boundary for a future loop.
