@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260818
 
-- Status: active
+- Status: complete
 - Started: 2026-08-18T05:29:44.743Z
 - Starting baseline: rfq-only-v1 (9.00/16.00)
-- Current baseline: g3-half-cap (12.00/16.00)
-- Stop condition: not reached
-- Score trend: 9.00 → 11.40 → 11.70 → 12.00
+- Current baseline: g5-wide-three-two (12.30/16.00)
+- Stop condition: generation limit reached
+- Score trend: 9.00 → 11.40 → 11.70 → 12.00 → 12.30
 
 A normal promoted candidate is based on one HackerRank run; stochastic score risk remains. Fixture-only validation uses stubbed evidence.
 
@@ -192,5 +192,5 @@ Generation 4 found no FOK improvement around the 12.00 baseline. Quote width and
 - Baseline delta: -0.30 points; PnL 18.38
 
 Selection: g5-wide-three-two.
-Promotion: none.
+Promotion: g5-wide-three-two (885afb67fd281c66581c826a1c970bae93933178).
 Finding: Widening quotes to three cents while keeping size two passed 20/20, avoided bankruptcy, and improved the 12.00 baseline to 12.30 with +19.65 combined PnL and a higher observed minimum-capital ratio. Both size-three variants went bankrupt in cases 7 and 12, showing that larger quote quantity exceeded safe capital capacity regardless of the two- or three-cent width.
