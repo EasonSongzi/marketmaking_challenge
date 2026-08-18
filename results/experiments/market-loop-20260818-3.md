@@ -311,3 +311,40 @@ Promotion: none.
 Finding: All eight variants passed 20/20 without bankruptcy or runtime errors. Threshold two at a 3.4-cent edge retained 12.30 points and 5.98/10.00 minimum capital while producing 79.36 combined PnL, improving the parent by 0.37 and the champion by 2.14. Threshold five at 3.3 cents also tied at 79.10. Every vector at 3.5 cents or higher fell to 11.70, locating a sharp score boundary between 3.4 and 3.5 cents for the relevant order flow.
 Next-generation rationale: Update the challenger to threshold two at 3.4 cents, then retire it after its configured second tuning batch. Use the sixth and final generation on structural quote-risk controls from the champion, since FOK tier tuning improved PnL but never improved score or minimum capital.
 Challenger update: market-loop-20260818-3-g03-g3-large-edge-three retired after 2 tuning attempts.
+
+## Generation 6: explore quote
+
+Five generations improved the champion's warm-up calibration and mapped FOK quantity tiers, but the remaining promotion path is a higher score or minimum-capital ratio. The proven quote uses a fixed three-cent half-width at size two; test three structurally distinct ways to reduce adverse or capital-intensive RFQ fills without increasing size.
+
+### g6-wide-four
+
+- Hypothesis: A uniform four-cent half-width will sacrifice marginal fills but improve per-fill quality and capital enough to exceed the smoothed champion's promotion gate.
+- Implementation plan: Change only the quote half-width from three cents to four cents, retain size two on both sides, and clamp to valid penny prices with a strict two-sided quote.
+- Worker summary: Changed the champion's quote half-width uniformly from three to four cents at size two. Compilation, scope validation, diff checks, and boundary assertions passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.10/16.00 points; PnL 101.03; minimum capital 25.31/40.00
+- Baseline delta: -0.20 points; PnL 23.81
+
+### g6-long-wide-four
+
+- Hypothesis: Only longer-dated contracts need an extra cent for accumulated model uncertainty, so a four-cent width beyond three days can protect capital while preserving three-cent competitiveness near expiry.
+- Implementation plan: Use a four-cent quote half-width when steps_until_expiry exceeds three and the champion's three-cent width otherwise. Keep both quantities at two and preserve valid boundary-clamped penny quotes.
+- Worker summary: Used a four-cent half-width beyond three days and retained three cents near expiry, with size two unchanged. Compilation, scope validation, diff checks, and focused expiry/boundary assertions passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.10/16.00 points; PnL 75.25; minimum capital 6.07/10.00
+- Baseline delta: -0.20 points; PnL -1.97
+
+### g6-loss-side-shade
+
+- Hypothesis: Widening only the quote side whose per-contract maximum loss exceeds fifty cents will deter capital-intensive fills while preserving the champion price on the safer side.
+- Implementation plan: Start from the champion's three-cent bid and offer. Move the bid one additional cent down only when its buy-side maximum loss exceeds 0.50, and move the offer one additional cent up only when its sell-side maximum loss exceeds 0.50. Keep both quantities at two and clamp boundaries so every quote remains strict and penny-valid.
+- Worker summary: Widened only the quote side whose per-contract maximum loss exceeded fifty cents by one additional cent, preserving the safer-side price and size two. Compilation, scope validation, diff checks, and boundary assertions passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.10/16.00 points; PnL 93.07; minimum capital 25.14/40.00
+- Baseline delta: -0.20 points; PnL 15.85
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three quote-risk controls passed 20/20 without bankruptcy or runtime errors, but each scored 12.10 and therefore missed promotion by 0.20 points. Uniform four-cent quotes led combined PnL at 101.03 and produced a 25.31/40.00 minimum-capital result. One-sided loss shading reached 93.07 PnL and 25.14/40.00 capital, while long-expiry widening was more conservative at 75.25 PnL and 6.07/10.00 capital.
+Next-generation rationale: The configured six-generation limit is reached. Preserve the 12.30 rate-smoothed champion. Admit the one-sided loss-shade structure for a future loop because it materially improved PnL and capital ratio while losing only 0.20 points, and its fifty-cent activation threshold plus one-cent shade magnitude expose explicit tuning upside.
+Challenger update: admitted market-loop-20260818-3-g06-g6-loss-side-shade.

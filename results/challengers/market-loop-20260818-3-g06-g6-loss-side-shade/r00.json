@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-loss-side-shade",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-3-g06-g6-loss-side-shade/r00.py",
+  "sourceSha256": "ec88763fcff3df2024688928b995d1cb9eec41ae029bbc3dd3d35fade992332f",
+  "modifiedLines": 4,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1210,
+    "combinedPnlCents": 9307,
+    "minimumCapital": {
+      "endingCashCents": 2514,
+      "startingCapitalCents": 4000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -20,
+    "combinedPnlCents": 1585
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
