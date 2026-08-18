@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-repeat-rfq-wide",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-5-g06-g6-repeat-rfq-wide/r00.py",
+  "sourceSha256": "b0d17da093b28707df4ab588276016f52868503b93ebba08685758fb8b97eec8",
+  "modifiedLines": 9,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1240,
+    "combinedPnlCents": 10544,
+    "minimumCapital": {
+      "endingCashCents": 768,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -40,
+    "combinedPnlCents": -34
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

@@ -22,7 +22,7 @@
   "challengers": [
     {
       "id": "market-loop-20260818-2-g01-g1-inventory-skew",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It matched the champion's 12.30 points and zero-bankruptcy record while adding 1.20 combined PnL. The discrete one-cent skew and immediate activation expose explicit tuning upside in skew magnitude and inventory threshold.",
@@ -112,7 +112,7 @@
     },
     {
       "id": "market-loop-20260818-2-g03-g3-clamped-skew-three",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "The candidate is structurally safe at all quote boundaries, passed 20/20, and traded only 0.20 points for higher PnL and capital. Its three-cent literal exposes a clean bounded tuning axis that can test whether smaller or larger safe skews recover the lost rank points.",
@@ -339,7 +339,7 @@
     },
     {
       "id": "market-loop-20260818-3-g02-champion-g5-wide-three-two",
-      "status": "active",
+      "status": "retired",
       "method": "warm_up",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g2-rate-smoothing",
@@ -521,7 +521,7 @@
     },
     {
       "id": "market-loop-20260818-3-g06-g6-loss-side-shade",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It passed 20/20 with zero bankruptcies, improved combined PnL by 15.85 and minimum-capital ratio from 0.598 to 0.629, and lost only 0.20 points. Its maximum-loss activation threshold and one-cent shade magnitude provide clean bounded tuning axes for recovering rank.",
@@ -569,7 +569,7 @@
     },
     {
       "id": "market-loop-20260818-4-g01-champion-g2-rate-smoothing",
-      "status": "active",
+      "status": "retired",
       "method": "respond_to_fok",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g1-q2-edge034",
@@ -673,7 +673,7 @@
     },
     {
       "id": "market-loop-20260818-4-g02-champion-g1-q2-edge034",
-      "status": "active",
+      "status": "retired",
       "method": "warm_up",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g2-rate-adaptive",
@@ -721,7 +721,7 @@
     },
     {
       "id": "market-loop-20260818-4-g03-champion-g2-rate-adaptive",
-      "status": "active",
+      "status": "retired",
       "method": "warm_up",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by coarse-400-64",
@@ -769,7 +769,7 @@
     },
     {
       "id": "market-loop-20260818-4-g04-champion-coarse-400-64",
-      "status": "active",
+      "status": "retired",
       "method": "respond_to_fok",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g4-full-unwind",
@@ -817,7 +817,7 @@
     },
     {
       "id": "market-loop-20260818-4-g05-champion-g4-full-unwind",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g5-uniform-four",
@@ -865,7 +865,7 @@
     },
     {
       "id": "market-loop-20260818-4-g06-champion-g5-uniform-four",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g6-loss-side-five",
@@ -962,7 +962,7 @@
     },
     {
       "id": "market-loop-20260818-5-g01-g1-rate-recross-10-1",
-      "status": "active",
+      "status": "retired",
       "method": "warm_up",
       "origin": "explore",
       "rationale": "It passed 20/20 with zero bankruptcies, moved case 17 from third to second, retained cases 9, 13, and 16 at their champion ranks, and missed the champion only because case 15 fell from first to second by 0.51. Its explicit low-penalty estimator paired with the unchanged maximum-loss-side shade exposes a focused quote-interaction path to repair the sole lost rank.",
@@ -1010,7 +1010,7 @@
     },
     {
       "id": "market-loop-20260818-5-g02-g2-loss-side-six",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "derived-explore",
       "rationale": "It strictly improves its 10/1 parent by 0.10 points, passes 20/20 with zero bankruptcies, and simultaneously reaches the required case-15 and case-17 ranks. Its extra-cent activation is a single focused structural gate with explicit upside: remove the sixth cent from case-13-sensitive quotes while retaining it on the tail fills that repaired cases 15 and 17.",
@@ -1111,7 +1111,7 @@
     },
     {
       "id": "market-loop-20260818-5-g06-champion-g3-tail-loss-six",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g6-contract-rfq-wide",
@@ -1153,6 +1153,102 @@
             ]
           },
           "createdAt": "2026-08-18T23:33:46.446Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260818-5-g05-g5-repeat-fok-edge",
+      "status": "active",
+      "method": "respond_to_fok",
+      "origin": "archive-review",
+      "rationale": "It preserved 12.80 points and every champion rank while adding a distinct repeat-counterparty FOK memory path. Explore the final contract-specific RFQ rule from this complete source, then tune repeat activation and extra edge.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260818-5-g05-g5-repeat-fok-edge/r00.py",
+          "sourceSha256": "98f32eabf6c00a8123ef9900c783295b81f69017b2d0a0a8e8f49f3429f65830",
+          "evaluationPath": "results/challengers/market-loop-20260818-5-g05-g5-repeat-fok-edge/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260818-5-g05-g5-repeat-fok-edge/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-repeat-fok-edge",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260818-5-g05-g5-repeat-fok-edge/r00.py",
+            "sourceSha256": "98f32eabf6c00a8123ef9900c783295b81f69017b2d0a0a8e8f49f3429f65830",
+            "modifiedLines": 7,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1280,
+              "combinedPnlCents": 10519,
+              "minimumCapital": {
+                "endingCashCents": 732,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -59
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-18T23:43:32.692Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260818-5-g06-g6-repeat-rfq-wide",
+      "status": "active",
+      "method": "quote",
+      "origin": "archive-review",
+      "rationale": "It produced the strongest observed 7.68/10.00 minimum capital among high-scoring strategies. Delay or narrow broad repeat-counterparty widening to recover cases 13 and 17 while retaining its capital-defense signal.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260818-5-g06-g6-repeat-rfq-wide/r00.py",
+          "sourceSha256": "b0d17da093b28707df4ab588276016f52868503b93ebba08685758fb8b97eec8",
+          "evaluationPath": "results/challengers/market-loop-20260818-5-g06-g6-repeat-rfq-wide/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260818-5-g06-g6-repeat-rfq-wide/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g6-repeat-rfq-wide",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260818-5-g06-g6-repeat-rfq-wide/r00.py",
+            "sourceSha256": "b0d17da093b28707df4ab588276016f52868503b93ebba08685758fb8b97eec8",
+            "modifiedLines": 9,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1240,
+              "combinedPnlCents": 10544,
+              "minimumCapital": {
+                "endingCashCents": 768,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": -40,
+              "combinedPnlCents": -34
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-18T23:43:32.762Z"
         }
       ],
       "tuningHistory": []

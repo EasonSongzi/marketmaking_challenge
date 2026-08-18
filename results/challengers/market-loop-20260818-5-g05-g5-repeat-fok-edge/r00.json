@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g5-repeat-fok-edge",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-5-g05-g5-repeat-fok-edge/r00.py",
+  "sourceSha256": "98f32eabf6c00a8123ef9900c783295b81f69017b2d0a0a8e8f49f3429f65830",
+  "modifiedLines": 7,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1280,
+    "combinedPnlCents": 10519,
+    "minimumCapital": {
+      "endingCashCents": 732,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -59
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
