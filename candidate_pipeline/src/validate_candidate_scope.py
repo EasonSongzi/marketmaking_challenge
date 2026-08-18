@@ -21,6 +21,7 @@ CORE_METHODS: tuple[str, ...] = (
     "respond_to_fok",
     "warm_up",
 )
+TARGET_METHODS: tuple[str, ...] = ("quote", "respond_to_fok", "warm_up")
 
 
 class ValidationError(Exception):
@@ -129,7 +130,9 @@ def decorators(method: MethodNode) -> tuple[str, ...]:
     return tuple(node_dump(decorator) for decorator in method.decorator_list)
 
 
-def validate_core_methods(baseline: ast.ClassDef, candidate: ast.ClassDef) -> None:
+def validate_core_methods(
+    baseline: ast.ClassDef, candidate: ast.ClassDef, target_method: str | None
+) -> None:
     for method_name in CORE_METHODS:
         baseline_method = find_core_method(baseline, method_name, "baseline")
         candidate_method = find_core_method(candidate, method_name, "candidate")
@@ -137,30 +140,41 @@ def validate_core_methods(baseline: ast.ClassDef, candidate: ast.ClassDef) -> No
             fail(f"MarketMaker.{method_name} signature differs from baseline")
         if decorators(baseline_method) != decorators(candidate_method):
             fail(f"MarketMaker.{method_name} decorators differ from baseline")
+        if target_method is not None and method_name != target_method:
+            if node_dump(baseline_method) != node_dump(candidate_method):
+                fail(
+                    f"MarketMaker.{method_name} differs while target method is "
+                    f"MarketMaker.{target_method}"
+                )
 
 
-def validate(baseline_path: Path, candidate_path: Path) -> None:
+def validate(
+    baseline_path: Path, candidate_path: Path, target_method: str | None = None
+) -> None:
     baseline_module = parse_module(baseline_path, "baseline")
     candidate_module = parse_module(candidate_path, "candidate")
     baseline_class = find_market_maker(baseline_module, "baseline")
     candidate_class = find_market_maker(candidate_module, "candidate")
     validate_top_level(baseline_module, candidate_module)
-    validate_core_methods(baseline_class, candidate_class)
+    validate_core_methods(baseline_class, candidate_class, target_method)
 
 
 def parse_args(arguments: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Verify that a candidate only changes imports and MarketMaker internals."
+        description=(
+            "Verify candidate scope and optionally restrict core-method changes to one target."
+        )
     )
     parser.add_argument("--baseline", required=True, type=Path)
     parser.add_argument("--candidate", required=True, type=Path)
+    parser.add_argument("--target-method", choices=TARGET_METHODS)
     return parser.parse_args(arguments)
 
 
 def main(arguments: list[str] | None = None) -> int:
     options = parse_args(sys.argv[1:] if arguments is None else arguments)
     try:
-        validate(options.baseline, options.candidate)
+        validate(options.baseline, options.candidate, options.target_method)
     except ValidationError as error:
         print(f"candidate scope validation failed: {error}", file=sys.stderr)
         return 1

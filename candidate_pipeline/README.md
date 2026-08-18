@@ -33,6 +33,10 @@ The plan schema is:
   "schemaVersion": 2,
   "mode": "explore",
   "method": "quote",
+  "parent": {
+    "type": "champion",
+    "sourceSha256": "<current-champion-sha256>"
+  },
   "rationale": "Evidence-based generation rationale.",
   "candidates": [
     {
@@ -55,8 +59,23 @@ The plan schema is:
 ```
 
 Explore `method` must be `quote`, `respond_to_fok`, or `warm_up`. Candidate IDs must be
-unique lowercase slugs. Read the prepared worktree and result-directory paths
-from `results/runs/<run-id>/state.json`.
+unique lowercase slugs. `parent.type` is either `champion` as above or
+`challenger`; a challenger parent also requires `challengerId` and must pin the
+SHA-256 of that challenger's current active revision:
+
+```json
+{
+  "type": "challenger",
+  "challengerId": "active-challenger-id",
+  "sourceSha256": "<current-revision-sha256>"
+}
+```
+
+The Explore schema accepts one generation-level `method`; candidate-level or
+plural method declarations are rejected. Challenger-parent worktrees are
+initialized from that revision's complete source, not by merging individual
+methods into the champion. Read the prepared worktree and result-directory
+paths from `results/runs/<run-id>/state.json`.
 
 A Tune plan selects an active entry in `results/strategy-state.json` and gives
 `challengerId`, the current `parentSourceSha256`, its method, `sampleCount`, and
@@ -81,11 +100,18 @@ evaluation, validate each candidate's scope and signatures:
 
 ```bash
 candidate_pipeline/validate-candidate.sh \
-  --baseline /absolute/main/Market_making_binary_option.py \
-  --candidate /absolute/worktree/Market_making_binary_option.py
+  --baseline /absolute/parent/Market_making_binary_option.py \
+  --candidate /absolute/worktree/Market_making_binary_option.py \
+  --target-method quote
 ```
 
-Workers receive one repair pass after a failed validation or local check.
+For challenger-parent Explore, `--baseline` is the immutable challenger
+revision. With `--target-method`, the validator rejects changes to every other
+core method while still allowing required imports and `MarketMaker` helpers.
+The serial dispatcher repeats this validation before using cached evidence or
+launching HackerRank. A scope-invalid candidate is skipped and must be passed
+to `archive` with `--invalid <candidate-id>`. Workers receive one repair pass
+after a failed validation or local check.
 
 Launch the valid candidates through the serial dispatcher:
 
@@ -121,6 +147,15 @@ exhausted its repair pass. `archive` runs selection internally, records
 `selection.json`, and cleans up verified worktrees. `finish` writes
 `results/experiments/<run-id>.md`, creates a
 report-only commit when needed, and skips an empty commit.
+
+Explore promotion eligibility is always recomputed against the current
+champion, regardless of which parent supplied the source. If the parent is an
+active challenger and no candidate beats the champion, the best valid
+candidate that strictly improves the parent is automatically stored as a new
+active `derived-explore` challenger with immutable parent lineage. An optional
+analysis `challenger` decision may add rationale for that same candidate, but
+cannot replace it with a weaker branch. Only a candidate that strictly exceeds
+the current champion can enter the promotion transaction.
 
 A browser or authentication failure is automatically recorded and retried once
 for the same source. A second consecutive failure stops without selection or
@@ -166,7 +201,7 @@ writes `evaluation.json` beside the worktree's raw Markdown and JSON.
 
 Candidate exit statuses are:
 
-- `0`: valid and strictly exceeds the baseline;
+- `0`: valid and strictly exceeds the baseline by SCORED points, combined PnL, then minimum-capital ratio;
 - `2`: evidence is valid but performance is ineligible, including failed tests,
   bankruptcy, or not strictly exceeding the baseline;
 - `3`: evidence is malformed or incomplete, or the source SHA changed;
@@ -195,8 +230,8 @@ is rebound to the current champion before selection.
 ```
 
 The selector rechecks every valid source SHA, filters on `valid=true` and
-`eligible=true`, then orders by SCORED points, minimum remaining-capital ratio,
-combined PnL, modified line count, and candidate ID. Before temporary worktrees
+`eligible=true`, then orders by SCORED points, combined PnL, minimum
+remaining-capital ratio, modified line count, and candidate ID. Before temporary worktrees
 are removed, the main agent must copy the winner's raw Markdown, raw JSON, and
 evaluation into the main run directory and recheck the promoted source SHA.
 

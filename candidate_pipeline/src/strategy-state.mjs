@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { compareCapital } from "./case-result.mjs";
+import { compareCapital, comparePerformance } from "./case-result.mjs";
 
 const REGISTRY = path.join("results", "strategy-state.json");
 const CHALLENGERS = path.join("results", "challengers");
@@ -53,6 +53,13 @@ function validateRegistry(registry) {
     }
     const revision = challenger.revisions.find(({ number }) => number === challenger.currentRevision);
     if (!revision) throw new StrategyStateError(`Missing current revision for ${challenger.id}`);
+    if (challenger.derivedFrom !== undefined && (
+      typeof challenger.derivedFrom?.challengerId !== "string"
+      || !Number.isSafeInteger(challenger.derivedFrom?.revision)
+      || !/^[a-f0-9]{64}$/.test(challenger.derivedFrom?.sourceSha256 ?? "")
+    )) {
+      throw new StrategyStateError(`Malformed derived challenger parent: ${challenger.id}`);
+    }
   }
 }
 
@@ -84,11 +91,7 @@ export async function saveRegistry(repo, registry) {
 
 function promotionEligible(summary, baselineSummary) {
   if (summary.passed !== 20 || summary.total !== 20 || summary.bankruptcies !== 0) return false;
-  const pointDelta = summary.scoredPointsHundredths - baselineSummary.scoredPointsHundredths;
-  return pointDelta > 0 || (
-    pointDelta === 0
-    && compareCapital(summary.minimumCapital, baselineSummary.minimumCapital) > 0
-  );
+  return comparePerformance(summary, baselineSummary) > 0;
 }
 
 export function cacheEvaluation(registry, evaluation) {
@@ -152,18 +155,28 @@ function compareOptionalNumber(first, second) {
   return first === second ? 0 : first > second ? 1 : -1;
 }
 
-export function compareStrategy(first, second) {
+function compareStrategyQuality(first, second) {
   const safeDelta = Number(safeSummary(second.summary)) - Number(safeSummary(first.summary));
   if (safeDelta !== 0) return safeDelta;
   const pointDelta = second.summary.scoredPointsHundredths - first.summary.scoredPointsHundredths;
   if (pointDelta !== 0) return pointDelta;
-  const capital = compareOptionalCapital(first.summary.minimumCapital, second.summary.minimumCapital);
-  if (capital !== 0) return -capital;
   const pnl = compareOptionalNumber(first.summary.combinedPnlCents, second.summary.combinedPnlCents);
   if (pnl !== 0) return -pnl;
+  const capital = compareOptionalCapital(first.summary.minimumCapital, second.summary.minimumCapital);
+  if (capital !== 0) return -capital;
   const passDelta = second.summary.passed - first.summary.passed;
   if (passDelta !== 0) return passDelta;
+  return 0;
+}
+
+export function compareStrategy(first, second) {
+  const quality = compareStrategyQuality(first, second);
+  if (quality !== 0) return quality;
   return first.candidateId.localeCompare(second.candidateId);
+}
+
+export function strictlyImproves(candidate, parent) {
+  return compareStrategyQuality(candidate, parent) < 0;
 }
 
 export function currentRevision(challenger) {
@@ -207,6 +220,7 @@ export async function storeRevision({
   method,
   origin,
   rationale,
+  derivedFrom,
   status = "active",
 }) {
   const sourceSha256 = await fileSha256(sourcePath);
@@ -259,6 +273,7 @@ export async function storeRevision({
       currentRevision: number,
       revisions: [],
       tuningHistory: [],
+      ...(derivedFrom ? { derivedFrom: structuredClone(derivedFrom) } : {}),
     };
     registry.challengers.push(challenger);
   }

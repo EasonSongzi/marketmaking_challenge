@@ -19,9 +19,9 @@ Choose `explore` when the champion needs a structural idea. Choose `tune` only w
 
 ### Explore
 
-Write a schema-version-2 plan with `mode: "explore"`, one target method, a rationale, and exactly three structurally distinct candidates. Prepare it with `loop.sh prepare`.
+Write a schema-version-2 plan with `mode: "explore"`, one target method, a rationale, exactly three structurally distinct candidates, and one hash-pinned `parent`. Use `{"type":"champion","sourceSha256":"..."}` for the current champion or `{"type":"challenger","challengerId":"...","sourceSha256":"..."}` for the current revision of an active challenger. A challenger parent initializes every worktree from its complete source so the generation can explore a different method without method-level merging. Prepare it with `loop.sh prepare`.
 
-Spawn three workers using `model: "gpt-5.6-luna"`, `reasoning_effort: "medium"`, and `fork_turns: "none"`. Give each worker its complete worktree path, hypothesis, implementation plan, repository constraints, and checks. Workers may change only `MarketMaker` plus required imports, must validate scope and compile, and must not run HackerRank or commit.
+Spawn three workers using `model: "gpt-5.6-luna"`, `reasoning_effort: "medium"`, and `fork_turns: "none"`. Give each worker its complete worktree path, hypothesis, implementation plan, repository constraints, and checks. Workers may change only the single target core method plus `MarketMaker` helpers and required imports. They must validate against the selected parent with `validate-candidate.sh --target-method <method>`, compile, and must not run HackerRank or commit. Never put candidate-level or plural target-method declarations in the plan.
 
 ### Tune
 
@@ -47,7 +47,7 @@ The materializer enforces directions, bounds, unique vectors, AST-only constant 
 
 Run the prepared candidates through `candidate_pipeline/run-generation.sh`. The dispatcher is serial because the browser is single-session. It skips completed and cached sources. A runner/browser/authentication failure automatically records the failure, resumes, and retries the same source once. A successful retry resets that source's counter. A second consecutive failure preserves the worktree and stops. Integrity status `3` never retries.
 
-For Explore, summaries are keyed by the three candidate IDs. For Tune, provide one summary keyed by the designer ID. Save a post-evaluation analysis with a non-empty `finding`; an Explore analysis may include at most one `challenger` object with a non-winner `candidateId` and tuning-upside `rationale`. Valid but currently bankrupt or failing structural candidates may enter the pool, but promotion still requires 20/20 and zero bankruptcies.
+For Explore, summaries are keyed by the three candidate IDs. For Tune, provide one summary keyed by the designer ID. Save a post-evaluation analysis with a non-empty `finding`; an Explore analysis may include at most one `challenger` object with a non-winner `candidateId` and tuning-upside `rationale`. When Explore starts from an active challenger and does not beat the champion, the pipeline automatically preserves the best candidate that strictly beats its parent as a new active derived challenger; if analysis supplies a challenger decision, it must identify that same candidate. Valid but currently bankrupt or failing structural candidates may enter the pool, but promotion still requires 20/20, zero bankruptcies, and a strict improvement over the current champion.
 
 Archive with `loop.sh archive`. It hash-verifies full sources and evidence, caches every valid source SHA, and cleans worktrees only after verified archival. Tune selects the best of N, compares it with the parent challenger, creates a new immutable revision only when it improves, and retires the lineage after its second unsuccessful tuning batch.
 

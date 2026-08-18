@@ -60,10 +60,15 @@ async function fixture(t, candidate = baseline) {
   return { baselinePath, candidatePath };
 }
 
-function runValidator({ baselinePath, candidatePath }) {
+function runValidator({ baselinePath, candidatePath }, targetMethod = null) {
   return spawnSync(
     "bash",
-    [validator, "--baseline", baselinePath, "--candidate", candidatePath],
+    [
+      validator,
+      "--baseline", baselinePath,
+      "--candidate", candidatePath,
+      ...(targetMethod ? ["--target-method", targetMethod] : []),
+    ],
     { encoding: "utf8" },
   );
 }
@@ -119,6 +124,28 @@ test("rejects core method decorator changes", async (t) => {
 
   assert.equal(result.status, 1);
   assert.match(result.stderr, /MarketMaker\.name decorators differ from baseline/);
+});
+
+test("target scope accepts one target method and rejects a second core method", async (t) => {
+  const quoteOnly = baseline.replace("        return None", "        return (0.4, 0.6)");
+  const accepted = runValidator(await fixture(t, quoteOnly), "quote");
+  assert.equal(accepted.status, 0, accepted.stderr);
+
+  const twoMethods = quoteOnly.replace("        return False", "        return True");
+  const rejected = runValidator(await fixture(t, twoMethods), "quote");
+  assert.equal(rejected.status, 1);
+  assert.match(rejected.stderr, /respond_to_fok differs while target method is MarketMaker\.quote/);
+});
+
+test("target scope still allows imports and helper changes", async (t) => {
+  const candidate = baseline
+    .replace("import math", "import statistics")
+    .replace(
+      "    def warm_up(self, market_history: object) -> None:\n        pass",
+      "    def warm_up(self, market_history: object) -> None:\n        self.samples = []\n\n    def sample_mean(self) -> float:\n        return 0.0",
+    );
+  const result = runValidator(await fixture(t, candidate), "warm_up");
+  assert.equal(result.status, 0, result.stderr);
 });
 
 test("reports candidate syntax errors without a traceback", async (t) => {

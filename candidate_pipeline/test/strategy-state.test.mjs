@@ -14,6 +14,7 @@ import {
   loadRegistry,
   saveRegistry,
   storeRevision,
+  strictlyImproves,
 } from "../src/strategy-state.mjs";
 
 function summary(points, bankruptcies = 0) {
@@ -89,6 +90,24 @@ test("pool comparison prefers safe revisions before raw score", () => {
   assert.equal([unsafe, safe].sort(compareStrategy)[0].candidateId, "safe");
 });
 
+test("strict improvement ignores the deterministic candidate ID tie-break", () => {
+  const first = evaluation("candidate-a", "a".repeat(64), 900);
+  const second = evaluation("candidate-z", "b".repeat(64), 900);
+  assert.equal(strictlyImproves(first, second), false);
+  first.summary.combinedPnlCents += 1;
+  assert.equal(strictlyImproves(first, second), true);
+});
+
+test("pool comparison uses PnL before capital after equal points", () => {
+  const parent = evaluation("parent", "a".repeat(64), 900);
+  const candidate = evaluation("candidate", "b".repeat(64), 900);
+  candidate.summary.combinedPnlCents += 1;
+  candidate.summary.minimumCapital = { endingCashCents: 700, startingCapitalCents: 1000 };
+
+  assert.equal(strictlyImproves(candidate, parent), true);
+  assert.equal([parent, candidate].sort(compareStrategy)[0].candidateId, "candidate");
+});
+
 test("cached evidence is rebound to the current champion", () => {
   const registry = { evaluations: {} };
   const original = evaluation("old", "a".repeat(64), 950);
@@ -103,6 +122,24 @@ test("cached evidence is rebound to the current champion", () => {
   assert.equal(rebound.candidateId, "new-id");
   assert.equal(rebound.eligible, true);
   assert.equal(rebound.cached, true);
+});
+
+test("cached evidence uses PnL before capital after equal points", () => {
+  const registry = { evaluations: {} };
+  const original = evaluation("old", "e".repeat(64), 900);
+  original.summary.minimumCapital = { endingCashCents: 700, startingCapitalCents: 1000 };
+  original.summary.combinedPnlCents = 901;
+  cacheEvaluation(registry, original);
+  const baseline = summary(900);
+
+  const rebound = cachedEvaluation(
+    registry,
+    original.sourceSha256,
+    "new-id",
+    "/tmp/new.py",
+    { summary: baseline },
+  );
+  assert.equal(rebound.eligible, true);
 });
 
 test("runtime-failure cache preserves unavailable ranking data and remains comparable", () => {

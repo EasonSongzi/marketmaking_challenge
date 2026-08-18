@@ -8,8 +8,10 @@ import { cachedEvaluation, fileSha256, loadRegistry } from "./strategy-state.mjs
 
 const SOURCE = "Market_making_binary_option.py";
 const WORKTREE_ROOT = "/tmp/akuna-market-maker";
+const SCOPE_VALIDATOR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "validate-candidate.sh");
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const SKIPPED_STATUSES = new Set(["evaluated", "invalid"]);
+const TARGET_METHODS = new Set(["quote", "respond_to_fok", "warm_up"]);
 
 export class GenerationInputError extends Error {}
 
@@ -52,6 +54,9 @@ function currentGeneration(state) {
     throw new GenerationInputError("Prepared generation number does not match loop state history");
   }
   const mode = generation.mode ?? "explore";
+  if (!TARGET_METHODS.has(generation.method)) {
+    throw new GenerationInputError("Prepared generation has an invalid target method");
+  }
   if (mode === "explore" && generation.candidates?.length !== 3) {
     throw new GenerationInputError("Explore generation must contain exactly three candidates");
   }
@@ -100,7 +105,29 @@ function resolvePaths(options, state, generation) {
       throw new GenerationInputError(`Candidate result directory is not beside its source: ${candidate.id}`);
     }
   }
-  return { repo };
+  let parentSourcePath = null;
+  if ((generation.mode ?? "explore") === "explore" && generation.parent) {
+    if (generation.parent.type === "champion" && generation.parent.sourcePath === SOURCE) {
+      parentSourcePath = path.join(repo, SOURCE);
+    } else if (
+      generation.parent.type === "challenger"
+      && ID_PATTERN.test(generation.parent.challengerId ?? "")
+      && Number.isSafeInteger(generation.parent.revision)
+      && generation.parent.revision >= 0
+    ) {
+      const expectedPath = path.join(
+        "results",
+        "challengers",
+        generation.parent.challengerId,
+        `r${String(generation.parent.revision).padStart(2, "0")}.py`,
+      );
+      if (generation.parent.sourcePath === expectedPath) parentSourcePath = path.join(repo, expectedPath);
+    }
+    if (parentSourcePath === null || !/^[a-f0-9]{64}$/.test(generation.parent.sourceSha256 ?? "")) {
+      throw new GenerationInputError("Explore generation parent is invalid");
+    }
+  }
+  return { repo, parentSourcePath };
 }
 
 function runProcess(command, argumentsList) {
@@ -147,7 +174,7 @@ export async function runGeneration(options, dependencies = {}) {
   requireAbsolute(options.outputPath, "--output");
   const state = await readJson(options.statePath, "loop state");
   const generation = currentGeneration(state);
-  const { repo } = resolvePaths(options, state, generation);
+  const { repo, parentSourcePath } = resolvePaths(options, state, generation);
   const baseline = await readJson(options.baselinePath, "baseline");
   const registry = await loadRegistry(repo, baseline);
   const candidateIds = new Set(generation.candidates.map(({ id }) => id));
@@ -170,6 +197,7 @@ export async function runGeneration(options, dependencies = {}) {
   };
   const persist = dependencies.writeStatus ?? writeJsonAtomic;
   const execute = dependencies.executeCandidate ?? runProcess;
+  const validateScope = dependencies.validateScope ?? runProcess;
   const recover = dependencies.recoverFailure ?? recoverFailure;
   const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
   const candidateCommand = dependencies.candidateCommand ?? path.join(scriptDirectory, "..", "candidate.sh");
@@ -180,6 +208,25 @@ export async function runGeneration(options, dependencies = {}) {
     if (record.status.startsWith("skipped-")) continue;
     const sourcePath = candidateSource(candidate);
     const sourceSha256 = await fileSha256(sourcePath);
+    if (parentSourcePath !== null) {
+      if (await fileSha256(parentSourcePath) !== generation.parent.sourceSha256) {
+        throw new GenerationInputError("Explore parent source SHA-256 changed");
+      }
+      const scopeStatus = await validateScope(SCOPE_VALIDATOR, [
+        "--baseline", parentSourcePath,
+        "--candidate", sourcePath,
+        "--target-method", generation.method,
+      ], candidate);
+      if (scopeStatus !== 0) {
+        record.status = "scope-invalid";
+        record.exitCode = scopeStatus;
+        record.sourceSha256 = sourceSha256;
+        record.completedAt = timestamp();
+        await persist(options.outputPath, output);
+        continue;
+      }
+      record.scopeValidated = true;
+    }
     const cached = cachedEvaluation(registry, sourceSha256, candidate.id, sourcePath, baseline);
     if (cached) {
       await fs.mkdir(candidate.resultDirectory, { recursive: true });

@@ -19,14 +19,14 @@ import {
 const matchingHash = "a".repeat(64);
 const evaluateScript = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../evaluate.sh");
 
-function equalScoreCases(minimumCash = 1000) {
+function equalScoreCases(minimumCash = 1000, secondCash = 1000) {
   return Array.from({ length: 20 }, (_, index) => {
     const number = index + 1;
     if (number < 5) {
       return rawCase(number);
     }
     return rawCase(number, {
-      endingCashCents: number === 5 ? minimumCash : 1000,
+      endingCashCents: number === 5 ? minimumCash : number === 6 ? secondCash : 1000,
       scoreHundredths: number <= 13 ? 100 : 0,
     });
   });
@@ -200,15 +200,20 @@ test("evaluateCandidate rejects an incomplete set of 16 SCORED results", () => {
   assert.match(result.reasons.join("\n"), /exactly 16 SCORED results/);
 });
 
-test("evaluateCandidate promotes equal points only with a higher capital ratio", () => {
-  const higherCapital = rawReport({ cases: equalScoreCases(770) });
-  const equalCapital = rawReport({ cases: equalScoreCases(769) });
+test("evaluateCandidate compares equal points by PnL and then capital ratio", () => {
+  const higherPnlLowerCapital = rawReport({ cases: equalScoreCases(760, 1040) });
+  const equalPnlHigherCapital = rawReport({ cases: equalScoreCases(770, 957) });
+  const exactTie = rawReport({ cases: equalScoreCases(769, 958) });
+  const lowerPnlHigherCapital = rawReport({ cases: equalScoreCases(770, 950) });
 
-  assert.equal(evaluateCandidate(higherCapital, baseline, matchingHash).eligible, true);
-  const equalResult = evaluateCandidate(equalCapital, baseline, matchingHash);
-  assert.equal(equalResult.valid, true);
-  assert.equal(equalResult.eligible, false);
-  assert.match(equalResult.reasons.join("\n"), /did not strictly exceed/);
+  assert.equal(evaluateCandidate(higherPnlLowerCapital, baseline, matchingHash).eligible, true);
+  assert.equal(evaluateCandidate(equalPnlHigherCapital, baseline, matchingHash).eligible, true);
+  for (const report of [exactTie, lowerPnlHigherCapital]) {
+    const result = evaluateCandidate(report, baseline, matchingHash);
+    assert.equal(result.valid, true);
+    assert.equal(result.eligible, false);
+    assert.match(result.reasons.join("\n"), /did not strictly exceed/);
+  }
 });
 
 test("evaluateCandidate rejects a source SHA change", () => {

@@ -5,7 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
-import { compareCapital } from "./case-result.mjs";
+import { comparePerformance } from "./case-result.mjs";
 import { evaluateRun } from "./evaluate.mjs";
 import { selectFromFiles } from "./select.mjs";
 import {
@@ -18,12 +18,14 @@ import {
   registryPath,
   saveRegistry,
   storeRevision,
+  strictlyImproves,
   syncChampion,
 } from "./strategy-state.mjs";
 
 const execFile = promisify(execFileCallback);
 const SOURCE = "Market_making_binary_option.py";
 const WORKTREE_ROOT = "/tmp/akuna-market-maker";
+const SCOPE_VALIDATOR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "validate-candidate.sh");
 const METHODS = new Set(["quote", "respond_to_fok", "warm_up"]);
 const MODES = new Set(["explore", "tune"]);
 const FAILURE_KINDS = new Set(["authentication", "browser", "runner", "integrity"]);
@@ -167,11 +169,18 @@ function validateLoadedState(paths, state) {
     if (!Array.isArray(generation.candidates)) throw new LoopInputError(`Generation ${generation.number} candidates must be an array`);
     const mode = generation.mode ?? "explore";
     if (!MODES.has(mode)) throw new LoopInputError(`Generation ${generation.number} has an invalid mode`);
+    if (!METHODS.has(generation.method)) throw new LoopInputError(`Generation ${generation.number} has an invalid target method`);
     if (mode === "explore" && generation.candidates.length !== 3) {
       throw new LoopInputError(`Explore generation ${generation.number} must contain exactly three candidates`);
     }
     if (mode === "tune" && generation.materialized && generation.candidates.length === 0) {
       throw new LoopInputError(`Tune generation ${generation.number} has no materialized candidates`);
+    }
+    if (mode === "explore" && generation.parent !== undefined) {
+      exploreParentPath(paths, generation);
+      if (!/^[a-f0-9]{64}$/.test(generation.parent.sourceSha256 ?? "")) {
+        throw new LoopInputError(`Explore generation ${generation.number} has an invalid parent SHA-256`);
+      }
     }
     const ids = new Set();
     for (const candidate of generation.candidates) {
@@ -259,6 +268,12 @@ export function renderReportText(state) {
       generation.rationale,
       "",
     );
+    if ((generation.mode ?? "explore") === "explore" && generation.parent) {
+      const parentId = generation.parent.type === "champion"
+        ? generation.parent.id
+        : `${generation.parent.challengerId} r${String(generation.parent.revision).padStart(2, "0")}`;
+      lines.push(`Parent: ${generation.parent.type} \`${parentId}\` (\`${generation.parent.sourceSha256}\`).`, "");
+    }
     for (const candidate of generation.candidates) {
       lines.push(
         `### ${candidate.id}`,
@@ -385,6 +400,57 @@ export async function startRun(options) {
   return { paths, state };
 }
 
+function assertOnlyKeys(value, allowed, label) {
+  const unexpected = Object.keys(value).filter((key) => !allowed.has(key));
+  if (unexpected.length > 0) throw new LoopInputError(`${label} has unsupported fields: ${unexpected.join(", ")}`);
+}
+
+function exploreParent(plan, registry) {
+  if (plan.schemaVersion === 1) {
+    return {
+      type: "champion",
+      id: registry.champion.id,
+      sourcePath: registry.champion.sourcePath ?? SOURCE,
+      sourceSha256: registry.champion.sourceSha256,
+    };
+  }
+  const parent = plan.parent;
+  if (typeof parent !== "object" || parent === null || !["champion", "challenger"].includes(parent.type)) {
+    throw new LoopInputError("Explore plan parent must select the champion or an active challenger");
+  }
+  const allowed = parent.type === "champion"
+    ? new Set(["type", "sourceSha256"])
+    : new Set(["type", "challengerId", "sourceSha256"]);
+  assertOnlyKeys(parent, allowed, "Explore parent");
+  if (!/^[a-f0-9]{64}$/.test(parent.sourceSha256 ?? "")) {
+    throw new LoopInputError("Explore parent sourceSha256 is required");
+  }
+  if (parent.type === "champion") {
+    if (parent.sourceSha256 !== registry.champion.sourceSha256) {
+      throw new LoopInputError("Explore plan parent does not match the current champion");
+    }
+    return {
+      type: "champion",
+      id: registry.champion.id,
+      sourcePath: registry.champion.sourcePath ?? SOURCE,
+      sourceSha256: parent.sourceSha256,
+    };
+  }
+  const challenger = activeChallenger(registry, parent.challengerId);
+  if (!challenger) throw new LoopInputError("Explore plan must select an active challenger");
+  const revision = currentRevision(challenger);
+  if (parent.sourceSha256 !== revision.sourceSha256) {
+    throw new LoopInputError("Explore plan parent does not match the challenger revision");
+  }
+  return {
+    type: "challenger",
+    challengerId: challenger.id,
+    revision: revision.number,
+    sourcePath: revision.sourcePath,
+    sourceSha256: revision.sourceSha256,
+  };
+}
+
 function validatePlan(plan, registry) {
   const mode = plan?.mode ?? (plan?.schemaVersion === 1 ? "explore" : null);
   if (![1, 2].includes(plan?.schemaVersion) || !MODES.has(mode) || !METHODS.has(plan.method)) {
@@ -408,13 +474,20 @@ function validatePlan(plan, registry) {
     if (!Array.isArray(plan.parameters) || plan.parameters.length === 0) {
       throw new LoopInputError("Tune plan requires parameter bindings");
     }
-    return mode;
+    return { mode, parent: null };
   }
+  assertOnlyKeys(
+    plan,
+    new Set(["schemaVersion", "mode", "method", "rationale", "parent", "candidates"]),
+    "Explore plan",
+  );
   if (!Array.isArray(plan.candidates) || plan.candidates.length !== 3) {
     throw new LoopInputError("Explore plan must contain exactly three candidates");
   }
   const ids = new Set();
   for (const candidate of plan.candidates) {
+    if (typeof candidate !== "object" || candidate === null) throw new LoopInputError("Explore candidates must be objects");
+    assertOnlyKeys(candidate, new Set(["id", "hypothesis", "implementationPlan"]), `Candidate ${candidate.id ?? "unknown"}`);
     assertId(candidate?.id, "candidate ID");
     if (ids.has(candidate.id)) throw new LoopInputError("Candidate IDs must be unique");
     ids.add(candidate.id);
@@ -424,7 +497,7 @@ function validatePlan(plan, registry) {
       }
     }
   }
-  return mode;
+  return { mode, parent: exploreParent(plan, registry) };
 }
 
 export function getStopReason(state) {
@@ -433,13 +506,55 @@ export function getStopReason(state) {
   return null;
 }
 
+function exploreParentPath(paths, generation) {
+  const parent = generation.parent;
+  if (parent?.type === "champion") {
+    if (parent.sourcePath !== SOURCE) throw new LoopInputError("Explore champion parent path is invalid");
+    return paths.sourcePath;
+  }
+  if (parent?.type !== "challenger") throw new LoopInputError("Explore generation is missing its parent");
+  assertId(parent.challengerId, "Explore parent challenger ID");
+  if (!Number.isSafeInteger(parent.revision) || parent.revision < 0) {
+    throw new LoopInputError("Explore parent challenger revision is invalid");
+  }
+  const expectedPath = path.join(
+    "results",
+    "challengers",
+    parent.challengerId,
+    `r${String(parent.revision).padStart(2, "0")}.py`,
+  );
+  if (parent.sourcePath !== expectedPath) throw new LoopInputError("Explore challenger parent path is invalid");
+  return path.join(paths.repo, expectedPath);
+}
+
+async function seedExploreSources(paths, state, generation) {
+  if (generation.mode !== "explore") return;
+  const parentSource = exploreParentPath(paths, generation);
+  if (await sha256(parentSource) !== generation.parent.sourceSha256) {
+    throw new LoopInputError("Explore parent source SHA-256 changed");
+  }
+  for (const candidate of generation.candidates) {
+    if (candidate.parentReady) continue;
+    const candidateSource = path.join(candidate.worktreePath, SOURCE);
+    const candidateSha256 = await sha256(candidateSource);
+    if (![state.baseline.sourceSha256, generation.parent.sourceSha256].includes(candidateSha256)) {
+      throw new LoopInputError(`Cannot initialize parent source for modified candidate ${candidate.id}`);
+    }
+    if (candidateSha256 !== generation.parent.sourceSha256) await fs.copyFile(parentSource, candidateSource);
+    candidate.parentReady = true;
+  }
+  await saveState(paths, state);
+}
+
 export async function prepareGeneration(options) {
   const { paths, state } = await loadState(options);
   const incomplete = state.generations.at(-1);
   if (state.status !== "active") throw new LoopInputError(`Run is ${state.status}, not active`);
   if (incomplete && ["preparing", "prepared"].includes(incomplete.status)) {
     await ensureWorktrees(paths, state, incomplete);
-    if (incomplete.mode === "tune") {
+    if (incomplete.mode === "explore") {
+      await seedExploreSources(paths, state, incomplete);
+    } else if (incomplete.mode === "tune") {
       await fs.copyFile(
         path.join(paths.repo, incomplete.parentRevision.sourcePath),
         path.join(incomplete.designer.worktreePath, SOURCE),
@@ -455,8 +570,11 @@ export async function prepareGeneration(options) {
   const planPath = path.resolve(options.planPath ?? "");
   const plan = await readJson(planPath, "generation plan");
   const baseline = await readJson(paths.baselinePath, "best baseline");
-  const registry = await loadRegistry(paths.repo, baseline);
-  const mode = validatePlan(plan, registry);
+  const registry = await loadRegistry(paths.repo, { ...baseline, sourceSha256: state.baseline.sourceSha256 });
+  const { mode, parent } = validatePlan(plan, registry);
+  if (mode === "explore" && await sha256(exploreParentPath(paths, { parent })) !== parent.sourceSha256) {
+    throw new LoopInputError("Explore plan parent source SHA-256 changed");
+  }
   const number = state.generations.length + 1;
   const generationRoot = ensureWorktreePath(path.join(WORKTREE_ROOT, state.runId, `g${String(number).padStart(2, "0")}`));
   const planArchivePath = path.join(paths.runDirectory, `g${String(number).padStart(2, "0")}`, "plan.json");
@@ -483,6 +601,7 @@ export async function prepareGeneration(options) {
     selection: null,
     promotion: null,
   };
+  if (mode === "explore") generation.parent = parent;
   if (mode === "tune") {
     const challenger = activeChallenger(registry, plan.challengerId);
     const revision = currentRevision(challenger);
@@ -502,7 +621,9 @@ export async function prepareGeneration(options) {
   state.generations.push(generation);
   await saveState(paths, state);
   await ensureWorktrees(paths, state, generation);
-  if (mode === "tune") {
+  if (mode === "explore") {
+    await seedExploreSources(paths, state, generation);
+  } else if (mode === "tune") {
     const parentSource = path.join(paths.repo, generation.parentRevision.sourcePath);
     const designerSource = path.join(generation.designer.worktreePath, SOURCE);
     await fs.copyFile(parentSource, designerSource);
@@ -643,12 +764,36 @@ function recomputeEligibility(evaluation, baseline) {
     && summary?.total === 20
     && summary?.bankruptcies === 0
     && Number.isSafeInteger(summary?.scoredPointsHundredths)
+    && Number.isSafeInteger(summary?.combinedPnlCents)
     && Number.isSafeInteger(summary?.minimumCapital?.endingCashCents)
     && Number.isSafeInteger(summary?.minimumCapital?.startingCapitalCents)
     && summary.minimumCapital.startingCapitalCents > 0;
   if (!complete) return false;
-  const pointDelta = summary.scoredPointsHundredths - baseline.summary.scoredPointsHundredths;
-  return pointDelta > 0 || (pointDelta === 0 && compareCapital(summary.minimumCapital, baseline.summary.minimumCapital) > 0);
+  return comparePerformance(summary, baseline.summary) > 0;
+}
+
+async function validateExploreCandidate(paths, generation, sourcePath) {
+  if (generation.mode !== "explore") return;
+  const parentSource = exploreParentPath(paths, generation);
+  if (await sha256(parentSource) !== generation.parent.sourceSha256) {
+    throw new LoopInputError("Explore parent source SHA-256 changed before archive");
+  }
+  await command(SCOPE_VALIDATOR, [
+    "--baseline", parentSource,
+    "--candidate", sourcePath,
+    "--target-method", generation.method,
+  ]);
+}
+
+async function candidatePatch(paths, generation, candidate, sourcePath) {
+  if (generation.mode === "tune") return `${JSON.stringify(candidate.parameters, null, 2)}\n`;
+  if (generation.parent.type === "champion") {
+    return (await git(candidate.worktreePath, "diff", "--binary", "HEAD", "--", SOURCE)).stdout;
+  }
+  const parentSource = exploreParentPath(paths, generation);
+  const result = await gitStatus(paths.repo, "diff", "--no-index", "--binary", "--", parentSource, sourcePath);
+  if (![0, 1].includes(result.status)) throw new LoopInputError(`Cannot create patch for ${candidate.id}`);
+  return result.stdout;
 }
 
 async function copyCandidate(paths, state, generation, candidate, invalidIds) {
@@ -659,9 +804,7 @@ async function copyCandidate(paths, state, generation, candidate, invalidIds) {
   await fs.copyFile(sourcePath, archivedSource);
   const sourceSha256 = await sha256(sourcePath);
   if (await sha256(archivedSource) !== sourceSha256) throw new LoopInputError(`Archive SHA-256 failed for ${candidate.id}`);
-  const patch = generation.mode === "tune"
-    ? `${JSON.stringify(candidate.parameters, null, 2)}\n`
-    : (await git(candidate.worktreePath, "diff", "--binary", "HEAD", "--", SOURCE)).stdout;
+  const patch = await candidatePatch(paths, generation, candidate, sourcePath);
   await fs.writeFile(path.join(archiveDirectory, "candidate.patch"), patch);
   candidate.sourceSha256 = sourceSha256;
   candidate.archiveDirectory = archiveDirectory;
@@ -671,6 +814,7 @@ async function copyCandidate(paths, state, generation, candidate, invalidIds) {
     candidate.status = "invalid";
     return null;
   }
+  await validateExploreCandidate(paths, generation, sourcePath);
   const evaluationPath = path.join(candidate.resultDirectory, "evaluation.json");
   const evaluation = await readJson(evaluationPath, `evaluation for ${candidate.id}`);
   if (evaluation.candidateId !== candidate.id || evaluation.sourceSha256 !== sourceSha256) {
@@ -878,35 +1022,79 @@ export async function archiveGeneration(options) {
       ? await selectFromFiles(evaluationPaths)
       : { schemaVersion: 1, promotion: false, winner: null, reason: "No valid candidate was evaluated" };
     const baseline = await readJson(paths.baselinePath, "best baseline");
-    const registry = await loadRegistry(paths.repo, baseline);
+    const registry = await loadRegistry(paths.repo, { ...baseline, sourceSha256: state.baseline.sourceSha256 });
     for (const candidate of generation.candidates) cacheEvaluation(registry, candidate.evaluation);
     if (selection.promotion) {
       const winner = generation.candidates.find(({ id }) => id === selection.winner.candidateId);
       selection.winner.sourcePath = winner.archivedSourcePath;
       selection.winner.evaluationPath = winner.evaluationPath;
     }
-    if (generation.mode === "explore" && analysis.challenger !== undefined) {
+    if (generation.mode === "explore") {
       const decision = analysis.challenger;
-      if (typeof decision?.candidateId !== "string" || typeof decision?.rationale !== "string" || !decision.rationale.trim()) {
+      if (decision !== undefined && (
+        typeof decision?.candidateId !== "string"
+        || typeof decision?.rationale !== "string"
+        || !decision.rationale.trim()
+      )) {
         throw new LoopInputError("Explore challenger decision requires candidateId and rationale");
       }
-      if (selection.winner?.candidateId === decision.candidateId) {
+      if (decision && selection.winner?.candidateId === decision.candidateId) {
         throw new LoopInputError("The promoted winner cannot also enter the challenger pool");
       }
-      const candidate = generation.candidates.find(({ id }) => id === decision.candidateId);
-      if (!candidate?.evaluation?.valid) throw new LoopInputError("Only a valid evaluated candidate can enter the pool");
-      const challengerId = `${state.runId}-g${String(generation.number).padStart(2, "0")}-${candidate.id}`;
-      await storeRevision({
-        repo: paths.repo,
-        registry,
-        challengerId,
-        sourcePath: candidate.archivedSourcePath,
-        evaluation: candidate.evaluation,
-        method: generation.method,
-        origin: "explore",
-        rationale: decision.rationale.trim(),
-      });
-      generation.challengerUpdate = `admitted ${challengerId}`;
+      const decisionCandidate = decision
+        ? generation.candidates.find(({ id }) => id === decision.candidateId)
+        : null;
+      if (decision && !decisionCandidate?.evaluation?.valid) {
+        throw new LoopInputError("Only a valid evaluated candidate can enter the pool");
+      }
+      let derivedCandidate = null;
+      let derivedFrom = null;
+      if (generation.parent.type === "challenger" && !selection.promotion) {
+        const parentChallenger = activeChallenger(registry, generation.parent.challengerId);
+        const parentRevision = parentChallenger && currentRevision(parentChallenger);
+        if (
+          !parentRevision
+          || parentRevision.number !== generation.parent.revision
+          || parentRevision.sourceSha256 !== generation.parent.sourceSha256
+        ) {
+          throw new LoopInputError("Explore parent challenger is no longer the selected active revision");
+        }
+        const validCandidates = generation.candidates.filter(({ evaluation }) => evaluation?.valid);
+        const best = [...validCandidates]
+          .sort((first, second) => compareStrategy(first.evaluation, second.evaluation))[0] ?? null;
+        if (best && strictlyImproves(best.evaluation, parentRevision.evaluation)) {
+          derivedCandidate = best;
+          derivedFrom = {
+            challengerId: parentChallenger.id,
+            revision: parentRevision.number,
+            sourceSha256: parentRevision.sourceSha256,
+          };
+        }
+      }
+      if (derivedCandidate && decision && decision.candidateId !== derivedCandidate.id) {
+        throw new LoopInputError(`Derived challenger must preserve strictly improved candidate ${derivedCandidate.id}`);
+      }
+      const candidate = generation.parent.type === "challenger"
+        ? derivedCandidate
+        : decisionCandidate;
+      if (candidate) {
+        const challengerId = `${state.runId}-g${String(generation.number).padStart(2, "0")}-${candidate.id}`;
+        const isDerived = candidate === derivedCandidate;
+        await storeRevision({
+          repo: paths.repo,
+          registry,
+          challengerId,
+          sourcePath: candidate.archivedSourcePath,
+          evaluation: candidate.evaluation,
+          method: generation.method,
+          origin: isDerived ? "derived-explore" : "explore",
+          rationale: decision?.rationale.trim()
+            ?? `Strictly improved active parent ${generation.parent.challengerId} without beating the champion.`,
+          derivedFrom,
+        });
+        generation.derivedCandidateId = isDerived ? candidate.id : null;
+        generation.challengerUpdate = `${isDerived ? "derived" : "admitted"} ${challengerId}`;
+      }
     }
     if (generation.mode === "tune") {
       const challenger = activeChallenger(registry, generation.challengerId);
@@ -915,7 +1103,7 @@ export async function archiveGeneration(options) {
       challenger.tuningAttempts += 1;
       const validCandidates = generation.candidates.filter(({ evaluation }) => evaluation?.valid);
       const best = [...validCandidates].sort((first, second) => compareStrategy(first.evaluation, second.evaluation))[0] ?? null;
-      const improved = best && compareStrategy(best.evaluation, parent.evaluation) < 0;
+      const improved = best && strictlyImproves(best.evaluation, parent.evaluation);
       const manifestArchive = path.join(
         paths.challengersPath,
         challenger.id,
@@ -1002,7 +1190,9 @@ export async function resumeRun(options) {
   await saveState(paths, state);
   if (generation.previousFailure.kind === "setup") {
     await ensureWorktrees(paths, state, generation);
-    if (generation.mode === "tune") {
+    if (generation.mode === "explore") {
+      await seedExploreSources(paths, state, generation);
+    } else if (generation.mode === "tune") {
       await fs.copyFile(
         path.join(paths.repo, generation.parentRevision.sourcePath),
         path.join(generation.designer.worktreePath, SOURCE),
@@ -1173,6 +1363,9 @@ export async function promoteGeneration(options) {
   const winner = generation.candidates.find(({ id }) => id === generation.selection.winner.candidateId);
   if (!winner || await sha256(winner.archivedSourcePath) !== winner.sourceSha256) {
     throw new LoopInputError("Winner archive SHA-256 verification failed");
+  }
+  if (!recomputeEligibility(winner.evaluation, { summary: state.baseline.summary })) {
+    throw new LoopInputError("Promotion winner does not strictly exceed the current champion");
   }
   const baseline = promotedBaseline(state, generation, winner);
   const artifactPath = path.join(paths.repo, baseline.resultArtifact);

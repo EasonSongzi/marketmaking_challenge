@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { compareCapital, parseCaseResult } from "../src/case-result.mjs";
+import { compareCapital, comparePerformance, parseCaseResult } from "../src/case-result.mjs";
 import { rawCase, runtimeErrorCase } from "./fixtures/run-data.mjs";
 
 test("parseCaseResult parses THEO, VERBOSE, and SCORED cases", () => {
@@ -79,4 +79,28 @@ test("compareCapital uses exact integer ratios", () => {
     ),
     1,
   );
+});
+
+test("comparePerformance uses points, PnL, and capital ratio in order", () => {
+  const base = {
+    scoredPointsHundredths: 900,
+    combinedPnlCents: -273,
+    minimumCapital: { endingCashCents: 769, startingCapitalCents: 1000 },
+  };
+  assert.equal(comparePerformance({ ...base, scoredPointsHundredths: 901 }, base), 1);
+  assert.equal(comparePerformance({
+    ...base,
+    combinedPnlCents: -272,
+    minimumCapital: { endingCashCents: 7, startingCapitalCents: 10 },
+  }, base), 1);
+  assert.equal(comparePerformance({
+    ...base,
+    minimumCapital: { endingCashCents: 77, startingCapitalCents: 100 },
+  }, base), 1);
+  assert.equal(comparePerformance({
+    ...base,
+    combinedPnlCents: -274,
+    minimumCapital: { endingCashCents: 9, startingCapitalCents: 10 },
+  }, base), -1);
+  assert.equal(comparePerformance(structuredClone(base), base), 0);
 });

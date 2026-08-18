@@ -32,20 +32,26 @@ test("selectCandidates orders multiple candidates by points", () => {
   assert.equal(selection.winner.candidateId, "higher");
 });
 
-test("selectCandidates breaks point ties by minimum capital ratio", () => {
+test("selectCandidates breaks point ties by PnL before capital ratio", () => {
   const selection = selectCandidates([
-    candidate("lower", { minimumCapital: { endingCashCents: 799, startingCapitalCents: 1000 } }),
-    candidate("higher", { minimumCapital: { endingCashCents: 4, startingCapitalCents: 5 } }),
+    candidate("higher-capital", {
+      combinedPnlCents: 99,
+      minimumCapital: { endingCashCents: 9, startingCapitalCents: 10 },
+    }),
+    candidate("higher-pnl", {
+      combinedPnlCents: 100,
+      minimumCapital: { endingCashCents: 7, startingCapitalCents: 10 },
+    }),
   ]);
-  assert.equal(selection.winner.candidateId, "higher");
+  assert.equal(selection.winner.candidateId, "higher-pnl");
 });
 
-test("selectCandidates then breaks ties by PnL and modified lines", () => {
-  const pnlWinner = selectCandidates([
-    candidate("lower-pnl", { combinedPnlCents: 99 }),
-    candidate("higher-pnl", { combinedPnlCents: 100 }),
+test("selectCandidates then breaks ties by capital ratio and modified lines", () => {
+  const capitalWinner = selectCandidates([
+    candidate("lower-capital", { minimumCapital: { endingCashCents: 799, startingCapitalCents: 1000 } }),
+    candidate("higher-capital", { minimumCapital: { endingCashCents: 4, startingCapitalCents: 5 } }),
   ]);
-  assert.equal(pnlWinner.winner.candidateId, "higher-pnl");
+  assert.equal(capitalWinner.winner.candidateId, "higher-capital");
 
   const diffWinner = selectCandidates([
     candidate("larger-diff", {}, { modifiedLines: 11 }),

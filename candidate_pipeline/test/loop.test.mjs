@@ -23,6 +23,36 @@ import { rawCase, rawReport, runtimeErrorCase } from "./fixtures/run-data.mjs";
 
 const execFile = promisify(execFileCallback);
 const worktreeRoot = "/tmp/akuna-market-maker";
+const marketMakerSource = `\
+class MarketMaker:
+    def __init__(self, underlying_initial_state: list, option_initial_state: list, cash_balance: float) -> None:
+        pass
+
+    def on_step_advance(self, new_underlying_state: list, new_option_state: list) -> None:
+        pass
+
+    def on_trade(self, option: object, price: float, quantity: int, counterparty_id: int) -> None:
+        pass
+
+    @property
+    def name(self) -> str:
+        return "fixture"
+
+    def price_option(self, option: object) -> float:
+        return 0.5
+
+    def price_option_from_parameters(self, market_parameters: object, option: object) -> float:
+        return 0.5
+
+    def quote(self, option: object, counterparty_id: int) -> object:
+        return None
+
+    def respond_to_fok(self, option: object, fok_order: object) -> bool:
+        return False
+
+    def warm_up(self, market_history: object) -> None:
+        pass
+`;
 
 function baseline(schemaVersion = 1, sourceSha256) {
   const value = {
@@ -66,7 +96,7 @@ async function git(repo, ...argumentsList) {
 async function createRepo(schemaVersion = 1) {
   const repo = await fs.mkdtemp(path.join(tmpdir(), "akuna-loop-test-"));
   await fs.mkdir(path.join(repo, "results", "baselines"), { recursive: true });
-  await fs.writeFile(path.join(repo, "Market_making_binary_option.py"), "class MarketMaker:\n    pass\n");
+  await fs.writeFile(path.join(repo, "Market_making_binary_option.py"), marketMakerSource);
   const source = await fs.readFile(path.join(repo, "Market_making_binary_option.py"));
   const sourceSha256 = createHash("sha256").update(source).digest("hex");
   await fs.writeFile(path.join(repo, "results", "baselines", "best.json"), `${JSON.stringify(baseline(schemaVersion, sourceSha256), null, 2)}\n`);
@@ -80,6 +110,46 @@ async function createRepo(schemaVersion = 1) {
   await git(repo, "add", ".");
   await git(repo, "commit", "-qm", "fixture");
   return repo;
+}
+
+async function addChallenger(repo, { id = "parent-challenger", method = "quote", points = 800 } = {}) {
+  const championSource = await fs.readFile(path.join(repo, "Market_making_binary_option.py"), "utf8");
+  const challengerSource = championSource.replace("        return None", "        return (0.45, 0.55)");
+  const sourcePath = path.join(repo, "results", "challengers", id, "r00.py");
+  await fs.mkdir(path.dirname(sourcePath), { recursive: true });
+  await fs.writeFile(sourcePath, challengerSource);
+  const sourceSha256 = createHash("sha256").update(challengerSource).digest("hex");
+  const candidateEvaluation = evaluation(id, sourcePath, sourceSha256, points);
+  const best = JSON.parse(await fs.readFile(path.join(repo, "results", "baselines", "best.json")));
+  await fs.writeFile(path.join(repo, "results", "strategy-state.json"), JSON.stringify({
+    schemaVersion: 1,
+    champion: {
+      id: best.strategy,
+      sourcePath: "Market_making_binary_option.py",
+      sourceSha256: best.sourceSha256,
+      summary: best.summary,
+    },
+    challengers: [{
+      id,
+      status: "active",
+      method,
+      origin: "explore",
+      rationale: "fixture parent",
+      tuningAttempts: 0,
+      currentRevision: 0,
+      revisions: [{
+        number: 0,
+        sourcePath: path.relative(repo, sourcePath),
+        sourceSha256,
+        evaluation: candidateEvaluation,
+      }],
+      tuningHistory: [],
+    }],
+    evaluations: {},
+  }));
+  await git(repo, "add", "results");
+  await git(repo, "commit", "-qm", "add parent challenger");
+  return { id, sourcePath, sourceSha256, source: challengerSource };
 }
 
 function runId(label) {
@@ -223,6 +293,103 @@ test("prepare validates plans and creates exactly three detached worktrees", asy
       assert.ok(candidate.worktreePath.startsWith(`${worktreeRoot}/${id}/`));
       assert.equal((await git(candidate.worktreePath, "symbolic-ref", "-q", "HEAD").catch((error) => error)).code, 1);
     }
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("schema-version-2 Explore can explicitly pin the current champion parent", async () => {
+  const repo = await createRepo(2);
+  const id = runId("explore-champion");
+  try {
+    const best = JSON.parse(await fs.readFile(path.join(repo, "results", "baselines", "best.json")));
+    await startRun({ repo, runId: id });
+    const prepared = await prepareGeneration({
+      repo,
+      runId: id,
+      planPath: await writePlan(repo, {
+        ...plan(),
+        schemaVersion: 2,
+        mode: "explore",
+        parent: { type: "champion", sourceSha256: best.sourceSha256 },
+      }),
+    });
+    assert.equal(prepared.generation.parent.type, "champion");
+    assert.equal(prepared.generation.parent.sourceSha256, best.sourceSha256);
+    assert.ok(prepared.generation.candidates.every(({ parentReady }) => parentReady));
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("Explore selects a hash-pinned active challenger and rejects extra method declarations", async () => {
+  const repo = await createRepo(2);
+  const id = runId("explore-parent");
+  try {
+    const parent = await addChallenger(repo);
+    await startRun({ repo, runId: id });
+    const explorePlan = {
+      ...plan(),
+      schemaVersion: 2,
+      mode: "explore",
+      method: "respond_to_fok",
+      parent: {
+        type: "challenger",
+        challengerId: parent.id,
+        sourceSha256: parent.sourceSha256,
+      },
+    };
+    const multipleMethods = { ...explorePlan, methods: ["quote", "respond_to_fok"] };
+    await assert.rejects(
+      prepareGeneration({ repo, runId: id, planPath: await writePlan(repo, multipleMethods) }),
+      /unsupported fields: methods/,
+    );
+    const prepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo, explorePlan) });
+    assert.deepEqual(
+      {
+        type: prepared.generation.parent.type,
+        challengerId: prepared.generation.parent.challengerId,
+        revision: prepared.generation.parent.revision,
+        sourceSha256: prepared.generation.parent.sourceSha256,
+      },
+      { type: "challenger", challengerId: parent.id, revision: 0, sourceSha256: parent.sourceSha256 },
+    );
+    for (const candidate of prepared.generation.candidates) {
+      assert.equal(
+        await fs.readFile(path.join(candidate.worktreePath, "Market_making_binary_option.py"), "utf8"),
+        parent.source,
+      );
+    }
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("Explore rejects stale or inactive challenger parents", async () => {
+  const repo = await createRepo(2);
+  const id = runId("explore-stale-parent");
+  try {
+    const parent = await addChallenger(repo);
+    await startRun({ repo, runId: id });
+    const explorePlan = {
+      ...plan(),
+      schemaVersion: 2,
+      mode: "explore",
+      parent: { type: "challenger", challengerId: parent.id, sourceSha256: "0".repeat(64) },
+    };
+    await assert.rejects(
+      prepareGeneration({ repo, runId: id, planPath: await writePlan(repo, explorePlan) }),
+      /does not match the challenger revision/,
+    );
+    const registryPath = path.join(repo, "results", "strategy-state.json");
+    const registry = JSON.parse(await fs.readFile(registryPath));
+    registry.challengers[0].status = "retired";
+    await fs.writeFile(registryPath, JSON.stringify(registry));
+    explorePlan.parent.sourceSha256 = parent.sourceSha256;
+    await assert.rejects(
+      prepareGeneration({ repo, runId: id, planPath: await writePlan(repo, explorePlan) }),
+      /active challenger/,
+    );
   } finally {
     await cleanup(repo, id);
   }
@@ -728,6 +895,125 @@ test("archive recomputes eligibility instead of trusting candidate JSON", async 
   }
 });
 
+test("Explore preserves the best strict parent improvement as a derived challenger", async () => {
+  const repo = await createRepo(2);
+  const id = runId("derived-explore");
+  try {
+    const parent = await addChallenger(repo, { points: 800 });
+    await startRun({ repo, runId: id });
+    const prepared = await prepareGeneration({
+      repo,
+      runId: id,
+      planPath: await writePlan(repo, {
+        ...plan(),
+        schemaVersion: 2,
+        mode: "explore",
+        method: "warm_up",
+        parent: {
+          type: "challenger",
+          challengerId: parent.id,
+          sourceSha256: parent.sourceSha256,
+        },
+      }),
+    });
+    await populateEvaluations(prepared.generation, [850, 890, 880]);
+    const { generation } = await archiveGeneration({
+      repo,
+      runId: id,
+      ...await archiveInputs(repo, "derived-explore"),
+    });
+    assert.equal(generation.selection.promotion, false);
+    assert.equal(generation.derivedCandidateId, "candidate-b");
+    const registry = JSON.parse(await fs.readFile(path.join(repo, "results", "strategy-state.json")));
+    const derived = registry.challengers.find(({ origin }) => origin === "derived-explore");
+    assert.equal(derived.status, "active");
+    assert.equal(derived.method, "warm_up");
+    assert.deepEqual(derived.derivedFrom, {
+      challengerId: parent.id,
+      revision: 0,
+      sourceSha256: parent.sourceSha256,
+    });
+    assert.equal(
+      derived.revisions.find(({ number }) => number === derived.currentRevision).sourceSha256,
+      generation.candidates[1].sourceSha256,
+    );
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("challenger-parent Explore discards branches that do not improve the parent", async () => {
+  const repo = await createRepo(2);
+  const id = runId("derived-explore-weaker");
+  try {
+    const parent = await addChallenger(repo, { points: 850 });
+    await startRun({ repo, runId: id });
+    const prepared = await prepareGeneration({
+      repo,
+      runId: id,
+      planPath: await writePlan(repo, {
+        ...plan(),
+        schemaVersion: 2,
+        mode: "explore",
+        method: "warm_up",
+        parent: {
+          type: "challenger",
+          challengerId: parent.id,
+          sourceSha256: parent.sourceSha256,
+        },
+      }),
+    });
+    await populateEvaluations(prepared.generation, [840, 830, 820]);
+    const { generation } = await archiveGeneration({
+      repo,
+      runId: id,
+      ...await archiveInputs(repo, "derived-explore-weaker", {
+        finding: "No branch improved the parent.",
+        challenger: { candidateId: "candidate-a", rationale: "Keep the least weak branch." },
+      }),
+    });
+
+    assert.equal(generation.derivedCandidateId, undefined);
+    assert.equal(generation.challengerUpdate, undefined);
+    const registry = JSON.parse(await fs.readFile(path.join(repo, "results", "strategy-state.json")));
+    assert.deepEqual(registry.challengers.map(({ id: challengerId }) => challengerId), [parent.id]);
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("archive recomputes the PnL promotion tie-break", async () => {
+  const repo = await createRepo();
+  const id = runId("pnl-gate");
+  try {
+    await startRun({ repo, runId: id });
+    const prepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo) });
+    await populateEvaluations(prepared.generation, [900, 900, 900]);
+    const pnls = [-273, -200, -300];
+    const capitals = [769, 760, 800];
+    for (const [index, candidate] of prepared.generation.candidates.entries()) {
+      const evaluationPath = path.join(candidate.resultDirectory, "evaluation.json");
+      const saved = JSON.parse(await fs.readFile(evaluationPath));
+      saved.eligible = false;
+      saved.summary.combinedPnlCents = pnls[index];
+      saved.summary.minimumCapital = { endingCashCents: capitals[index], startingCapitalCents: 1000 };
+      await fs.writeFile(evaluationPath, JSON.stringify(saved));
+    }
+
+    const { generation } = await archiveGeneration({
+      repo,
+      runId: id,
+      ...await archiveInputs(repo, "pnl-gate"),
+    });
+    assert.equal(generation.candidates[0].evaluation.eligible, false);
+    assert.equal(generation.candidates[1].evaluation.eligible, true);
+    assert.equal(generation.candidates[2].evaluation.eligible, false);
+    assert.equal(generation.selection.winner.candidateId, "candidate-b");
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
 test("an archive SHA mismatch is a hard stop and preserves every worktree", async () => {
   const repo = await createRepo();
   const id = runId("hash");
@@ -778,6 +1064,28 @@ test("promotion migrates v1 to v2 and commits only loop outputs", async () => {
     const { stdout: names } = await git(repo, "show", "--pretty=format:", "--name-only", promoted.commit);
     assert.ok(!names.split("\n").includes("AGENTS.MD"));
     assert.match((await git(repo, "status", "--short", "--", "AGENTS.MD")).stdout, /^ M AGENTS\.MD/);
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
+test("promotion rechecks that the winner still strictly exceeds the current champion", async () => {
+  const repo = await createRepo();
+  const id = runId("promotion-champion-gate");
+  try {
+    const started = await startRun({ repo, runId: id });
+    const prepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo) });
+    await populateEvaluations(prepared.generation);
+    await archiveGeneration({ repo, runId: id, ...await archiveInputs(repo, "promotion-champion-gate") });
+    const state = JSON.parse(await fs.readFile(started.paths.statePath));
+    const winnerId = state.generations[0].selection.winner.candidateId;
+    const winner = state.generations[0].candidates.find(({ id: candidateId }) => candidateId === winnerId);
+    winner.evaluation.summary = structuredClone(state.baseline.summary);
+    await fs.writeFile(started.paths.statePath, JSON.stringify(state));
+    await assert.rejects(
+      promoteGeneration({ repo, runId: id }),
+      /does not strictly exceed the current champion/,
+    );
   } finally {
     await cleanup(repo, id);
   }

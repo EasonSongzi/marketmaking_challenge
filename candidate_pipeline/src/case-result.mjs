@@ -123,3 +123,13 @@ export function compareCapital(first, second) {
   const right = BigInt(second.endingCashCents) * BigInt(first.startingCapitalCents);
   return left === right ? 0 : left > right ? 1 : -1;
 }
+
+export function comparePerformance(first, second) {
+  if (first.scoredPointsHundredths !== second.scoredPointsHundredths) {
+    return first.scoredPointsHundredths > second.scoredPointsHundredths ? 1 : -1;
+  }
+  if (first.combinedPnlCents !== second.combinedPnlCents) {
+    return first.combinedPnlCents > second.combinedPnlCents ? 1 : -1;
+  }
+  return compareCapital(first.minimumCapital, second.minimumCapital);
+}

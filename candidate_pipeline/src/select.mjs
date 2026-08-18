@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { compareCapital } from "./case-result.mjs";
+import { comparePerformance } from "./case-result.mjs";
 
 class InputError extends Error {}
 
@@ -119,18 +119,8 @@ async function verifySource(evaluation) {
 }
 
 function compareCandidates(first, second) {
-  const pointDelta = second.summary.scoredPointsHundredths - first.summary.scoredPointsHundredths;
-  if (pointDelta !== 0) {
-    return pointDelta;
-  }
-  const capitalComparison = compareCapital(first.summary.minimumCapital, second.summary.minimumCapital);
-  if (capitalComparison !== 0) {
-    return -capitalComparison;
-  }
-  const pnlDelta = second.summary.combinedPnlCents - first.summary.combinedPnlCents;
-  if (pnlDelta !== 0) {
-    return pnlDelta;
-  }
+  const performance = comparePerformance(first.summary, second.summary);
+  if (performance !== 0) return -performance;
   const firstLines = first.modifiedLines ?? Number.MAX_SAFE_INTEGER;
   const secondLines = second.modifiedLines ?? Number.MAX_SAFE_INTEGER;
   if (firstLines !== secondLines) {

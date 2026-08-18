@@ -5,7 +5,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { compareCapital, parseCaseResult } from "./case-result.mjs";
+import { compareCapital, comparePerformance, parseCaseResult } from "./case-result.mjs";
 
 class InputError extends Error {}
 
@@ -243,11 +243,7 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
   const valid = evidenceReasons.length === 0;
   let eligible = false;
   if (valid && performanceReasons.length === 0) {
-    const pointComparison = summary.scoredPointsHundredths - baseline.summary.scoredPointsHundredths;
-    eligible = pointComparison > 0 || (
-      pointComparison === 0
-      && compareCapital(summary.minimumCapital, baseline.summary.minimumCapital) > 0
-    );
+    eligible = comparePerformance(summary, baseline.summary) > 0;
     if (!eligible) {
       performanceReasons.push("Candidate did not strictly exceed the baseline");
     }

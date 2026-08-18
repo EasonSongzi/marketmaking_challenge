@@ -7,6 +7,29 @@ import test from "node:test";
 
 import { GenerationInputError, failureMessage, runGeneration } from "../src/run-generation.mjs";
 
+const scopedSource = `\
+class MarketMaker:
+    def __init__(self, a: list, b: list, c: float) -> None:
+        pass
+    def on_step_advance(self, a: list, b: list) -> None:
+        pass
+    def on_trade(self, a: object, b: float, c: int, d: int) -> None:
+        pass
+    @property
+    def name(self) -> str:
+        return "fixture"
+    def price_option(self, option: object) -> float:
+        return 0.5
+    def price_option_from_parameters(self, parameters: object, option: object) -> float:
+        return 0.5
+    def quote(self, option: object, counterparty_id: int) -> object:
+        return None
+    def respond_to_fok(self, option: object, order: object) -> bool:
+        return False
+    def warm_up(self, history: object) -> None:
+        pass
+`;
+
 function summary(points = 900) {
   return {
     passed: 20,
@@ -39,7 +62,7 @@ async function fixture(statuses = ["prepared", "prepared", "prepared"]) {
   const state = {
     schemaVersion: 2,
     runId: "run-001",
-    generations: [{ number: 1, mode: "explore", status: "prepared", candidates }],
+    generations: [{ number: 1, mode: "explore", method: "quote", status: "prepared", candidates }],
   };
   const baseline = {
     schemaVersion: 2,
@@ -176,6 +199,37 @@ test("reuses a cached source SHA without executing the runner", async (t) => {
   const evaluation = JSON.parse(await fs.readFile(path.join(input.candidates[0].resultDirectory, "evaluation.json")));
   assert.equal(evaluation.cached, true);
   assert.equal(evaluation.eligible, true);
+});
+
+test("Explore skips a candidate that changes a non-target core method", async (t) => {
+  const input = await fixture();
+  t.after(() => removeFixture(input));
+  const parentPath = path.join(input.directory, "Market_making_binary_option.py");
+  await fs.writeFile(parentPath, scopedSource);
+  for (const candidate of input.candidates) {
+    await fs.writeFile(path.join(candidate.worktreePath, "Market_making_binary_option.py"), scopedSource);
+  }
+  await fs.writeFile(
+    path.join(input.candidates[0].worktreePath, "Market_making_binary_option.py"),
+    scopedSource.replace("        return False", "        return True"),
+  );
+  const state = JSON.parse(await fs.readFile(input.statePath));
+  state.generations[0].method = "quote";
+  state.generations[0].parent = {
+    type: "champion",
+    id: "baseline",
+    sourcePath: "Market_making_binary_option.py",
+    sourceSha256: createHash("sha256").update(scopedSource).digest("hex"),
+  };
+  await fs.writeFile(input.statePath, JSON.stringify(state));
+  let executions = 0;
+  const result = await runGeneration(input, {
+    async executeCandidate() { executions += 1; return 0; },
+  });
+  assert.equal(result.output.candidates[0].status, "scope-invalid");
+  assert.equal(result.output.candidates[0].scopeValidated, undefined);
+  assert.ok(result.output.candidates.slice(1).every(({ scopeValidated }) => scopeValidated));
+  assert.equal(executions, 2);
 });
 
 test("rejects unknown invalid IDs and malformed state before execution", async (t) => {
