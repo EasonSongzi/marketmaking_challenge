@@ -243,3 +243,87 @@ Promotion: none.
 Finding: All three FOK structures passed 20/20 without bankruptcy or runtime errors. Inventory unwind tied the 12.30 champion with identical minimum capital and added 3.48 combined PnL. The projected-position guard fell to 12.00 and lost 3.83 PnL. A one-cent tail edge tied 12.30 but lost 2.69 PnL, so only the unwind exception preserved rank while improving economics.
 Next-generation rationale: Admit inventory unwind and use the sixth generation to tune the ordinary FOK rule around it. The existing two-cent edge and half-dollar cap expose explicit paired literals, and their interaction may differ now that safe position-reducing flow bypasses the ordinary cap.
 Challenger update: admitted market-loop-20260818-2-g05-g5-inventory-unwind.
+
+## Generation 6: tune respond_to_fok
+
+Inventory unwind tied the champion and added PnL. Jointly tune only the ordinary-order favorable edge and total worst-case-loss cap while preserving the full unwind exception and all other champion behavior.
+
+### coarse-edge-floor
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-2-g05-g5-inventory-unwind
+- Implementation plan: {"ordinaryEdge":0.01,"lossCap":0.5}
+- Worker summary: Designed eight immutable joint ordinary-edge and loss-cap vectors spanning coarse, medium, and fine granularity while preserving the inventory-unwind exception. The materializer changed only the four bound literals and passed compile/scope checks; the serial dispatcher evaluated each unique source once, with one automatic browser retry that succeeded.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 76.28; minimum capital 5.92/10.00
+- Baseline delta: 0.00 points; PnL 0.79
+
+### coarse-cap-ceiling
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-2-g05-g5-inventory-unwind
+- Implementation plan: {"ordinaryEdge":0.02,"lossCap":1}
+- Worker summary: Designed eight immutable joint ordinary-edge and loss-cap vectors spanning coarse, medium, and fine granularity while preserving the inventory-unwind exception. The materializer changed only the four bound literals and passed compile/scope checks; the serial dispatcher evaluated each unique source once, with one automatic browser retry that succeeded.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.50/16.00 points; PnL 101.19; minimum capital 35.32/40.00
+- Baseline delta: -0.80 points; PnL 25.70
+
+### coarse-joint-extremes
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-2-g05-g5-inventory-unwind
+- Implementation plan: {"ordinaryEdge":0.04,"lossCap":1}
+- Worker summary: Designed eight immutable joint ordinary-edge and loss-cap vectors spanning coarse, medium, and fine granularity while preserving the inventory-unwind exception. The materializer changed only the four bound literals and passed compile/scope checks; the serial dispatcher evaluated each unique source once, with one automatic browser retry that succeeded.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.50/16.00 points; PnL 67.30; minimum capital 5.80/10.00
+- Baseline delta: -0.80 points; PnL -8.19
+
+### medium-edge-ceiling
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-2-g05-g5-inventory-unwind
+- Implementation plan: {"ordinaryEdge":0.04,"lossCap":0.5}
+- Worker summary: Designed eight immutable joint ordinary-edge and loss-cap vectors spanning coarse, medium, and fine granularity while preserving the inventory-unwind exception. The materializer changed only the four bound literals and passed compile/scope checks; the serial dispatcher evaluated each unique source once, with one automatic browser retry that succeeded.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 58.64; minimum capital 5.92/10.00
+- Baseline delta: -0.60 points; PnL -16.85
+
+### medium-cap-floor
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-2-g05-g5-inventory-unwind
+- Implementation plan: {"ordinaryEdge":0.02,"lossCap":0.25}
+- Worker summary: Designed eight immutable joint ordinary-edge and loss-cap vectors spanning coarse, medium, and fine granularity while preserving the inventory-unwind exception. The materializer changed only the four bound literals and passed compile/scope checks; the serial dispatcher evaluated each unique source once, with one automatic browser retry that succeeded.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 59.24; minimum capital 5.92/10.00
+- Baseline delta: -0.60 points; PnL -16.25
+
+### medium-joint-floor
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-2-g05-g5-inventory-unwind
+- Implementation plan: {"ordinaryEdge":0.01,"lossCap":0.25}
+- Worker summary: Designed eight immutable joint ordinary-edge and loss-cap vectors spanning coarse, medium, and fine granularity while preserving the inventory-unwind exception. The materializer changed only the four bound literals and passed compile/scope checks; the serial dispatcher evaluated each unique source once, with one automatic browser retry that succeeded.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 57.69; minimum capital 5.92/10.00
+- Baseline delta: -0.60 points; PnL -17.80
+
+### fine-edge-nearby
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-2-g05-g5-inventory-unwind
+- Implementation plan: {"ordinaryEdge":0.025,"lossCap":0.5}
+- Worker summary: Designed eight immutable joint ordinary-edge and loss-cap vectors spanning coarse, medium, and fine granularity while preserving the inventory-unwind exception. The materializer changed only the four bound literals and passed compile/scope checks; the serial dispatcher evaluated each unique source once, with one automatic browser retry that succeeded.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 79.61; minimum capital 5.92/10.00
+- Baseline delta: 0.00 points; PnL 4.12
+
+### fine-joint-nearby
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-2-g05-g5-inventory-unwind
+- Implementation plan: {"ordinaryEdge":0.025,"lossCap":0.375}
+- Worker summary: Designed eight immutable joint ordinary-edge and loss-cap vectors spanning coarse, medium, and fine granularity while preserving the inventory-unwind exception. The materializer changed only the four bound literals and passed compile/scope checks; the serial dispatcher evaluated each unique source once, with one automatic browser retry that succeeded.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 58.11; minimum capital 5.92/10.00
+- Baseline delta: -0.60 points; PnL -17.38
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All eight variants passed 20/20 without bankruptcy or runtime errors. A 2.5-cent ordinary edge at the parent half-dollar cap was best at 12.30 points, 5.92/10.00 minimum capital, and 79.61 combined PnL, improving the inventory-unwind parent by 0.64 PnL. A one-cent edge at the parent cap also tied 12.30 but produced only 76.28 PnL. Every cap change or four-cent edge reduced points to 11.50-11.70, despite the one-dollar cap producing the batch's highest raw PnL in one vector.
+Next-generation rationale: Update the inventory-unwind challenger to the 2.5-cent edge revision. The configured six-generation limit is reached, so stop without further live evaluation.
+Challenger update: updated market-loop-20260818-2-g05-g5-inventory-unwind to fine-edge-nearby.
+Previous failure (runner): medium-joint-floor runner failure; automatic retry requested
+Recovery instruction: Repair the HackerRank browser profile with `auto_extract_result/login.sh`, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "792c6f164814917f4d3bb0f289af83cabcb259fb6abba9296788a9e125411b5b",
+  "variants": [
+    {
+      "id": "coarse-edge-floor",
+      "granularity": "coarse",
+      "parameters": {
+        "ordinaryEdge": 0.01,
+        "lossCap": 0.5
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g06/tune-06/.tuning/market-loop-20260818-2/g06/variants/coarse-edge-floor/Market_making_binary_option.py",
+      "sourceSha256": "07826523474f89a20104512ed813cf6f38043f414a0e38a1db49701118300521",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "coarse-cap-ceiling",
+      "granularity": "coarse",
+      "parameters": {
+        "ordinaryEdge": 0.02,
+        "lossCap": 1.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g06/tune-06/.tuning/market-loop-20260818-2/g06/variants/coarse-cap-ceiling/Market_making_binary_option.py",
+      "sourceSha256": "f5c901be8e1658363b867276e66113491f7cb18efac4a79e228ed888a7c7e3b5",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "coarse-joint-extremes",
+      "granularity": "coarse",
+      "parameters": {
+        "ordinaryEdge": 0.04,
+        "lossCap": 1.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g06/tune-06/.tuning/market-loop-20260818-2/g06/variants/coarse-joint-extremes/Market_making_binary_option.py",
+      "sourceSha256": "694c0a19d812c68ec9d891d38264a9e7d1a6456c909fc6d4546e654d7a168ef3",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "medium-edge-ceiling",
+      "granularity": "medium",
+      "parameters": {
+        "ordinaryEdge": 0.04,
+        "lossCap": 0.5
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g06/tune-06/.tuning/market-loop-20260818-2/g06/variants/medium-edge-ceiling/Market_making_binary_option.py",
+      "sourceSha256": "f3a290d7ca6dc618e41f663c8ccb7524fc98ec3a5fd51c08c13466e1352e6cd9",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "medium-cap-floor",
+      "granularity": "medium",
+      "parameters": {
+        "ordinaryEdge": 0.02,
+        "lossCap": 0.25
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g06/tune-06/.tuning/market-loop-20260818-2/g06/variants/medium-cap-floor/Market_making_binary_option.py",
+      "sourceSha256": "3ea5949ff4652656ddf2ca1850100622ed94a14e287bc9b6bf746fa0ecdbfb32",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "medium-joint-floor",
+      "granularity": "medium",
+      "parameters": {
+        "ordinaryEdge": 0.01,
+        "lossCap": 0.25
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g06/tune-06/.tuning/market-loop-20260818-2/g06/variants/medium-joint-floor/Market_making_binary_option.py",
+      "sourceSha256": "a1e7c3f35094b910ef161940e9f4589f94a7ee3c8d0b99f8ef6b70d44ec0d567",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "fine-edge-nearby",
+      "granularity": "fine",
+      "parameters": {
+        "ordinaryEdge": 0.025,
+        "lossCap": 0.5
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g06/tune-06/.tuning/market-loop-20260818-2/g06/variants/fine-edge-nearby/Market_making_binary_option.py",
+      "sourceSha256": "41272ed59ec4ad6cf3e210434ed0b58a0fd22c6d6a33ce8c79b6dbebc8d75e7f",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "fine-joint-nearby",
+      "granularity": "fine",
+      "parameters": {
+        "ordinaryEdge": 0.025,
+        "lossCap": 0.375
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-2/g06/tune-06/.tuning/market-loop-20260818-2/g06/variants/fine-joint-nearby/Market_making_binary_option.py",
+      "sourceSha256": "3c4239561556a4ce85694360cf2c1a7e94bf3b848bddefb831678440b251af5b",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}
