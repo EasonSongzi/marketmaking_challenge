@@ -462,13 +462,6 @@ class MarketMaker:
         rate_up_probability, rate_down_probability, rate_reversion_strength = (
             self._estimate_rate_parameters(rate_values)
         )
-        num_rate_transitions: int = len(rate_changes)
-        rate_up_probability = (rate_up_probability * num_rate_transitions + 0.5) / (
-            num_rate_transitions + 1.5
-        )
-        rate_down_probability = (rate_down_probability * num_rate_transitions + 0.5) / (
-            num_rate_transitions + 1.5
-        )
         ajarai_drift, ajarai_rate_beta, ajarai_residuals = self._linear_regression(
             rate_changes,
             ajarai_log_returns,

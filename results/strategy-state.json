@@ -1,21 +1,22 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g5-wide-three-two",
+    "id": "g2-rate-smoothing",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "f19704494d5edc6cff65eac13240ce2fe32ca4afef87d1e414573eac694630a0",
+    "sourceSha256": "f4d4f21e12b5d011db36f4b8585a88b887497eb068e7a14ea526ecd99d44cd3a",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260818:g05:g5-wide-three-two",
+    "experimentId": "market-loop-20260818-3:g02:g2-rate-smoothing",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1230,
-      "combinedPnlCents": 7549,
+      "combinedPnlCents": 7722,
       "minimumCapital": {
-        "endingCashCents": 592,
+        "endingCashCents": 598,
         "startingCapitalCents": 1000
-      }
+      },
+      "runtimeErrors": 0
     }
   },
   "challengers": [
@@ -335,6 +336,53 @@
           "improved": true
         }
       ]
+    },
+    {
+      "id": "market-loop-20260818-3-g02-champion-g5-wide-three-two",
+      "status": "active",
+      "method": "warm_up",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g2-rate-smoothing",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260818-3-g02-champion-g5-wide-three-two/r00.py",
+          "sourceSha256": "f19704494d5edc6cff65eac13240ce2fe32ca4afef87d1e414573eac694630a0",
+          "evaluationPath": "results/challengers/market-loop-20260818-3-g02-champion-g5-wide-three-two/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260818-3-g02-champion-g5-wide-three-two/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-wide-three-two",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260818-3-g02-champion-g5-wide-three-two/r00.py",
+            "sourceSha256": "f19704494d5edc6cff65eac13240ce2fe32ca4afef87d1e414573eac694630a0",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1230,
+              "combinedPnlCents": 7549,
+              "minimumCapital": {
+                "endingCashCents": 592,
+                "startingCapitalCents": 1000
+              }
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-18T20:01:44.845Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -352,7 +400,9 @@
           "startingCapitalCents": 1000
         }
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "137d9cfbc203f61ec30e224d5e0472faaf1206339e45ece6fe9c6ff80aad5f8b": {
       "valid": true,
@@ -982,6 +1032,61 @@
         "combinedPnlCents": 8008,
         "minimumCapital": {
           "endingCashCents": 592,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "cdb0d609c6f7cf837d7920f5e7ba1cf3c32a8b60af1b56b8b4f74ad63fd4fba6": {
+      "valid": true,
+      "modifiedLines": 81,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1220,
+        "combinedPnlCents": 10048,
+        "minimumCapital": {
+          "endingCashCents": 627,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "f4d4f21e12b5d011db36f4b8585a88b887497eb068e7a14ea526ecd99d44cd3a": {
+      "valid": true,
+      "modifiedLines": 7,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1230,
+        "combinedPnlCents": 7722,
+        "minimumCapital": {
+          "endingCashCents": 598,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "ad198bfdb9000c84dc55ae27d1ffb643b4c7a406135f2764fa66e419173f7f4e": {
+      "valid": true,
+      "modifiedLines": 8,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1210,
+        "combinedPnlCents": 7687,
+        "minimumCapital": {
+          "endingCashCents": 587,
           "startingCapitalCents": 1000
         },
         "runtimeErrors": 0
