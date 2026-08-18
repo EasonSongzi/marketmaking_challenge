@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "76112022ba4694af5319ff9105022bb421e36442bad80c9b7ad9c9f31bfed3b3",
+  "variants": [
+    {
+      "id": "q0-edge049-coarse",
+      "granularity": "coarse",
+      "parameters": {
+        "quantityThreshold": 0,
+        "largeOrderEdge": 0.049
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g05/tune-05/.tuning/market-loop-20260818-3/g05/variants/q0-edge049-coarse/Market_making_binary_option.py",
+      "sourceSha256": "46bfa40beeee39be0d3bec752fe18bbba6d01871485f06cb1d723f290a47a83b",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "q5-edge033-coarse",
+      "granularity": "coarse",
+      "parameters": {
+        "quantityThreshold": 5,
+        "largeOrderEdge": 0.033
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g05/tune-05/.tuning/market-loop-20260818-3/g05/variants/q5-edge033-coarse/Market_making_binary_option.py",
+      "sourceSha256": "7bd73281ac0954a3ec206ac0b38ec835143f10b50ec64c729ed1aaac183062bc",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "q1-edge035-medium",
+      "granularity": "medium",
+      "parameters": {
+        "quantityThreshold": 1,
+        "largeOrderEdge": 0.035
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g05/tune-05/.tuning/market-loop-20260818-3/g05/variants/q1-edge035-medium/Market_making_binary_option.py",
+      "sourceSha256": "fb4306f805c6eb799947b2887c2cf77f8f2897637cf3e0edcab774934faf07d9",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "q4-edge045-medium",
+      "granularity": "medium",
+      "parameters": {
+        "quantityThreshold": 4,
+        "largeOrderEdge": 0.045
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g05/tune-05/.tuning/market-loop-20260818-3/g05/variants/q4-edge045-medium/Market_making_binary_option.py",
+      "sourceSha256": "27aa36373325fe0ca10f2665700850edf9a8a7452baa5d65f37dd40576470bbf",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "q3-edge048-medium",
+      "granularity": "medium",
+      "parameters": {
+        "quantityThreshold": 3,
+        "largeOrderEdge": 0.048
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g05/tune-05/.tuning/market-loop-20260818-3/g05/variants/q3-edge048-medium/Market_making_binary_option.py",
+      "sourceSha256": "f22274629503cc6fd00a493df09c2e93adbac5109ba5c6761bb084516674cc67",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "q2-edge034-fine",
+      "granularity": "fine",
+      "parameters": {
+        "quantityThreshold": 2,
+        "largeOrderEdge": 0.034
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g05/tune-05/.tuning/market-loop-20260818-3/g05/variants/q2-edge034-fine/Market_making_binary_option.py",
+      "sourceSha256": "bf6c5a80f9e7756d3306df338c4bcf46c47d7ab27a5b6ef9f60f3dfb66f0f6a0",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "q2-edge036-fine",
+      "granularity": "fine",
+      "parameters": {
+        "quantityThreshold": 2,
+        "largeOrderEdge": 0.036
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g05/tune-05/.tuning/market-loop-20260818-3/g05/variants/q2-edge036-fine/Market_making_binary_option.py",
+      "sourceSha256": "57b9fbb1e3475a7674a94a40f75a2b9b921950d263f290ba45e8cfec14b1f712",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "q2-edge038-fine",
+      "granularity": "fine",
+      "parameters": {
+        "quantityThreshold": 2,
+        "largeOrderEdge": 0.038
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-3/g05/tune-05/.tuning/market-loop-20260818-3/g05/variants/q2-edge038-fine/Market_making_binary_option.py",
+      "sourceSha256": "ca14fa0f1ac10c4d73ffcac60e70d5f0bfab09cbd10ae9f7ef4304acf4a3c76a",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}

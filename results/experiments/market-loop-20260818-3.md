@@ -229,3 +229,85 @@ Promotion: none.
 Finding: All eight variants passed 20/20 without bankruptcy or runtime errors. Six variants retained 12.30 points and 5.98/10.00 minimum capital. The best was a 3.2-cent strict edge only above quantity two, producing 78.99 combined PnL: 0.34 above the challenger parent and 1.77 above the champion. Applying three cents to all quantities reached 78.68, while either five-cent variant fell to 11.70 and roughly 57.9 PnL.
 Next-generation rationale: Update the quantity-tier challenger to the quantity-above-two, 3.2-cent revision. The sharp loss at five cents and improvement at 3.2 cents leave explicit fine-grained upside between 3.2 and five cents and around activation thresholds two to three, suitable for the challenger's second and final tuning batch.
 Challenger update: updated market-loop-20260818-3-g03-g3-large-edge-three to q2-edge032-fine.
+
+## Generation 5: tune respond_to_fok
+
+The first tuning batch improved the quantity-tier challenger to a 3.2-cent edge above quantity two, preserving 12.30 points and 5.98 minimum capital while raising PnL. Five cents lost 0.60 points, while three cents earned less, leaving a bounded transition region and nearby activation thresholds for the second and final batch.
+
+### q0-edge049-coarse
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":0,"largeOrderEdge":0.049}
+- Worker summary: Designed eight immutable second-batch vectors spanning coarse, medium, and fine threshold/edge combinations while avoiding every prior exact combination. The materializer changed only the bound literals and passed compile/scope checks for all variants; every vector completed 20/20 without bankruptcy, and threshold two at 3.4 cents was best.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 58.23; minimum capital 5.98/10.00
+- Baseline delta: -0.60 points; PnL -18.99
+
+### q5-edge033-coarse
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":5,"largeOrderEdge":0.033}
+- Worker summary: Designed eight immutable second-batch vectors spanning coarse, medium, and fine threshold/edge combinations while avoiding every prior exact combination. The materializer changed only the bound literals and passed compile/scope checks for all variants; every vector completed 20/20 without bankruptcy, and threshold two at 3.4 cents was best.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 79.10; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 1.88
+
+### q1-edge035-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":1,"largeOrderEdge":0.035}
+- Worker summary: Designed eight immutable second-batch vectors spanning coarse, medium, and fine threshold/edge combinations while avoiding every prior exact combination. The materializer changed only the bound literals and passed compile/scope checks for all variants; every vector completed 20/20 without bankruptcy, and threshold two at 3.4 cents was best.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 57.84; minimum capital 5.98/10.00
+- Baseline delta: -0.60 points; PnL -19.38
+
+### q4-edge045-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":4,"largeOrderEdge":0.045}
+- Worker summary: Designed eight immutable second-batch vectors spanning coarse, medium, and fine threshold/edge combinations while avoiding every prior exact combination. The materializer changed only the bound literals and passed compile/scope checks for all variants; every vector completed 20/20 without bankruptcy, and threshold two at 3.4 cents was best.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 59.19; minimum capital 5.98/10.00
+- Baseline delta: -0.60 points; PnL -18.03
+
+### q3-edge048-medium
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":3,"largeOrderEdge":0.048}
+- Worker summary: Designed eight immutable second-batch vectors spanning coarse, medium, and fine threshold/edge combinations while avoiding every prior exact combination. The materializer changed only the bound literals and passed compile/scope checks for all variants; every vector completed 20/20 without bankruptcy, and threshold two at 3.4 cents was best.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 59.28; minimum capital 5.98/10.00
+- Baseline delta: -0.60 points; PnL -17.94
+
+### q2-edge034-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":2,"largeOrderEdge":0.034}
+- Worker summary: Designed eight immutable second-batch vectors spanning coarse, medium, and fine threshold/edge combinations while avoiding every prior exact combination. The materializer changed only the bound literals and passed compile/scope checks for all variants; every vector completed 20/20 without bankruptcy, and threshold two at 3.4 cents was best.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 79.36; minimum capital 5.98/10.00
+- Baseline delta: 0.00 points; PnL 2.14
+
+### q2-edge036-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":2,"largeOrderEdge":0.036}
+- Worker summary: Designed eight immutable second-batch vectors spanning coarse, medium, and fine threshold/edge combinations while avoiding every prior exact combination. The materializer changed only the bound literals and passed compile/scope checks for all variants; every vector completed 20/20 without bankruptcy, and threshold two at 3.4 cents was best.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 56.80; minimum capital 5.98/10.00
+- Baseline delta: -0.60 points; PnL -20.42
+
+### q2-edge038-fine
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-3-g03-g3-large-edge-three
+- Implementation plan: {"quantityThreshold":2,"largeOrderEdge":0.038}
+- Worker summary: Designed eight immutable second-batch vectors spanning coarse, medium, and fine threshold/edge combinations while avoiding every prior exact combination. The materializer changed only the bound literals and passed compile/scope checks for all variants; every vector completed 20/20 without bankruptcy, and threshold two at 3.4 cents was best.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.70/16.00 points; PnL 56.80; minimum capital 5.98/10.00
+- Baseline delta: -0.60 points; PnL -20.42
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All eight variants passed 20/20 without bankruptcy or runtime errors. Threshold two at a 3.4-cent edge retained 12.30 points and 5.98/10.00 minimum capital while producing 79.36 combined PnL, improving the parent by 0.37 and the champion by 2.14. Threshold five at 3.3 cents also tied at 79.10. Every vector at 3.5 cents or higher fell to 11.70, locating a sharp score boundary between 3.4 and 3.5 cents for the relevant order flow.
+Next-generation rationale: Update the challenger to threshold two at 3.4 cents, then retire it after its configured second tuning batch. Use the sixth and final generation on structural quote-risk controls from the champion, since FOK tier tuning improved PnL but never improved score or minimum capital.
+Challenger update: market-loop-20260818-3-g03-g3-large-edge-three retired after 2 tuning attempts.
