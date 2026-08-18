@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `coarse-400-64`
+- Current champion: `g4-full-unwind`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `44b91f8acec677de3a6eb56eedcfd0b9497e2e77c22933311e06a6f261328e5d`
-- Experiment: `market-loop-20260818-4`, generation 3, candidate `coarse-400-64`
+- Source SHA-256: `ae87114fbbc3b8680533db3b609bd16fcb6b9410dbbc41b077b7594919747548`
+- Experiment: `market-loop-20260818-4`, generation 4, candidate `g4-full-unwind`
 - SCORED points: 12.30/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0

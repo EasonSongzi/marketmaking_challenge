@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-18T21:49:07.026Z
 - Starting baseline: g2-rate-smoothing (12.30/16.00)
-- Current baseline: g2-rate-adaptive (12.30/16.00)
+- Current baseline: coarse-400-64 (12.30/16.00)
 - Stop condition: not reached
-- Score trend: 12.30 → 12.30 → 12.30
+- Score trend: 12.30 → 12.30 → 12.30 → 12.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -165,6 +165,44 @@ The penalized estimator is a high-PnL near miss: 12.00 points, 100.64 PnL, and 6
 - Baseline delta: -0.30 points; PnL 11.03
 
 Selection: coarse-400-64.
-Promotion: none.
+Promotion: coarse-400-64 (32cf387b7b7756a450cdfb5937216c782d497dfb).
 Finding: All eight penalty variants passed 20/20 without bankruptcy or runtime errors. Light and medium shrinkage through probability/reversion penalties of 100/16 remained at 12.00 points, with PnL from 96.69 to 98.91. Stronger pairs 150/24, 250/40, and 400/64 recovered 12.30 points and passed the promotion gate. The 400/64 vector led at 96.10 PnL, 10.44 above the adaptive champion and 16.74 above the quantity-tier baseline, with 6.01/10.00 minimum capital.
 Next-generation rationale: Promote the 400/64 penalized estimator. It preserves the critical score while retaining most of the high-likelihood economics. Next follow the research plan's highest-priority cross-method interaction by exploring targeted inventory-unwind and other marginal FOK controls from this full promoted source, holding the estimator and quote fixed.
+
+## Generation 4: explore respond_to_fok
+
+The tuned penalized estimator preserves 12.30 points while raising PnL to 96.10, and the research notes rank inventory unwind as the highest-priority compensating execution interaction. Test three structurally distinct ways to relax the FOK edge only when an order reduces an existing option position, while preserving the 3.4-cent quantity tier for new risk and leaving quote and estimator logic fixed.
+
+Parent: champion `coarse-400-64` (`44b91f8acec677de3a6eb56eedcfd0b9497e2e77c22933311e06a6f261328e5d`).
+
+### g4-full-unwind
+
+- Hypothesis: Accepting position-bounded FOK unwinds at fair value will monetize or neutralize inventory created by the improved estimator without changing entry discipline for new risk.
+- Implementation plan: Detect whether the counterparty BUY reduces a long position or the counterparty SELL reduces a short position. When quantity does not exceed absolute inventory, accept at theoretical value with no favorable-edge requirement, matching the proven historical unwind structure. Otherwise retain the champion's two-cent/3.4-cent quantity-tier edge and half-dollar loss cap exactly.
+- Worker summary: Added position-aware fair-value FOK exits when the order direction reduces inventory and quantity does not exceed the position, preserving the champion's quantity-tier edge and loss cap for new risk. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 98.80; minimum capital 6.01/10.00
+- Baseline delta: 0.00 points; PnL 2.70
+
+### g4-expiry-unwind
+
+- Hypothesis: Restricting fair-value inventory unwinds to options with at most one step remaining will remove near-expiry concentration while avoiding premature exits from positions that still have time to realize estimator edge.
+- Implementation plan: Use the same position-direction and quantity-bounded fair-value unwind as g4-full-unwind, but activate it only when steps_until_expiry is one or zero. Retain the champion's quantity-tier edge and half-dollar cap for every other FOK.
+- Worker summary: Added the same position-bounded fair-value exit only at one step or less to expiry, retaining the champion policy elsewhere. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 96.68; minimum capital 6.01/10.00
+- Baseline delta: 0.00 points; PnL 0.58
+
+### g4-scaled-unwind
+
+- Hypothesis: Continuously reducing the required edge according to the fraction of inventory removed will favor more complete risk reduction without turning every small partial unwind into a zero-edge trade.
+- Implementation plan: Start with the champion's two-cent/3.4-cent quantity-tier edge. For a directionally position-reducing FOK whose quantity does not exceed absolute inventory, multiply that edge by one minus quantity divided by absolute inventory. Apply the resulting edge through the champion's symmetric BUY/SELL comparisons and retain the half-dollar total-loss cap.
+- Worker summary: Reduced the required FOK edge continuously by the fraction of inventory removed while retaining the fixed loss cap and quantity-tier entry edge. Compilation, scope validation, and diff checks passed; the candidate completed 20/20 without bankruptcy.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 96.10; minimum capital 6.01/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+Selection: g4-full-unwind.
+Promotion: none.
+Finding: All three inventory-aware FOK policies passed 20/20 without bankruptcy or runtime errors and preserved 12.30 points with 6.01/10.00 minimum capital. Full position-bounded fair-value unwind led at 98.80 PnL, 2.70 above the tuned-estimator parent. Near-expiry-only unwind added 0.58 PnL, while proportional edge scaling exactly reproduced the parent at 96.10.
+Next-generation rationale: Promote full fair-value unwind. Next test the research plan's RFQ-risk interactions on this complete estimator-plus-unwind source: proven one-sided loss shading, aggressive uniform four-cent quotes, and a targeted central-probability uncertainty width, holding warm_up and FOK logic fixed.
