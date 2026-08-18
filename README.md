@@ -1,6 +1,20 @@
 # Manual Experiment Loop
 
-Planning and implementation happen in a normal Codex session. The project skill begins only after you have copied the local code to HackerRank and run all test cases.
+## Automated HackerRank run
+
+The Playwright utility under `auto_extract_result/` automates copying the local
+solution, running HackerRank, and extracting every test case. Complete its
+one-time setup and login, then run:
+
+```bash
+./auto_extract_result/run.sh
+```
+
+Timestamped reports are written to `auto_extract_result/results/`. See
+`auto_extract_result/README.md` for setup, authentication, exit codes, and the
+manual fallback.
+
+Planning and implementation happen in a normal Codex session. The project skill begins only after the local code has been copied to HackerRank and all test cases have run, either through the automation above or the manual fallback below.
 
 ## 1. Discuss an idea
 

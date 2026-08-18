@@ -1,0 +1,16 @@
+{
+  "name": "akuna-hackerrank-result-extractor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/config.mjs && node --check src/browser.mjs && node --check src/invitation.mjs && node --check src/question.mjs && node --check src/login.mjs && node --check src/report.mjs && node --check src/run.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.62.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
