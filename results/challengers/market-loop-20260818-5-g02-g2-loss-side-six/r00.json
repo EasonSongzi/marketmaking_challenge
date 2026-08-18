@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g2-loss-side-six",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-5-g02-g2-loss-side-six/r00.py",
+  "sourceSha256": "0781de8891bb8033edc128409269382e1edfb3f15ecdad3825a69b7622e4c72e",
+  "modifiedLines": 10,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1260,
+    "combinedPnlCents": 10426,
+    "minimumCapital": {
+      "endingCashCents": 732,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -1802
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

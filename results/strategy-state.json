@@ -1007,6 +1007,59 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260818-5-g02-g2-loss-side-six",
+      "status": "active",
+      "method": "quote",
+      "origin": "derived-explore",
+      "rationale": "It strictly improves its 10/1 parent by 0.10 points, passes 20/20 with zero bankruptcies, and simultaneously reaches the required case-15 and case-17 ranks. Its extra-cent activation is a single focused structural gate with explicit upside: remove the sixth cent from case-13-sensitive quotes while retaining it on the tail fills that repaired cases 15 and 17.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260818-5-g02-g2-loss-side-six/r00.py",
+          "sourceSha256": "0781de8891bb8033edc128409269382e1edfb3f15ecdad3825a69b7622e4c72e",
+          "evaluationPath": "results/challengers/market-loop-20260818-5-g02-g2-loss-side-six/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260818-5-g02-g2-loss-side-six/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g2-loss-side-six",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260818-5-g02-g2-loss-side-six/r00.py",
+            "sourceSha256": "0781de8891bb8033edc128409269382e1edfb3f15ecdad3825a69b7622e4c72e",
+            "modifiedLines": 10,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1260,
+              "combinedPnlCents": 10426,
+              "minimumCapital": {
+                "endingCashCents": 732,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -1802
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-18T23:10:57.994Z"
+        }
+      ],
+      "tuningHistory": [],
+      "derivedFrom": {
+        "challengerId": "market-loop-20260818-5-g01-g1-rate-recross-10-1",
+        "revision": 0,
+        "sourceSha256": "62feea3c97e975a314a102336249973f5a36d124bab1bb2948ac145b27346f95"
+      }
     }
   ],
   "evaluations": {
@@ -2588,6 +2641,63 @@
         "combinedPnlCents": 12131,
         "minimumCapital": {
           "endingCashCents": 694,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "0781de8891bb8033edc128409269382e1edfb3f15ecdad3825a69b7622e4c72e": {
+      "valid": true,
+      "modifiedLines": 10,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 10426,
+        "minimumCapital": {
+          "endingCashCents": 732,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "0ab1b3ea11b02a54e22e80cadfce58790c01b285ace7fe9df9cb65da46ea6522": {
+      "valid": true,
+      "modifiedLines": 10,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1230,
+        "combinedPnlCents": 11477,
+        "minimumCapital": {
+          "endingCashCents": 702,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "97a3d5db4ff3eeea9e73e4fa54fcc68736ddd16d24487d14b28545c4cee7b1db": {
+      "valid": true,
+      "modifiedLines": 10,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1210,
+        "combinedPnlCents": 11630,
+        "minimumCapital": {
+          "endingCashCents": 700,
           "startingCapitalCents": 1000
         },
         "runtimeErrors": 0
