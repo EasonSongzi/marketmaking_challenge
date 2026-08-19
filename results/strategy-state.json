@@ -1455,7 +1455,7 @@
     },
     {
       "id": "market-loop-20260818-6-g05-champion-g4-fill-side-once",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g5-union-both-third",
@@ -1499,7 +1499,11 @@
           "createdAt": "2026-08-19T02:25:00.207Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Bare demoted champion from two runs earlier at 12.80 points and 117.59 combined PnL, dominated on both axes by every remaining pool member. Its fill-side signal already survives inside the current champion lineage as the fill-signal skew, and its registry entry records no distinct mechanism to revisit.",
+        "at": "2026-08-19T20:47:12.723Z"
+      }
     },
     {
       "id": "market-loop-20260818-6-g06-champion-g5-union-both-third",
