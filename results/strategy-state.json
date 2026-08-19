@@ -2389,6 +2389,54 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-3-g04-g4-cheap-bid-four",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It is one of only two sources in the project's history to suppress Fixed Width 0.1 in case 13, and the only one on the current architecture, holding it to 11.26 against the champion's 12.06 while also raising our own case-13 PnL to 8.57. Generation 4 established that this effect survives neither signed-reserve certification nor capital gating, so this source is the sole surviving carrier of the only mechanism known to move the only reachable remaining case, and it must be retained as the research parent for any further case-13 work. It also reaches 145.00 combined PnL, 1.14 above the champion, despite scoring 0.30 lower, making it the strongest PnL source currently in the pool. Its tuning upside is explicit and entirely unswept: the 0.25 cheap-bid threshold is the trigger's only free parameter and has never been varied in any generation, so the price region that carries the suppression is unknown and could be narrower or wider; the fourth-unit multiple has never been tested against this trigger; and because the effect is known to vanish under certification, a sweep of the threshold is the only remaining way to find a setting that suppresses case 13 without releasing case-14 Lattice.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-3-g04-g4-cheap-bid-four/r00.py",
+          "sourceSha256": "6ae93a5780407430e3b5aa5d55e52834965810c26667903e847e9d72e7df00d0",
+          "evaluationPath": "results/challengers/market-loop-20260819-3-g04-g4-cheap-bid-four/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-3-g04-g4-cheap-bid-four/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g4-cheap-bid-four",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-3-g04-g4-cheap-bid-four/r00.py",
+            "sourceSha256": "6ae93a5780407430e3b5aa5d55e52834965810c26667903e847e9d72e7df00d0",
+            "modifiedLines": 2,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1300,
+              "combinedPnlCents": 14500,
+              "minimumCapital": {
+                "endingCashCents": 779,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": -30,
+              "combinedPnlCents": 114
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-19T22:00:31.798Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -5525,6 +5573,63 @@
         "bankruptcies": 0,
         "scoredPointsHundredths": 1330,
         "combinedPnlCents": 14322,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "6ae93a5780407430e3b5aa5d55e52834965810c26667903e847e9d72e7df00d0": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 14500,
+        "minimumCapital": {
+          "endingCashCents": 779,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "8b1e2942acc5ed6d6f22d2cf34249121509fe7db0973235bbb6cf8ac6f872f5e": {
+      "valid": true,
+      "modifiedLines": 7,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 14622,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "efa2d76d343a98bda197a10ba4d87268b00707b5353975dc68d58cf978dc5f71": {
+      "valid": true,
+      "modifiedLines": 8,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 14340,
         "minimumCapital": {
           "endingCashCents": 797,
           "startingCapitalCents": 1000
