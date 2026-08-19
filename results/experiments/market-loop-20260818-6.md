@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-19T01:47:53.800Z
 - Starting baseline: g6-contract-rfq-wide (12.80/16.00)
-- Current baseline: g4-fill-side-once (12.80/16.00)
+- Current baseline: g5-union-both-third (12.80/16.00)
 - Stop condition: not reached
-- Score trend: 12.80 → 12.80 → 12.80 → 12.80
+- Score trend: 12.80 → 12.80 → 12.80 → 12.80 → 12.80
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -242,8 +242,46 @@ Parent: champion `g4-fill-side-once` (`bdb36cb25de46bbd30c9c349742aef0ced17527e4
 - Baseline delta: 0.00 points; PnL 2.65
 
 Selection: g5-union-both-third.
-Promotion: none.
+Promotion: g5-union-both-third (c5b3eca494cc87d63a68305fdfe429258318a26e).
 Finding: All three hybrid size candidates completed 20/20 with zero bankruptcies and runtime errors; the bid-only source required one successful automatic retry after a browser navigation timeout. Both-sided union preserved 12.80, raised combined PnL from 117.59 to 122.05, and held minimum capital at 8.15/10.00. It kept cases 9, 15, 16, and 17 first, with case-17 lead increased to 1.48, but case 13 remained third by 4.36 behind second; case 14 stayed second at 10.81. Offer-only union also held 12.80 with 120.24 PnL and the strongest 8.41/10.00 minimum capital, but case 13 remained third. Bid-only union scored 12.50 because case 15 fell from first to second by 0.09, while case 13 still stayed third. Adding the low-loss rule therefore does not counteract the case-13 routing effect of capital-gated units, and extra bid-side low-loss participation is specifically risky to case 15. The fixed selector chooses the both-sided union on PnL.
 Next-generation rationale: Promote the both-sided union, then use the final generation to isolate which capital-gated side creates the case-17 win and case-13 loss. Keep low-loss quantity three on both sides, but enable additional capacity-gated central units on bid only, offer only, or only when a full three-lot fill is position-reducing. A successful split must restore case 13 to second while keeping case 17 first and protecting cases 9, 15, and 16.
 Previous failure (runner): g5-union-bid-third runner failure; automatic retry requested
 Recovery instruction: Repair the HackerRank browser profile with `auto_extract_result/login.sh`, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+
+## Generation 6: explore quote
+
+The both-sided low-loss/capital union kept case 17 first but case 13 third. Use the sixth generation to isolate the additional capital-gated units while retaining low-loss size three on both sides: capital participation on bid only, offer only, or only when the full fill reduces position. This is the final structural attempt to reach 13.00 without a rank regression.
+
+Parent: champion `g5-union-both-third` (`cf60d776f00d9be63fbb195912fd0ebd6843d0302f656b3fd39d074ef4a65e61`).
+
+### g6-cap-bid-only
+
+- Hypothesis: The case-17 gain may come from capital-gated maker buys while capital-gated maker sells cause case 13's regression, so retaining the capacity union only on bids can preserve both target ranks.
+- Implementation plan: Preserve all prices and state. Keep bid quantity three when the existing capacity condition passes OR bid loss is at most 0.25. Remove the capacity alternative from offers so offer quantity three only when one minus final offer is at most 0.25. Keep all constants and other logic fixed.
+- Worker summary: Retained low-loss size three on both sides and the existing capacity/low-loss union on bids, while removing the capacity alternative from offers so only low-loss offers receive a third unit. All prices, memory, exposure calculations, and non-size behavior were preserved; scope, compilation, diff, and side-specific assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 122.35; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL 0.30
+
+### g6-cap-offer-only
+
+- Hypothesis: The case-17 gain may instead come from capital-gated maker sells while capital-gated maker buys harm case 13, so retaining the capacity union only on offers can preserve both targets.
+- Implementation plan: Preserve all prices and state. Make bid quantity three only when final bid loss is at most 0.25. Keep offer quantity three when its existing capacity condition passes OR one minus final offer is at most 0.25. Keep all constants and other logic fixed.
+- Worker summary: Retained low-loss size three on both sides and the existing capacity/low-loss union on offers, while removing capacity-based bid sizing. All prices, memory, and non-size behavior were preserved; scope, compilation, one-line diff, and side-specific assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.30/16.00 points; PnL 115.58; minimum capital 8.15/10.00
+- Baseline delta: -0.50 points; PnL -6.47
+
+### g6-cap-reducing
+
+- Hypothesis: Additional central capacity units are useful only when they also reduce established inventory, so intersecting the capital gate with guaranteed position reduction can retain the case-17 benefit without the case-13 routing cost.
+- Implementation plan: Preserve unconditional low-loss size three on both sides. Outside low-loss sides, admit a capacity-gated bid size three only when current option position is at most -3, and a capacity-gated offer size three only when position is at least +3, so a full fill cannot cross flat. Preserve prices, memory, the 0.75 floor, and every non-size rule.
+- Worker summary: Retained unconditional low-loss size three, then required any additional capacity-gated central bid or offer unit to be guaranteed position-reducing for a full three-lot fill. Prices, memory, the 0.75 floor, and non-size behavior were preserved; scope, compilation, diff, and flat/long/short threshold assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 115.60; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL -6.45
+
+Selection: g6-cap-bid-only.
+Promotion: none.
+Finding: All final-generation candidates passed 20/20 with zero bankruptcies and runtime errors. Bid-only capital participation was the strongest and the fixed-selector winner: it preserved 12.80, raised combined PnL from 122.05 to 122.35, and held minimum capital at 8.15/10.00. It restored case 13 from third to second with a 1.05 buffer, protected case 9 first by 9.63, case 15 first by 2.02, and case 16 first by 13.29, and left case 14 second. It narrowly moved case 17 from first to second, only 0.03 behind first and 1.00 above third; this is the closest repository result to the 13.00 overlap. Offer-only capital participation kept case 17 first but scored 12.30 because case 13 remained third and case 15 fell second. Position-reducing capital units kept 12.80 and restored case 13 second, but case 17 was second by 0.61 and PnL fell to 115.60. The attribution is decisive: capacity-gated bids contain the case-13 recovery, capacity-gated offers contain much of the case-17 win, and their full union changes routing enough to lose case 13. No candidate achieved both ranks simultaneously.
+Next-generation rationale: The configured six-generation limit is reached. Promote bid-only capital participation under the fixed selector and finish the run. Preserve its 0.03 case-17 boundary as the highest-value starting point for a future structural loop; do not infer a constant sweep from this single hidden boundary.

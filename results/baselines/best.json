@@ -1,20 +1,20 @@
 {
   "schemaVersion": 2,
-  "strategy": "g5-union-both-third",
+  "strategy": "g6-cap-bid-only",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "cf60d776f00d9be63fbb195912fd0ebd6843d0302f656b3fd39d074ef4a65e61",
-  "experimentId": "market-loop-20260818-6:g05:g5-union-both-third",
+  "sourceSha256": "e1d8a428a921badb281cc2d6a314b9e0a2c4c1f23b1102914e930bfe6ffd1087",
+  "experimentId": "market-loop-20260818-6:g06:g6-cap-bid-only",
   "experiment": {
     "runId": "market-loop-20260818-6",
-    "generation": 5,
-    "candidateId": "g5-union-both-third"
+    "generation": 6,
+    "candidateId": "g6-cap-bid-only"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1280,
-    "combinedPnlCents": 12205,
+    "combinedPnlCents": 12235,
     "minimumCapital": {
       "endingCashCents": 815,
       "startingCapitalCents": 1000

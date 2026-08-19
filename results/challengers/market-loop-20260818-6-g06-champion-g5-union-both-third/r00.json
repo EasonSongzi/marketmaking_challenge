@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g5-union-both-third",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-6-g06-champion-g5-union-both-third/r00.py",
+  "sourceSha256": "cf60d776f00d9be63fbb195912fd0ebd6843d0302f656b3fd39d074ef4a65e61",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1280,
+    "combinedPnlCents": 12205,
+    "minimumCapital": {
+      "endingCashCents": 815,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}

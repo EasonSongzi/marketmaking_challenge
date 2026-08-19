@@ -427,7 +427,8 @@ class MarketMaker:
         )
         offer_quantity = (
             3
-            if 1.0 - offer_price <= 0.25
+            if active_exposure + 3 * (1.0 - offer_price) <= available_capacity
+            or 1.0 - offer_price <= 0.25
             else 2
         )
         quote_snapshots[option_id] = (
