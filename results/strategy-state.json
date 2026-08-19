@@ -1903,7 +1903,7 @@
     },
     {
       "id": "market-loop-20260819-2-g02-g2-first-touch-bid",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "derived-explore",
       "rationale": "It is the only candidate that strictly exceeds its parent challenger, improving combined PnL from 126.58 to 127.55 while holding 13.00 with zero rank regressions anywhere in the protected set. It carries the best case-14 result observed anywhere in this research line at 14.57 against a suppressed Lattice at 14.82, a 0.25 gap that is the closest any strategy has come to that rank boundary. Its tuning upside is explicit: the narrowing is still a single one-cent constant applied to every first-touch size-three bid, so the magnitude is an open parameter, and generation 2 proved the fair-value region where it fires can be restricted without losing the case-14 mechanism, leaving room to recover the case-19 deficit at minus 1.93 and the case-13 deficit at 8.34 that the central-band candidate showed are recoverable.",
@@ -1952,6 +1952,10 @@
         "challengerId": "market-loop-20260819-2-g01-g1-bid-narrow",
         "revision": 0,
         "sourceSha256": "3366dc1fe7d4956457aa37d0df05ab8303e1bb20a9c2c0d4f8798f49e2e94f3d"
+      },
+      "retirement": {
+        "reason": "13.00 and 127.55 PnL, dominated on both axes by 0.30 points and 27.20 PnL. Its distinguishing mechanism, the one-cent first-touch size-three bid narrowing, is fully absorbed into the champion and frozen, so it isolates nothing the champion does not already contain.",
+        "at": "2026-08-19T22:13:41.248Z"
       }
     },
     {
