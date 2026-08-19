@@ -2721,6 +2721,59 @@
         "admittedFrom": "results/runs/market-loop-20260819-3/archive/g02/g2-lowcap-central-offer-six",
         "at": "2026-08-19T22:13:15.971Z"
       }
+    },
+    {
+      "id": "market-loop-20260819-4-g01-g1-short-company-leg-four",
+      "status": "active",
+      "method": "quote",
+      "origin": "derived-explore",
+      "rationale": "It is the cleanest expression of the isolated mechanism, matching the unrestricted single-leg form's case-13 gap of 2.11 against 2.12 and its case-14 rank while quoting strictly less size and carrying marginally more combined PnL, and it strictly improves on its parent by recovering case 14 and 0.30 of score. It has explicit tuning upside in two constants that have never been swept inside this restricted class, the steps_until_expiry threshold at 1 and the cheap threshold at 0.25, and it is the reference source for the case-13 mechanism that generation 2 will attempt to transplant onto the champion.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-4-g01-g1-short-company-leg-four/r00.py",
+          "sourceSha256": "1d42d8d8aedce5a73e85cd5ec805d4d24f37ef8ab30dc5aab5c5ce86be082ae7",
+          "evaluationPath": "results/challengers/market-loop-20260819-4-g01-g1-short-company-leg-four/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-4-g01-g1-short-company-leg-four/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g1-short-company-leg-four",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-4-g01-g1-short-company-leg-four/r00.py",
+            "sourceSha256": "1d42d8d8aedce5a73e85cd5ec805d4d24f37ef8ab30dc5aab5c5ce86be082ae7",
+            "modifiedLines": 11,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 14650,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -825
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-19T22:31:18.722Z"
+        }
+      ],
+      "tuningHistory": [],
+      "derivedFrom": {
+        "challengerId": "market-loop-20260819-3-g05-g5-short-cheap-bid-four",
+        "revision": 0,
+        "sourceSha256": "d0b82db3121dffa8fe0aae562685010dea25c350c0826b54b57c1dd5cb9c8988"
+      }
     }
   ],
   "evaluations": {
@@ -6035,6 +6088,63 @@
         "runtimeErrors": 0
       },
       "reasons": []
+    },
+    "97c9751a2a1655c1a895c3e5c537dbbdce53cb3942b72b3921ad95a37a73b23a": {
+      "valid": true,
+      "modifiedLines": 10,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 14638,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "1d42d8d8aedce5a73e85cd5ec805d4d24f37ef8ab30dc5aab5c5ce86be082ae7": {
+      "valid": true,
+      "modifiedLines": 11,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 14650,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "fa5cab07fe9277873c0d33ec514b2de88d6aaa6579a91ad936642d5d10b4a41e": {
+      "valid": true,
+      "modifiedLines": 11,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 14374,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
     }
   }
 }
