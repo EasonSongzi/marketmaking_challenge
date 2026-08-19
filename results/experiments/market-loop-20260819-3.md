@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260819-3
 
-- Status: active
+- Status: complete
 - Started: 2026-08-19T21:37:20.090Z
 - Starting baseline: g6-offer-five (13.00/16.00)
-- Current baseline: g5-single-leg-cheap-bid-four (13.30/16.00)
-- Stop condition: not reached
-- Score trend: 13.00 → 13.30 → 13.30 → 13.30
+- Current baseline: g6-single-leg-cheap-five (13.30/16.00)
+- Stop condition: generation limit reached
+- Score trend: 13.00 → 13.30 → 13.30 → 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -237,7 +237,7 @@ Parent: champion `g5-single-leg-cheap-bid-four` (`c63044aff2ba438908192018c71657
 - Baseline delta: 0.00 points; PnL 1.32
 
 Selection: g6-single-leg-cheap-five.
-Promotion: none.
+Promotion: g6-single-leg-cheap-five (73b06c0d3c36085687d66a2e3e3594a110b2aa6a).
 Finding: The dose question is answered on both axes and the generation produces the strongest source the project has ever built. g6-single-leg-cheap-five is the winner at 13.30 with 154.75 combined PnL, 8.56 above the champion it replaces and 5.53 above the previous all-time PnL record of 149.22, which was set at a strictly worse score of 13.00. It passed 20/20 with zero bankruptcies, zero runtime errors, and 7.65 minimum capital, and it holds every protected rank. The fifth unit is not a case-13 lever but it is a substantial case-14 and aggregate lever: case 14 improved from 16.46 to 16.98 while Lattice fell further from 14.81 to 14.07, widening the margin on our most recently won first place from 1.65 to 2.91, and the gains are spread across the book rather than concentrated. Case 13 answers the dose question negatively and cleanly. The fifth unit slightly worsened it, moving Fixed Width 0.1 up from 11.26 to 11.39 and our own PnL down from 8.57 to 8.51, so the suppression does not scale with size. g6-single-leg-cheap-repeat left case 13 bit-identical at 11.26 and 8.57 and left case 14 bit-identical too, finishing at 146.05 combined PnL against the champion's 146.19, which means extending the rule to repeat requests changes essentially nothing: cheap single-leg repeat RFQs either do not arrive or do not reach the fourth-unit path, so flow is not the lever either. g6-single-leg-wide-cheap-four also left case 13 bit-identical at 11.26 and 8.57 while reaching 147.51 combined PnL and improving case 14 to 16.75, so widening the trigger from the 0.25 bid threshold to the 40-cent fair-value boundary adds general value without touching the case-13 mechanism at all. Three independent throughput increases therefore all failed to move case 13 while two of them improved everything else, which is decisive: the case-13 suppression is saturated at the fourth unit, exactly the binary routing-regime behaviour previously observed for Lattice suppression in case 14 rather than a continuous function of aggression. Case 13 stays second at 8.51 against 11.39, and 13.30 is the ceiling this architecture reaches.
 Next-generation rationale: This run should finish here. The score frontier is closed on every axis the loop can reach: seven of the eight imperfect cases were shown unreachable, five of them by direct experiment in generation 3 and the remaining two by gaps of 24 to 31 PnL, and case 13 has now resisted capital gating, signed-reserve certification, tenor restriction, inventory restriction, and all three forms of dose escalation while its one working mechanism is saturated at the fourth unit. A future run wanting the last 0.20 should not resume quantity work on case 13. The remaining untested idea is the interaction the tomography exposed but did not exploit: generation 5 showed the case-13 suppression lives entirely in single-leg contracts and generation 6 showed it does not scale, which together suggest the effect is about which contracts we are present in rather than how much we quote, so a future run should investigate presence and timing, for example withholding quotes entirely on selected comparison spreads, rather than sizing. On aggregate PnL the picture is now inverted from where this run started: the strategy gained 5.53 of PnL over the old record while also gaining 0.30 of score, so the decoupling the memo described has been at least partially resolved by the single-leg separation. The immediate follow-up with the clearest expected value is a Tune generation over the two discrete constants this run introduced and never swept, the 40-cent fair-value boundary in the widened variant and the 0.25 cheap threshold in the winner.
 Challenger update: admitted market-loop-20260819-3-g06-g6-single-leg-wide-cheap-four.
