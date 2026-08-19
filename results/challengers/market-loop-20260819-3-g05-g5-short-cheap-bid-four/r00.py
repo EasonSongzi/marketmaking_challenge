@@ -482,7 +482,7 @@ class MarketMaker:
             and signed_reserve + 4 * bid_price <= available_capacity
         ):
             bid_quantity = 4
-        if bid_quantity == 3 and not repeat_request and bid_price <= 0.25 and len(option.legs) == 1:
+        if bid_quantity == 3 and not repeat_request and bid_price <= 0.25 and option.steps_until_expiry <= 1:
             bid_quantity = 4
         quote_snapshots[option_id] = (
             counterparty_id,

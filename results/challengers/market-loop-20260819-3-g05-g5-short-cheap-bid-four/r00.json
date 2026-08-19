@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g5-short-cheap-bid-four",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-3-g05-g5-short-cheap-bid-four/r00.py",
+  "sourceSha256": "d0b82db3121dffa8fe0aae562685010dea25c350c0826b54b57c1dd5cb9c8988",
+  "modifiedLines": 2,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 14582,
+    "minimumCapital": {
+      "endingCashCents": 796,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -30,
+    "combinedPnlCents": 196
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
