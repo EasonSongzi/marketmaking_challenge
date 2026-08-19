@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g1-bid-narrow",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-2-g01-g1-bid-narrow/r00.py",
+  "sourceSha256": "3366dc1fe7d4956457aa37d0df05ab8303e1bb20a9c2c0d4f8798f49e2e94f3d",
+  "modifiedLines": 2,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 12658,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -318
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g2-first-touch-bid",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-2-g02-g2-first-touch-bid/r00.py",
+  "sourceSha256": "ed2b71f544092c4e475bad9bd626ac9d8929755bca395a35e3286be0318d6df8",
+  "modifiedLines": 2,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 12755,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -221
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

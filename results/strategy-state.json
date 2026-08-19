@@ -1836,6 +1836,107 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-2-g01-g1-bid-narrow",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It matches the champion at 13.00 with zero bankruptcies and, uniquely in the generation, produces no rank regression anywhere in the protected set. It carries the best case-14 result observed in this lineage at 14.45 and the largest suppression of the case-14 leader, cutting Lattice from 23.26 to 14.82 and leaving a 0.37 gap to first place, which satisfies the memo's challenger retention conditions for best case-14 PnL and largest reduction of the leader's PnL. Its tuning upside is explicit and unexplored: the narrowing is a single one-cent constant applied unconditionally to every size-three bid, so both the magnitude and the fair-value region in which it activates are open parameters, and its 126.58 combined PnL against the champion's 129.76 indicates recoverable loss in cases 13 and 19 that parameter work can target without touching the frozen offer side.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-2-g01-g1-bid-narrow/r00.py",
+          "sourceSha256": "3366dc1fe7d4956457aa37d0df05ab8303e1bb20a9c2c0d4f8798f49e2e94f3d",
+          "evaluationPath": "results/challengers/market-loop-20260819-2-g01-g1-bid-narrow/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-2-g01-g1-bid-narrow/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g1-bid-narrow",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-2-g01-g1-bid-narrow/r00.py",
+            "sourceSha256": "3366dc1fe7d4956457aa37d0df05ab8303e1bb20a9c2c0d4f8798f49e2e94f3d",
+            "modifiedLines": 2,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1300,
+              "combinedPnlCents": 12658,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -318
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-19T17:19:17.831Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-2-g02-g2-first-touch-bid",
+      "status": "active",
+      "method": "quote",
+      "origin": "derived-explore",
+      "rationale": "It is the only candidate that strictly exceeds its parent challenger, improving combined PnL from 126.58 to 127.55 while holding 13.00 with zero rank regressions anywhere in the protected set. It carries the best case-14 result observed anywhere in this research line at 14.57 against a suppressed Lattice at 14.82, a 0.25 gap that is the closest any strategy has come to that rank boundary. Its tuning upside is explicit: the narrowing is still a single one-cent constant applied to every first-touch size-three bid, so the magnitude is an open parameter, and generation 2 proved the fair-value region where it fires can be restricted without losing the case-14 mechanism, leaving room to recover the case-19 deficit at minus 1.93 and the case-13 deficit at 8.34 that the central-band candidate showed are recoverable.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-2-g02-g2-first-touch-bid/r00.py",
+          "sourceSha256": "ed2b71f544092c4e475bad9bd626ac9d8929755bca395a35e3286be0318d6df8",
+          "evaluationPath": "results/challengers/market-loop-20260819-2-g02-g2-first-touch-bid/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-2-g02-g2-first-touch-bid/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g2-first-touch-bid",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-2-g02-g2-first-touch-bid/r00.py",
+            "sourceSha256": "ed2b71f544092c4e475bad9bd626ac9d8929755bca395a35e3286be0318d6df8",
+            "modifiedLines": 2,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1300,
+              "combinedPnlCents": 12755,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -221
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-19T18:54:01.214Z"
+        }
+      ],
+      "tuningHistory": [],
+      "derivedFrom": {
+        "challengerId": "market-loop-20260819-2-g01-g1-bid-narrow",
+        "revision": 0,
+        "sourceSha256": "3366dc1fe7d4956457aa37d0df05ab8303e1bb20a9c2c0d4f8798f49e2e94f3d"
+      }
     }
   ],
   "evaluations": {
@@ -4474,6 +4575,120 @@
         "runtimeErrors": 0
       },
       "reasons": []
+    },
+    "ab3677fb81900630826835f58525c1d6aed54c9a92a85ae5e1a74e52af1a420d": {
+      "valid": true,
+      "modifiedLines": 4,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1270,
+        "combinedPnlCents": 13344,
+        "minimumCapital": {
+          "endingCashCents": 785,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "3366dc1fe7d4956457aa37d0df05ab8303e1bb20a9c2c0d4f8798f49e2e94f3d": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12658,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "fee44161e4c69a7e9e0912a0727021399821d3ecea49c2bced4db2671414bffb": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1210,
+        "combinedPnlCents": 12646,
+        "minimumCapital": {
+          "endingCashCents": 803,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "7a8230c746c80bf55ddf6751c2c6e7223c032b79a88fd096bb33e9a5b88d476a": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1280,
+        "combinedPnlCents": 12918,
+        "minimumCapital": {
+          "endingCashCents": 815,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "ed2b71f544092c4e475bad9bd626ac9d8929755bca395a35e3286be0318d6df8": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12755,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "87fefa2b31462e33ae7809f7328cd24cf88f4335ba730142840bb1a0e9a0e864": {
+      "valid": true,
+      "modifiedLines": 5,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12482,
+        "minimumCapital": {
+          "endingCashCents": 800,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
     }
   }
 }
