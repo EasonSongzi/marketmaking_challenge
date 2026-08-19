@@ -913,7 +913,7 @@
     },
     {
       "id": "market-loop-20260818-4-g06-g6-uniform-five",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It passed 20/20 with zero bankruptcies, scored 12.40, led all evaluated strategies at 129.81 combined PnL, and had the strongest 6.89/10.00 minimum-capital result. Its uniform five-cent quote also moved case 17 closer to second place, making it the best economic challenger for a targeted rank-repair interaction.",
@@ -1063,7 +1063,7 @@
     },
     {
       "id": "market-loop-20260818-5-g03-champion-g6-loss-side-five",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g3-tail-loss-six",
@@ -1159,7 +1159,7 @@
     },
     {
       "id": "market-loop-20260818-5-g05-g5-repeat-fok-edge",
-      "status": "active",
+      "status": "retired",
       "method": "respond_to_fok",
       "origin": "archive-review",
       "rationale": "It preserved 12.80 points and every champion rank while adding a distinct repeat-counterparty FOK memory path. Explore the final contract-specific RFQ rule from this complete source, then tune repeat activation and extra edge.",
@@ -1207,7 +1207,7 @@
     },
     {
       "id": "market-loop-20260818-5-g06-g6-repeat-rfq-wide",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "archive-review",
       "rationale": "It produced the strongest observed 7.68/10.00 minimum capital among high-scoring strategies. Delay or narrow broad repeat-counterparty widening to recover cases 13 and 17 while retaining its capital-defense signal.",
@@ -1311,7 +1311,7 @@
     },
     {
       "id": "market-loop-20260818-6-g01-champion-g6-contract-rfq-wide",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g1-low-loss-third",
@@ -1359,7 +1359,7 @@
     },
     {
       "id": "market-loop-20260818-6-g02-champion-g1-low-loss-third",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by cash-floor-coarse-075",
@@ -1407,7 +1407,7 @@
     },
     {
       "id": "market-loop-20260818-6-g04-champion-cash-floor-coarse-075",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g4-fill-side-once",
