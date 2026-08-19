@@ -459,21 +459,9 @@ class MarketMaker:
             and active_exposure + 5 * (1.0 - offer_price) <= available_capacity
         ):
             offer_quantity = 5
-        if (
-            offer_quantity == 5
-            and not repeat_request
-            and 20.0 <= self.cash_balance < 40.0
-            and active_exposure + 6 * (1.0 - offer_price) <= available_capacity
-        ):
-            offer_quantity = 6
         if bid_quantity == 3 and not repeat_request:
             bid_price += 0.01
-        if (
-            bid_quantity == 3
-            and not repeat_request
-            and self.cash_balance >= 40.0
-            and signed_reserve + 4 * bid_price <= available_capacity
-        ):
+        if bid_quantity == 3 and not repeat_request and signed_reserve + 4 * bid_price <= available_capacity:
             bid_quantity = 4
         quote_snapshots[option_id] = (
             counterparty_id,
