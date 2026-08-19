@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g1-highcap-bid-four",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-3-g01-g1-highcap-bid-four/r00.py",
+  "sourceSha256": "6093e504c40280612f6a45178bd0e7f39ebe61021c9bea5fbf22548cccba148f",
+  "modifiedLines": 7,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 14472,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -450
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

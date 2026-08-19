@@ -2197,6 +2197,54 @@
         "admittedFrom": "results/runs/market-loop-20260819-2/archive/g05/g5-bid-four-cheap",
         "at": "2026-08-19T20:47:04.651Z"
       }
+    },
+    {
+      "id": "market-loop-20260819-3-g01-g1-highcap-bid-four",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It is the only source ever produced that holds case-14 Lattice at 14.82 while keeping the case-17 fourth-unit gains, and it improves case 17 to 17.50, above the champion's 16.24 and far above the 13.94 of the repeat-request relocation that previously achieved the same suppression. That combination is the exact structural evidence the memo asked to retain, and at a 0.40 case-14 gap it is a strictly better research parent than the champion's 6.27 gap despite being 4.50 behind on combined PnL. Its tuning upside is explicit and entirely unswept: the new 40.0 capital boundary was taken unchanged from the offer q3 rule and has never been varied as a bid-side gate, so the true separating capital level is unknown and could sit anywhere between the 20 and 40 starting capitals; the fourth-unit certification multiple of four has never been varied jointly with that gate, only in isolation where it was just refuted; and the not-repeat restriction on the fourth unit remains an untested conjunct that could be relaxed independently now that the capital regime carries the separation.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-3-g01-g1-highcap-bid-four/r00.py",
+          "sourceSha256": "6093e504c40280612f6a45178bd0e7f39ebe61021c9bea5fbf22548cccba148f",
+          "evaluationPath": "results/challengers/market-loop-20260819-3-g01-g1-highcap-bid-four/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-3-g01-g1-highcap-bid-four/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g1-highcap-bid-four",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-3-g01-g1-highcap-bid-four/r00.py",
+            "sourceSha256": "6093e504c40280612f6a45178bd0e7f39ebe61021c9bea5fbf22548cccba148f",
+            "modifiedLines": 7,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1300,
+              "combinedPnlCents": 14472,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -450
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-19T21:42:10.262Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -5173,6 +5221,63 @@
         "runtimeErrors": 0
       },
       "reasons": []
+    },
+    "6093e504c40280612f6a45178bd0e7f39ebe61021c9bea5fbf22548cccba148f": {
+      "valid": true,
+      "modifiedLines": 7,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 14472,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "4dc662ef8f5fbf724611d8e6c15c3c3c5a3ee767816eac7aadc978e62b01dc7b": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 14770,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "159bacde64c0d9c60ad5e92272d778b4f7be3ea94a24e89f5413b1b9b6eb9702": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 14739,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
     }
   }
 }
