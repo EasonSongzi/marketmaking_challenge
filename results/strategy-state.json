@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g5-central-offer",
+    "id": "g6-signed-central",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "7cf6418c949258d9a1b31b483c3689f04ffdfda57b0175ee8e1debc086f7038b",
+    "sourceSha256": "5e8b044ff64ac6cba452e2fb79b43c79f22eb483f3d6594fec14a8fff1f1f6df",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260819:g05:g5-central-offer",
+    "experimentId": "market-loop-20260819:g06:g6-signed-central",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1300,
-      "combinedPnlCents": 12849,
+      "combinedPnlCents": 12976,
       "minimumCapital": {
         "endingCashCents": 815,
         "startingCapitalCents": 1000
@@ -1689,6 +1689,102 @@
             ]
           },
           "createdAt": "2026-08-19T16:04:34.767Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-g06-g6-postfill-central",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It is the only source in the run to improve case 13, the sole reachable rank boundary, lifting it from 8.96 to 9.03 while holding 20/20, zero bankruptcies, and 8.15/10.00 minimum capital. Its post-fill netting model is orthogonal to the promoted offer-side change and carries explicit tuning upside in the assumed fill size and the capacity margin, which is the natural way to convert its case-13 signal without its case-14 and case-15 cost.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-g06-g6-postfill-central/r00.py",
+          "sourceSha256": "90bc078774c41b6e7d4ad7c8ffb9a1d184ffb15559bf8208a2586ee1c0bf7dc8",
+          "evaluationPath": "results/challengers/market-loop-20260819-g06-g6-postfill-central/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-g06-g6-postfill-central/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g6-postfill-central",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-g06-g6-postfill-central/r00.py",
+            "sourceSha256": "90bc078774c41b6e7d4ad7c8ffb9a1d184ffb15559bf8208a2586ee1c0bf7dc8",
+            "modifiedLines": 31,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1300,
+              "combinedPnlCents": 12759,
+              "minimumCapital": {
+                "endingCashCents": 815,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -90
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-19T16:20:43.047Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-g06-champion-g5-central-offer",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g6-signed-central",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-g06-champion-g5-central-offer/r00.py",
+          "sourceSha256": "7cf6418c949258d9a1b31b483c3689f04ffdfda57b0175ee8e1debc086f7038b",
+          "evaluationPath": "results/challengers/market-loop-20260819-g06-champion-g5-central-offer/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-g06-champion-g5-central-offer/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-central-offer",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-g06-champion-g5-central-offer/r00.py",
+            "sourceSha256": "7cf6418c949258d9a1b31b483c3689f04ffdfda57b0175ee8e1debc086f7038b",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1300,
+              "combinedPnlCents": 12849,
+              "minimumCapital": {
+                "endingCashCents": 815,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-19T16:20:54.155Z"
         }
       ],
       "tuningHistory": []
@@ -4261,13 +4357,68 @@
     },
     "7cf6418c949258d9a1b31b483c3689f04ffdfda57b0175ee8e1debc086f7038b": {
       "valid": true,
-      "modifiedLines": 7,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
         "bankruptcies": 0,
         "scoredPointsHundredths": 1300,
         "combinedPnlCents": 12849,
+        "minimumCapital": {
+          "endingCashCents": 815,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Demoted champion"
+      ]
+    },
+    "90bc078774c41b6e7d4ad7c8ffb9a1d184ffb15559bf8208a2586ee1c0bf7dc8": {
+      "valid": true,
+      "modifiedLines": 31,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12759,
+        "minimumCapital": {
+          "endingCashCents": 815,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "0daae0a85c7cac4723f6e31d65b780033c8e5c583022e13dc4bc2f7684784d81": {
+      "valid": true,
+      "modifiedLines": 3,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12855,
+        "minimumCapital": {
+          "endingCashCents": 815,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "5e8b044ff64ac6cba452e2fb79b43c79f22eb483f3d6594fec14a8fff1f1f6df": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12976,
         "minimumCapital": {
           "endingCashCents": 815,
           "startingCapitalCents": 1000

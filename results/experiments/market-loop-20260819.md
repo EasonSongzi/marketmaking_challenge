@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-19T14:53:19.420Z
 - Starting baseline: g6-cap-bid-only (12.80/16.00)
-- Current baseline: g4-signed-bid (13.00/16.00)
+- Current baseline: g5-central-offer (13.00/16.00)
 - Stop condition: not reached
-- Score trend: 12.80 → 13.00 → 13.00
+- Score trend: 12.80 → 13.00 → 13.00 → 13.00
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -197,6 +197,45 @@ Parent: champion `g4-signed-bid` (`970a7fa0950b84b94a7ea6d50d87954027432d6cf0c3f
 - Baseline delta: 0.00 points; PnL 1.16
 
 Selection: g5-central-offer.
-Promotion: none.
+Promotion: g5-central-offer (66893cbadfbdd04099af634a9dd97d9e1134c074).
 Finding: All three selective capital-20 offer candidates passed 20/20 with zero bankruptcies and runtime errors and preserved 13.00. The 40-60-cent central gate led at 128.49 PnL, 1.16 above the champion, with unchanged 8.15/10.00 minimum capital. It kept case 13 second at 8.96, lifted case 14 from 10.51 to 11.19 while remaining second, and kept case 15 first at 8.56 with a 1.14 lead. Guaranteed-reducing offers were nearly inactive, adding 0.06 PnL and only 0.06 to case 15. One-day offers reduced PnL by 0.83 and did not change cases 13 or 14. All candidates preserved cases 9, 16, 17, and 20 first and case 18 second. Central fair value is therefore the only capital-20 offer predicate with a material positive allocation signal, though it does not yet cross the case-13 or case-14 first-place boundary.
 Next-generation rationale: Archive and promote the fixed-selector central-offer winner. For the final generation, combine only independently validated structures: union the central gate with the safe reducing-offer rule, and cross the central gate with the already validated post-fill-bid and long-only-bid reserve architectures. Do not introduce new predicates or tune constants.
+
+## Generation 6: explore quote
+
+Five generations of capital-20 predicate tomography held 13.00 and lifted PnL from 122.35 to 128.49 without moving a rank. The only reachable boundary left is case 13, second at 8.96 against 11.96, and every capital-20 case shares the same allocation machinery. Per the Generation 5 analysis, combine only independently validated structures rather than introducing new predicates or sweeping constants: recross the validated post-fill bid reserve with the promoted central offer gate, union the two validated capital-20 offer predicates, and lift the promoted central branch from the crude unit-count proxy onto the already validated signed reserve. Prices, memory, the 0.75 floor, the high-capital offer branch, estimator, and FOK stay unchanged in all three.
+
+Parent: champion `g5-central-offer` (`7cf6418c949258d9a1b31b483c3689f04ffdfda57b0175ee8e1debc086f7038b`).
+
+### g6-postfill-central
+
+- Hypothesis: Post-fill bid reserve produced the best observed case-13 PnL at 9.03 under the previous offer path, so pairing it with the promoted central capital-20 offer gate can add its case-13 allocation to the current 8.96 without touching the offer routing that already protects cases 17 and 18.
+- Implementation plan: Keep the champion offer_quantity path byte-for-byte equivalent, including the low-loss rule, the cash >= 40 exposure branch, and the 20 <= cash_balance < 40 central 40-60 branch on active_exposure. Replace only the bid capacity test: instead of the pre-fill signed reserve, compute the probability-weighted signed reserve over active options after replacing the target option's net quantity with quantity plus three, reserving positive net quantity at that option's current theoretical value and negative net quantity magnitude at one minus that value, so a bid netting against a short is credited. Quote bid size three when that post-fill reserve fits available_capacity or the existing bid_price <= 0.25 low-loss exception passes. Preserve prices, fill memory, the 0.75 cash floor, estimator, and FOK exactly.
+- Worker summary: Kept the complete champion offer path byte-for-byte, including the low-loss rule, the cash >= 40 exposure branch, and the capital-20 central 40-60 branch on active_exposure, then replaced the bid capacity test with a probability-weighted reserve computed after adding the three-lot bid to the target option's net quantity, so a bid netting against a short is credited rather than charged. Two MarketMaker helpers factor the shared per-option reserve rule. Scope validation, compilation, diff checks, short-netting and long-adding bid assertions, the low-loss exception, and a 36-combination check that offer quantity is identical to the parent all passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 127.59; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL -0.90
+
+### g6-union-reducing
+
+- Hypothesis: The central 40-60 gate and the guaranteed-reducing gate were each validated safe and non-overlapping in effect, so their union should retain the promoted central allocation while adding the reducing-offer units that acted only outside the central band.
+- Implementation plan: Keep the signed-reserve bid rule and the cash >= 40 exposure offer branch unchanged. In the 20 <= cash_balance < 40 offer branch, keep the existing active_exposure plus three-lot offer loss within available_capacity requirement, and widen its companion condition from fair_value_cents between 40 and 60 inclusive to that condition or the current target option position being at least positive three. Keep the low-loss offer rule, prices, fill memory, the 0.75 cash floor, estimator, and FOK unchanged.
+- Worker summary: Preserved the signed-reserve bid rule, the low-loss offer rule, and the cash >= 40 exposure branch, then widened only the capital-20 central branch's companion condition from fair value 40 through 60 inclusive to that condition or a current target position of at least positive three, keeping its capacity inequality unchanged. Scope validation, compilation, a two-line diff, and assertions covering the union arm, the position boundary, the retained central gate, the binding capacity guard, and unchanged capital-10 and capital-40 behavior all passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 128.55; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL 0.06
+
+### g6-signed-central
+
+- Hypothesis: The promoted capital-20 central branch still gates on the crude absolute unit count while the bid side already uses probability-weighted reserve; substituting the accurate collateral model inside that narrow central band should release the capital-20 offers the unit count falsely blocks without reopening the broad offer activation that lost cases 13 and 18.
+- Implementation plan: Keep the signed-reserve bid rule, the low-loss offer rule, and the cash >= 40 exposure offer branch unchanged on active_exposure. In the 20 <= cash_balance < 40 central branch only, keep the fair_value_cents 40 through 60 inclusive restriction and replace active_exposure in its capacity inequality with the signed probability-weighted reserve already computed for bids, so the test becomes signed reserve plus three-lot offer loss within available_capacity. Preserve prices, fill memory, the 0.75 cash floor, estimator, and FOK exactly.
+- Worker summary: Preserved the signed-reserve bid rule, the low-loss offer rule, and the cash >= 40 high-capital branch with both of its active_exposure conditions intact, then replaced active_exposure with the already-computed signed reserve inside the capital-20 central branch's capacity inequality only, keeping the 40 through 60 fair-value restriction. Scope validation, compilation, a one-line diff, and assertions covering net-short release, a genuinely over-capacity long portfolio, out-of-band fair values, unchanged capital-10 and capital-40 quotes, and an unchanged bid sweep all passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 129.76; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL 1.27
+
+Selection: g6-signed-central.
+Promotion: none.
+Finding: All three recombination candidates passed 20/20 with zero bankruptcies and runtime errors, held 13.00, and kept minimum capital at 8.15/10.00. Substituting the probability-weighted signed reserve for the crude unit count inside the capital-20 central offer branch led at 129.76 combined PnL, 1.27 above the champion, and produced the best case-14 result of the entire run at 11.76 while holding case 15 first at 8.68. Unioning the central gate with the guaranteed-reducing predicate added only 0.06 PnL and left cases 13 and 14 at the champion's 8.96 and 11.19, confirming the Generation 5 observation that the reducing arm is nearly inactive and does not compose additively. Post-fill bid reserve was the only candidate to move case 13, raising it from 8.96 to 9.03, but it cost 0.90 PnL overall by reducing case 14 to 10.69 and case 15 to 8.93, and it failed the promotion gate at 127.59. Every candidate preserved cases 16, 17, and 20 first and cases 18 and 19 second at unchanged values, so the offer-side recombination is rank-neutral outside the capital-20 group. No candidate crossed a rank boundary: case 13 still needs 3.00 against Fixed Width 0.1 and case 14 still needs 11.50 against Lattice, so the accurate collateral model buys PnL inside the existing rank set rather than new points.
+Next-generation rationale: Promote the signed-reserve central offer winner and finish the run at the six-generation limit. The run establishes that probability-weighted reserve strictly dominates the absolute unit count wherever it has been substituted, on bids in Generation 4 and now on the capital-20 central offer branch, and that further capital-20 predicate recombination is exhausted: six generations moved combined PnL from 122.35 to 129.76 without moving a single rank. Any future loop should stop refining quantity predicates and attack the one remaining reachable boundary, case 13's 3.00 gap, with a structurally different lever, since case 14 at 11.50 and cases 18 and 19 at 40.90 and 20.86 are out of range of allocation changes of this magnitude.
+Challenger update: admitted market-loop-20260819-g06-g6-postfill-central.

@@ -418,18 +418,12 @@ class MarketMaker:
             abs(self.position.option_quantity_by_option_id.get(option_id, 0))
             for option_id in active_option_ids
         )
-        signed_reserve = 0.0
-        for active_option in self.active_option_state:
-            position = self.position.option_quantity_by_option_id.get(active_option.option_id, 0)
-            if position > 0:
-                signed_reserve += position * self.price_option(active_option)
-            elif position < 0:
-                signed_reserve -= position * (1.0 - self.price_option(active_option))
         cash_floor = 0.75 * self.cash_balance
         available_capacity = self.cash_balance - cash_floor
+        post_fill_reserve = self._reserve_after_fill(option, 3)
         bid_quantity = (
             3
-            if signed_reserve + 3 * bid_price <= available_capacity or bid_price <= 0.25
+            if post_fill_reserve <= available_capacity or bid_price <= 0.25
             else 2
         )
         offer_quantity = 3 if 1.0 - offer_price <= 0.25 else 2
@@ -444,7 +438,7 @@ class MarketMaker:
             offer_quantity == 2
             and 20.0 <= self.cash_balance < 40.0
             and 40 <= fair_value_cents <= 60
-            and signed_reserve + 3 * (1.0 - offer_price) <= available_capacity
+            and active_exposure + 3 * (1.0 - offer_price) <= available_capacity
         ):
             offer_quantity = 3
         quote_snapshots[option_id] = (
@@ -457,6 +451,27 @@ class MarketMaker:
             offer_price=offer_price,
             offer_quantity=offer_quantity,
         )
+
+    def _reserve_after_fill(self, option: BinaryOption, fill_quantity: int) -> float:
+        reserve = 0.0
+        target_priced = False
+        for active_option in self.active_option_state:
+            net_quantity = self.position.option_quantity_by_option_id.get(active_option.option_id, 0)
+            if active_option.option_id == option.option_id:
+                net_quantity += fill_quantity
+                target_priced = True
+            reserve += self._reserve_contribution(active_option, net_quantity)
+        if not target_priced:
+            net_quantity = self.position.option_quantity_by_option_id.get(option.option_id, 0) + fill_quantity
+            reserve += self._reserve_contribution(option, net_quantity)
+        return reserve
+
+    def _reserve_contribution(self, option: BinaryOption, net_quantity: int) -> float:
+        if net_quantity > 0:
+            return net_quantity * self.price_option(option)
+        if net_quantity < 0:
+            return -net_quantity * (1.0 - self.price_option(option))
+        return 0.0
 
     def respond_to_fok(self, option: BinaryOption, fok_order: FokOrder) -> bool:  # type: ignore[empty-body]
         theoretical_value: float = self.price_option(option)

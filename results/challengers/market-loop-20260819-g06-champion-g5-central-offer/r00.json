@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g5-central-offer",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-g06-champion-g5-central-offer/r00.py",
+  "sourceSha256": "7cf6418c949258d9a1b31b483c3689f04ffdfda57b0175ee8e1debc086f7038b",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 12849,
+    "minimumCapital": {
+      "endingCashCents": 815,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}

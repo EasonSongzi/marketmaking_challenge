@@ -444,7 +444,7 @@ class MarketMaker:
             offer_quantity == 2
             and 20.0 <= self.cash_balance < 40.0
             and 40 <= fair_value_cents <= 60
-            and signed_reserve + 3 * (1.0 - offer_price) <= available_capacity
+            and active_exposure + 3 * (1.0 - offer_price) <= available_capacity
         ):
             offer_quantity = 3
         quote_snapshots[option_id] = (

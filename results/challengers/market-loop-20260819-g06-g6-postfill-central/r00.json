@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-postfill-central",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-g06-g6-postfill-central/r00.py",
+  "sourceSha256": "90bc078774c41b6e7d4ad7c8ffb9a1d184ffb15559bf8208a2586ee1c0bf7dc8",
+  "modifiedLines": 31,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 12759,
+    "minimumCapital": {
+      "endingCashCents": 815,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -90
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

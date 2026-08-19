@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g5-central-offer`
+- Current champion: `g6-signed-central`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `7cf6418c949258d9a1b31b483c3689f04ffdfda57b0175ee8e1debc086f7038b`
-- Experiment: `market-loop-20260819`, generation 5, candidate `g5-central-offer`
+- Source SHA-256: `5e8b044ff64ac6cba452e2fb79b43c79f22eb483f3d6594fec14a8fff1f1f6df`
+- Experiment: `market-loop-20260819`, generation 6, candidate `g6-signed-central`
 - SCORED points: 13.00/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0
