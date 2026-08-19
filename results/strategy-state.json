@@ -2012,7 +2012,7 @@
     },
     {
       "id": "market-loop-20260819-2-g06-g6-both-four",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It cleared the promotion gate independently at 146.05 combined PnL with every protected rank held and zero bankruptcies, and it is the exact one-step-smaller sibling of the winner, stopping the offer escalation at four units instead of five. That makes it the natural control for any future work on the escalation depth and the safer base if a later generation finds the fifth unit interacts badly with a new mechanism. Its tuning upside is explicit and unswept: the escalation ceiling is a discrete parameter now known to pay at four and at five but never tested beyond, the exposure multiplier in the certifying inequality has never been varied, and the not-repeat gate on the offer unit is an untested restriction that could be relaxed independently of the capacity arithmetic.",
@@ -2054,7 +2054,11 @@
           "createdAt": "2026-08-19T20:41:04.562Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "13.00 and 146.05 PnL, dominated on both axes by 0.30 points and 8.70 PnL. It composes bid-Q4 with offer-Q4, and both mechanisms are absorbed into the champion in strictly stronger form: the bid side now runs a capital-gated fourth unit plus a single-leg cheap fourth and fifth, and the offer side now escalates to six.",
+        "at": "2026-08-19T22:13:41.493Z"
+      }
     },
     {
       "id": "market-loop-20260819-2-g06-champion-g5-bid-four-reserve",
