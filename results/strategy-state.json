@@ -2376,7 +2376,7 @@
     },
     {
       "id": "market-loop-20260819-3-g03-champion-g2-lowcap-offer-six",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g3-lowcap-central-offer-three",
@@ -2420,7 +2420,11 @@
           "createdAt": "2026-08-19T21:53:27.823Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "13.30 but 143.75 PnL, 11.00 behind the champion and strictly dominated inside the pool by its own successor g3-lowcap-central-offer-three at 143.86, which is the same architecture plus the sub-20 offer-q3 rule. The newly admitted g2-lowcap-central-offer-six covers the one axis this source could still have tested, fair-value gating of the sixth offer unit, and does so from the same generation.",
+        "at": "2026-08-19T22:13:42.011Z"
+      }
     },
     {
       "id": "market-loop-20260819-3-g04-g4-cheap-bid-four",
