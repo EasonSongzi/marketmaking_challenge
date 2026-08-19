@@ -2079,6 +2079,56 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-2-g05-g5-offer-four-exposure",
+      "status": "active",
+      "method": "quote",
+      "origin": "curated",
+      "rationale": "Restored from the Generation 5 archive by operator decision after the engine dropped the analysis challenger decision on a promoting challenger-parent generation. It cleared the promotion gate on its own at 13.00 points and 135.77 combined PnL with every protected rank held and zero bankruptcies, and it is the only strategy in run history that adds material PnL without disturbing the case-14 mechanism: Lattice stays pinned at 14.82 and our own case 14 holds at 14.50, where the promoted bid fourth unit releases Lattice to 20.87. It also carries the best case 20 at plus 2.25, best case 15 at 7.93, and best case 19 at minus 1.85. Tuning upside is explicit and unswept: the exposure multiplier certifying the fourth unit has never been varied, the unit count is discrete and untried above four on this base, and the not-repeat gate is an untested restriction independent of the capacity arithmetic.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-2-g05-g5-offer-four-exposure/r00.py",
+          "sourceSha256": "89b2b51b69eebbd1fe0a8e663a21da2b65f26be78d4bc93f209a42892d9418d5",
+          "evaluationPath": "results/challengers/market-loop-20260819-2-g05-g5-offer-four-exposure/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-2-g05-g5-offer-four-exposure/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-offer-four-exposure",
+            "valid": true,
+            "eligible": true,
+            "sourcePath": "results/challengers/market-loop-20260819-2-g05-g5-offer-four-exposure/r00.py",
+            "sourceSha256": "89b2b51b69eebbd1fe0a8e663a21da2b65f26be78d4bc93f209a42892d9418d5",
+            "modifiedLines": 8,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1300,
+              "combinedPnlCents": 13577,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 601
+            },
+            "reasons": []
+          },
+          "createdAt": "2026-08-19T20:46:57.852Z"
+        }
+      ],
+      "tuningHistory": [],
+      "curation": {
+        "admittedFrom": "results/runs/market-loop-20260819-2/archive/g05/g5-offer-four-exposure",
+        "at": "2026-08-19T20:46:57.857Z"
+      }
     }
   ],
   "evaluations": {

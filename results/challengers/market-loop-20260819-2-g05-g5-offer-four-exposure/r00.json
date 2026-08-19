@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g5-offer-four-exposure",
+  "valid": true,
+  "eligible": true,
+  "sourcePath": "results/challengers/market-loop-20260819-2-g05-g5-offer-four-exposure/r00.py",
+  "sourceSha256": "89b2b51b69eebbd1fe0a8e663a21da2b65f26be78d4bc93f209a42892d9418d5",
+  "modifiedLines": 8,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 13577,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 601
+  },
+  "reasons": []
+}
