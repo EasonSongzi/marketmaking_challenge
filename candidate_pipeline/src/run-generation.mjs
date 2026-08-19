@@ -10,6 +10,7 @@ const SOURCE = "Market_making_binary_option.py";
 const WORKTREE_ROOT = "/tmp/akuna-market-maker";
 const SCOPE_VALIDATOR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "validate-candidate.sh");
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
+const CHALLENGER_ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,84}$/;
 const SKIPPED_STATUSES = new Set(["evaluated", "invalid"]);
 const TARGET_METHODS = new Set(["quote", "respond_to_fok", "warm_up"]);
 
@@ -111,7 +112,7 @@ function resolvePaths(options, state, generation) {
       parentSourcePath = path.join(repo, SOURCE);
     } else if (
       generation.parent.type === "challenger"
-      && ID_PATTERN.test(generation.parent.challengerId ?? "")
+      && CHALLENGER_ID_PATTERN.test(generation.parent.challengerId ?? "")
       && Number.isSafeInteger(generation.parent.revision)
       && generation.parent.revision >= 0
     ) {

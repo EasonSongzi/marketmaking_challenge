@@ -30,6 +30,7 @@ const METHODS = new Set(["quote", "respond_to_fok", "warm_up"]);
 const MODES = new Set(["explore", "tune"]);
 const FAILURE_KINDS = new Set(["authentication", "browser", "runner", "integrity"]);
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
+const CHALLENGER_ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,84}$/;
 
 export class LoopInputError extends Error {}
 
@@ -86,6 +87,22 @@ async function sha256(filePath) {
 function assertId(value, label) {
   if (!ID_PATTERN.test(value ?? "")) {
     throw new LoopInputError(`${label} must match ${ID_PATTERN}`);
+  }
+}
+
+function assertChallengerId(value, label) {
+  if (!CHALLENGER_ID_PATTERN.test(value ?? "")) {
+    throw new LoopInputError(`${label} must match ${CHALLENGER_ID_PATTERN}`);
+  }
+}
+
+async function pathExists(target) {
+  try {
+    await fs.access(target);
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") return false;
+    throw error;
   }
 }
 
@@ -513,7 +530,7 @@ function exploreParentPath(paths, generation) {
     return paths.sourcePath;
   }
   if (parent?.type !== "challenger") throw new LoopInputError("Explore generation is missing its parent");
-  assertId(parent.challengerId, "Explore parent challenger ID");
+  assertChallengerId(parent.challengerId, "Explore parent challenger ID");
   if (!Number.isSafeInteger(parent.revision) || parent.revision < 0) {
     throw new LoopInputError("Explore parent challenger revision is invalid");
   }
@@ -798,14 +815,24 @@ async function candidatePatch(paths, generation, candidate, sourcePath) {
 
 async function copyCandidate(paths, state, generation, candidate, invalidIds) {
   const archiveDirectory = path.join(paths.runDirectory, "archive", `g${String(generation.number).padStart(2, "0")}`, candidate.id);
-  await fs.mkdir(path.join(archiveDirectory, "raw"), { recursive: true });
-  const sourcePath = candidate.sourcePath ?? path.join(candidate.worktreePath, SOURCE);
+  const rawDirectory = path.join(archiveDirectory, "raw");
+  await fs.mkdir(rawDirectory, { recursive: true });
+  const workingSource = candidate.sourcePath ?? path.join(candidate.worktreePath, SOURCE);
   const archivedSource = path.join(archiveDirectory, SOURCE);
-  await fs.copyFile(sourcePath, archivedSource);
+  // An archive that fails after worktree cleanup, such as a rejected commit, must stay
+  // replayable: fall back to the hash-verified evidence this candidate already archived.
+  const replaying = candidate.status === "archived" && !(await pathExists(workingSource));
+  const sourcePath = replaying ? archivedSource : workingSource;
   const sourceSha256 = await sha256(sourcePath);
+  if (replaying && sourceSha256 !== candidate.sourceSha256) {
+    throw new LoopInputError(`Archived source for ${candidate.id} no longer matches its recorded SHA-256`);
+  }
+  if (sourcePath !== archivedSource) await fs.copyFile(sourcePath, archivedSource);
   if (await sha256(archivedSource) !== sourceSha256) throw new LoopInputError(`Archive SHA-256 failed for ${candidate.id}`);
-  const patch = await candidatePatch(paths, generation, candidate, sourcePath);
-  await fs.writeFile(path.join(archiveDirectory, "candidate.patch"), patch);
+  if (!replaying) {
+    const patch = await candidatePatch(paths, generation, candidate, sourcePath);
+    await fs.writeFile(path.join(archiveDirectory, "candidate.patch"), patch);
+  }
   candidate.sourceSha256 = sourceSha256;
   candidate.archiveDirectory = archiveDirectory;
   candidate.archivedSourcePath = archivedSource;
@@ -815,16 +842,22 @@ async function copyCandidate(paths, state, generation, candidate, invalidIds) {
     return null;
   }
   await validateExploreCandidate(paths, generation, sourcePath);
-  const evaluationPath = path.join(candidate.resultDirectory, "evaluation.json");
+  const evidenceDirectory = replaying ? rawDirectory : candidate.resultDirectory;
+  const evaluationPath = path.join(evidenceDirectory, "evaluation.json");
   const evaluation = await readJson(evaluationPath, `evaluation for ${candidate.id}`);
   if (evaluation.candidateId !== candidate.id || evaluation.sourceSha256 !== sourceSha256) {
     throw new LoopInputError(`Evaluation identity or source SHA-256 changed for ${candidate.id}`);
   }
   evaluation.eligible = recomputeEligibility(evaluation, state.baseline);
-  const entries = await fs.readdir(candidate.resultDirectory, { withFileTypes: true });
-  for (const entry of entries) {
-    if (entry.isFile() && /\.(?:json|md)$/.test(entry.name)) {
-      await fs.copyFile(path.join(candidate.resultDirectory, entry.name), path.join(archiveDirectory, "raw", entry.name));
+  // Selection re-verifies the source behind each evaluation, so a replay must point at the
+  // archived copy this function just hash-checked rather than the deleted worktree.
+  if (replaying) evaluation.sourcePath = archivedSource;
+  if (evidenceDirectory !== rawDirectory) {
+    const entries = await fs.readdir(evidenceDirectory, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isFile() && /\.(?:json|md)$/.test(entry.name)) {
+        await fs.copyFile(path.join(evidenceDirectory, entry.name), path.join(rawDirectory, entry.name));
+      }
     }
   }
   const archivedEvaluation = path.join(archiveDirectory, "evaluation.json");
@@ -910,6 +943,7 @@ async function refreshLegacyEvaluations(paths, generation) {
 async function cleanupWorktrees(paths, state, generation) {
   const registered = await registeredWorktrees(paths.repo);
   const worktreeOwners = generation.mode === "tune" ? [generation.designer] : generation.candidates;
+  const removable = [];
   for (const candidate of worktreeOwners) {
     const worktreePath = ensureWorktreePath(candidate.worktreePath);
     const expected = path.join(
@@ -919,9 +953,12 @@ async function cleanupWorktrees(paths, state, generation) {
       candidate.id,
     );
     if (worktreePath !== expected) throw new LoopInputError(`Refusing cleanup: unexpected worktree path for ${candidate.id}`);
+    // A replayed archive finds worktrees an earlier attempt already removed.
+    if (!(await pathExists(worktreePath))) continue;
     if (!registered.has(await fs.realpath(worktreePath))) throw new LoopInputError(`Refusing cleanup: ${worktreePath} is not a registered worktree`);
+    removable.push(candidate);
   }
-  for (const candidate of worktreeOwners) await git(paths.repo, "worktree", "remove", "--force", candidate.worktreePath);
+  for (const candidate of removable) await git(paths.repo, "worktree", "remove", "--force", candidate.worktreePath);
 }
 
 function validateCandidatePaths(state, generation) {
@@ -1522,9 +1559,73 @@ export async function statusRun(options) {
   return { ...loaded, recommendedStop: getStopReason(loaded.state) };
 }
 
+// Pool curation. Admission reuses the same hash-verified storeRevision path archive
+// uses, and refuses any source the fixed grader has not already scored, so a curated
+// challenger carries exactly the same evidence binding as an automatically admitted one.
+export async function admitChallenger(options) {
+  const repo = await resolveRepo(options.repo);
+  assertChallengerId(options.challengerId, "Challenger ID");
+  if (typeof options.rationale !== "string" || !options.rationale.trim()) {
+    throw new LoopInputError("Admitting a challenger requires --rationale");
+  }
+  const method = options.method ?? "quote";
+  if (!METHODS.has(method)) throw new LoopInputError(`--method must be one of: ${[...METHODS].join(", ")}`);
+  const archiveDirectory = path.resolve(options.archivePath ?? "");
+  const sourcePath = path.join(archiveDirectory, SOURCE);
+  const evaluation = await readJson(path.join(archiveDirectory, "evaluation.json"), "archived evaluation");
+  if (!evaluation?.valid) throw new LoopInputError("Only a valid evaluated candidate can enter the pool");
+  const baseline = await readJson(path.join(repo, "results", "baselines", "best.json"), "best baseline");
+  const registry = await loadRegistry(repo, baseline);
+  if (!registry.evaluations[evaluation.sourceSha256]?.valid) {
+    throw new LoopInputError(`No cached grader evidence for ${evaluation.sourceSha256}`);
+  }
+  const { challenger } = await storeRevision({
+    repo,
+    registry,
+    challengerId: options.challengerId,
+    sourcePath,
+    evaluation,
+    method,
+    origin: "curated",
+    rationale: options.rationale.trim(),
+  });
+  challenger.curation = { admittedFrom: path.relative(repo, archiveDirectory), at: new Date().toISOString() };
+  await saveRegistry(repo, registry);
+  const commit = await stageAndCommit(
+    repo,
+    [registryPath(repo), challengersPath(repo)],
+    `strategy: admit challenger ${options.challengerId}`,
+  );
+  return { repo, challengerId: options.challengerId, action: "admitted", commit };
+}
+
+export async function retireChallenger(options) {
+  const repo = await resolveRepo(options.repo);
+  assertChallengerId(options.challengerId, "Challenger ID");
+  if (typeof options.reason !== "string" || !options.reason.trim()) {
+    throw new LoopInputError("Retiring a challenger requires --reason");
+  }
+  const baseline = await readJson(path.join(repo, "results", "baselines", "best.json"), "best baseline");
+  const registry = await loadRegistry(repo, baseline);
+  const challenger = activeChallenger(registry, options.challengerId);
+  if (!challenger) {
+    const active = registry.challengers.filter(({ status }) => status === "active").map(({ id }) => id);
+    throw new LoopInputError(`No active challenger ${options.challengerId}. Active: ${active.join(", ") || "none"}`);
+  }
+  challenger.status = "retired";
+  challenger.retirement = { reason: options.reason.trim(), at: new Date().toISOString() };
+  await saveRegistry(repo, registry);
+  const commit = await stageAndCommit(
+    repo,
+    [registryPath(repo)],
+    `strategy: retire challenger ${options.challengerId}`,
+  );
+  return { repo, challengerId: options.challengerId, action: "retired", commit };
+}
+
 function parseCli(argumentsList) {
   const [action, ...rest] = argumentsList;
-  if (!action) throw new LoopInputError("Usage: loop.sh <start|prepare|register-tuning|archive|promote|finish|status|resume> --run-id ID");
+  if (!action) throw new LoopInputError("Usage: loop.sh <start|prepare|register-tuning|archive|promote|finish|status|resume|admit-challenger|retire-challenger> --run-id ID");
   const options = { invalidIds: [] };
   for (let index = 0; index < rest.length; index += 2) {
     const flag = rest[index];
@@ -1539,6 +1640,11 @@ function parseCli(argumentsList) {
     else if (flag === "--invalid") options.invalidIds.push(value);
     else if (flag === "--failure") options.failure = value;
     else if (flag === "--failure-kind") options.failureKind = value;
+    else if (flag === "--archive") options.archivePath = value;
+    else if (flag === "--challenger-id") options.challengerId = value;
+    else if (flag === "--rationale") options.rationale = value;
+    else if (flag === "--reason") options.reason = value;
+    else if (flag === "--method") options.method = value;
     else if (flag === "--max-generations") options.maxGenerations = Number(value);
     else if (flag === "--target") options.targetPointsHundredths = Number(value);
     else throw new LoopInputError(`Unknown option: ${flag}`);
@@ -1562,9 +1668,20 @@ async function main() {
     finish: finishRun,
     status: statusRun,
     resume: resumeRun,
+    "admit-challenger": admitChallenger,
+    "retire-challenger": retireChallenger,
   };
   if (!actions[action]) throw new LoopInputError(`Unknown action: ${action}`);
   const result = await actions[action](options);
+  if (!result.state) {
+    console.log(JSON.stringify({
+      challengerId: result.challengerId,
+      action: result.action,
+      registryPath: path.relative(result.repo, registryPath(result.repo)),
+      commit: result.commit ?? null,
+    }, null, 2));
+    return;
+  }
   console.log(JSON.stringify({
     runId: result.state.runId,
     status: result.state.status,
