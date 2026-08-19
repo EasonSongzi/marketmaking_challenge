@@ -418,18 +418,11 @@ class MarketMaker:
             abs(self.position.option_quantity_by_option_id.get(option_id, 0))
             for option_id in active_option_ids
         )
-        signed_reserve = 0.0
-        for active_option in self.active_option_state:
-            position = self.position.option_quantity_by_option_id.get(active_option.option_id, 0)
-            if position > 0:
-                signed_reserve += position * self.price_option(active_option)
-            elif position < 0:
-                signed_reserve -= position * (1.0 - self.price_option(active_option))
         cash_floor = 0.75 * self.cash_balance
         available_capacity = self.cash_balance - cash_floor
         bid_quantity = (
             3
-            if signed_reserve + 3 * bid_price <= available_capacity or bid_price <= 0.25
+            if active_exposure + 3 * bid_price <= available_capacity or bid_price <= 0.25
             else 2
         )
         offer_quantity = 3 if 1.0 - offer_price <= 0.25 else 2

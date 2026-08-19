@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g1-exposure-offer",
+    "id": "g4-signed-bid",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "ebf1e3c5cb2212308449ec840670a6f02aad2ca6430206c7a8110dbaa336a1cd",
+    "sourceSha256": "970a7fa0950b84b94a7ea6d50d87954027432d6cf0c3f283ea2f72ddc6f98adf",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260819:g01:g1-exposure-offer",
+    "experimentId": "market-loop-20260819:g04:g4-signed-bid",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1300,
-      "combinedPnlCents": 12389,
+      "combinedPnlCents": 12733,
       "minimumCapital": {
         "endingCashCents": 815,
         "startingCapitalCents": 1000
@@ -1593,6 +1593,54 @@
             ]
           },
           "createdAt": "2026-08-19T15:01:55.705Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-g04-champion-g1-exposure-offer",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g4-signed-bid",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-g04-champion-g1-exposure-offer/r00.py",
+          "sourceSha256": "ebf1e3c5cb2212308449ec840670a6f02aad2ca6430206c7a8110dbaa336a1cd",
+          "evaluationPath": "results/challengers/market-loop-20260819-g04-champion-g1-exposure-offer/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-g04-champion-g1-exposure-offer/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g1-exposure-offer",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-g04-champion-g1-exposure-offer/r00.py",
+            "sourceSha256": "ebf1e3c5cb2212308449ec840670a6f02aad2ca6430206c7a8110dbaa336a1cd",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1300,
+              "combinedPnlCents": 12389,
+              "minimumCapital": {
+                "endingCashCents": 815,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-19T15:21:38.752Z"
         }
       ],
       "tuningHistory": []
@@ -3943,7 +3991,7 @@
     },
     "ebf1e3c5cb2212308449ec840670a6f02aad2ca6430206c7a8110dbaa336a1cd": {
       "valid": true,
-      "modifiedLines": 13,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -3956,7 +4004,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "ab95b45006b2a15fef6ac280d6f62cbf12597d56d313d641d0d3675bebffe906": {
       "valid": true,
@@ -4071,6 +4121,57 @@
       "reasons": [
         "Candidate did not strictly exceed the baseline"
       ]
+    },
+    "970a7fa0950b84b94a7ea6d50d87954027432d6cf0c3f283ea2f72ddc6f98adf": {
+      "valid": true,
+      "modifiedLines": 9,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12733,
+        "minimumCapital": {
+          "endingCashCents": 815,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "624d4fdc882e49c3bc0f37a5e0af50c1e188d6dc0b67902a438b5046818b8fd2": {
+      "valid": true,
+      "modifiedLines": 13,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12634,
+        "minimumCapital": {
+          "endingCashCents": 815,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "4b6f51535b02423eb8a625e49448af8066cabaa96480f1c47f78b224361e0cc2": {
+      "valid": true,
+      "modifiedLines": 8,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 12728,
+        "minimumCapital": {
+          "endingCashCents": 768,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
     }
   }
 }

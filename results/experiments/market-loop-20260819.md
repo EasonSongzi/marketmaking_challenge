@@ -124,3 +124,41 @@ Selection: No candidate passed the promotion gate.
 Promotion: none.
 Finding: All three collateral-proxy candidates passed 20/20 with zero bankruptcies and runtime errors, but each scored 12.60 after losing cases 13 and 18 from second to third. Signed total reserve produced 129.73 PnL and lifted case 14 from 9.72 to 12.99; post-fill reserve produced 127.60 and case-14 PnL 12.49; side-separated reserve led PnL at 130.26 and lifted case 14 to 14.10. All preserved cases 9, 15, 16, 17, and 20 first, with case-17 leads from 1.74 to 1.82, but case 13 fell 2.07 to 2.70 behind second and case 18 fell 0.98 to 1.26 behind second. Because every architecture shared the removal of the champion's offer regime restriction, the common rank regression attributes the failure primarily to broad collateral-gated offer participation; the reserve models still show a useful case-14 and aggregate-PnL signal worth isolating on bids.
 Next-generation rationale: Keep the 13.00 champion. Restore its offer sizing byte-for-byte and test the same three reserve architectures only on bid capacity. This side isolation follows the established evidence that bid allocation protects case 13 while avoiding the broad offer path that lost case 18. Do not tune the 0.75 floor.
+
+## Generation 4: explore quote
+
+Generation 3 showed that all three collateral proxies improve case 14 and total PnL but broad offer activation loses cases 13 and 18. Isolate each proxy to bid capacity while preserving the full 13.00 champion offer path byte-for-byte. This tests whether additional maker-buy allocation carries the case-14 signal without importing the harmful offer routing, consistent with the prior evidence that bid capacity protects case 13.
+
+Parent: champion `g1-exposure-offer` (`ebf1e3c5cb2212308449ec840670a6f02aad2ca6430206c7a8110dbaa336a1cd`).
+
+### g4-signed-bid
+
+- Hypothesis: Signed total reserve can safely release additional bid capacity in 20-capital sessions while the unchanged champion offer gate preserves cases 17 and 18.
+- Implementation plan: Keep the champion active_exposure calculation for its offer branch. Additionally compute signed probability-weighted total reserve over active net positions. Use signed reserve plus three-lot bid loss for bid capacity, retaining the low-loss bid exception. Leave the champion offer_quantity code exactly equivalent, including low-loss offers, cash >= 40, half-available-capacity exposure ceiling, and the unit-count capacity inequality. Preserve prices, memory, 0.75 floor, estimator, and FOK.
+- Worker summary: Kept the champion unit-count exposure and offer-sizing path unchanged, added signed probability-weighted reserve over active net positions, and used it only for bid capacity plus the existing low-loss bid rule. An independent review caught and repaired the short-reserve sign before evaluation. Scope validation, compilation, diff checks, and signed-portfolio/bid/unchanged-offer assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 127.33; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL 3.44
+
+### g4-postfill-bid
+
+- Hypothesis: A hypothetical post-bid net reserve will selectively add inventory-reducing maker buys and may improve cases 13 or 14 more safely than a pre-fill total reserve.
+- Implementation plan: Keep the champion active_exposure and offer_quantity path exactly equivalent. For bid sizing only, compute probability-weighted reserve after replacing the target option position with position plus three, including netting against a current short. Quote bid size three when that post-fill reserve fits available_capacity or bid is low-loss. Preserve champion offers, prices, memory, 0.75 floor, estimator, FOK, and all unrelated behavior.
+- Worker summary: Kept the complete champion offer path unchanged and used probability-weighted reserve after a hypothetical full bid fill, including target-position netting, only for bid capacity. Scope validation, compilation, diff checks, and post-fill/short-covering/unchanged-offer assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 126.34; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL 2.45
+
+### g4-long-bid
+
+- Hypothesis: Budgeting bids only against current long reserve can prevent unrelated short inventory from suppressing useful maker-buy participation while the champion offer gate contains sell-side routing risk.
+- Implementation plan: Keep the champion active_exposure and offer_quantity path exactly equivalent. Compute current long reserve as positive active quantity times current theoretical value and use long reserve plus three-lot bid loss for bid capacity, retaining the low-loss exception. Preserve champion offers, prices, memory, 0.75 floor, estimator, FOK, and all other behavior.
+- Worker summary: Kept the complete champion offer path unchanged and budgeted bids against probability-weighted active long reserve only, retaining the existing low-loss bid exception. Scope validation, compilation, diff checks, and mixed-portfolio/side-isolation/unchanged-offer assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 127.28; minimum capital 7.68/10.00
+- Baseline delta: 0.00 points; PnL 3.39
+
+Selection: g4-signed-bid.
+Promotion: none.
+Finding: All three bid-only reserve candidates passed 20/20 with zero bankruptcies and runtime errors, retained 13.00, and strictly improved the champion by PnL. Signed total reserve led at 127.33 with unchanged 8.15/10.00 minimum capital; it raised case 13 from 8.78 to 8.96, case 14 from 9.72 to 10.51, and case 15 from 9.07 to 10.02 while preserving their ranks. Post-fill bid reserve produced 126.34 and the strongest case-13 PnL at 9.03 but slightly reduced case 14 to 9.60. Long-only reserve produced 127.28 and matched signed reserve on case-14 and case-15 PnL, but minimum capital fell to 7.68/10.00. All three protected cases 9, 16, 17, and 20 first, moved case 17 to a 0.36 lead, and strengthened case 18 second to a 1.90 buffer. This decisively attributes the Generation-3 regressions to broad offer activation and validates probability-weighted reserve as a safe bid-allocation improvement.
+Next-generation rationale: Archive and promote the fixed-selector signed-bid winner. With the protected 13.00 rank set stronger, use Generation 5 to test mutually exclusive capital-20 offer predicates on top of this bid reserve, targeting the remaining cases 13 and 14. Keep the successful high-capital offer branch intact and activate any new offer unit under one interpretable condition at a time.

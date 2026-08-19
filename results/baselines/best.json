@@ -1,20 +1,20 @@
 {
   "schemaVersion": 2,
-  "strategy": "g1-exposure-offer",
+  "strategy": "g4-signed-bid",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "ebf1e3c5cb2212308449ec840670a6f02aad2ca6430206c7a8110dbaa336a1cd",
-  "experimentId": "market-loop-20260819:g01:g1-exposure-offer",
+  "sourceSha256": "970a7fa0950b84b94a7ea6d50d87954027432d6cf0c3f283ea2f72ddc6f98adf",
+  "experimentId": "market-loop-20260819:g04:g4-signed-bid",
   "experiment": {
     "runId": "market-loop-20260819",
-    "generation": 1,
-    "candidateId": "g1-exposure-offer"
+    "generation": 4,
+    "candidateId": "g4-signed-bid"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1300,
-    "combinedPnlCents": 12389,
+    "combinedPnlCents": 12733,
     "minimumCapital": {
       "endingCashCents": 815,
       "startingCapitalCents": 1000
