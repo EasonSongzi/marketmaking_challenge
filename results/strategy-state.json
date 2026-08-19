@@ -1843,7 +1843,7 @@
     },
     {
       "id": "market-loop-20260819-2-g01-g1-bid-narrow",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It matches the champion at 13.00 with zero bankruptcies and, uniquely in the generation, produces no rank regression anywhere in the protected set. It carries the best case-14 result observed in this lineage at 14.45 and the largest suppression of the case-14 leader, cutting Lattice from 23.26 to 14.82 and leaving a 0.37 gap to first place, which satisfies the memo's challenger retention conditions for best case-14 PnL and largest reduction of the leader's PnL. Its tuning upside is explicit and unexplored: the narrowing is a single one-cent constant applied unconditionally to every size-three bid, so both the magnitude and the fair-value region in which it activates are open parameters, and its 126.58 combined PnL against the champion's 129.76 indicates recoverable loss in cases 13 and 19 that parameter work can target without touching the frozen offer side.",
@@ -1887,7 +1887,11 @@
           "createdAt": "2026-08-19T17:19:17.831Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Strictly dominated by its own derived child market-loop-20260819-2-g02-g2-first-touch-bid, which is the same one-cent size-three bid narrowing with the first-touch restriction added: same 13.00 points, higher combined PnL at 127.55 against 126.58, and better case 14 at 14.57 against 14.45. Generation 2 established the restriction is a strict improvement, so the unrestricted parent is a cruder duplicate with no property the child lacks.",
+        "at": "2026-08-19T20:47:12.850Z"
+      }
     },
     {
       "id": "market-loop-20260819-2-g02-g2-first-touch-bid",
