@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "id": "g6-signed-central",
+  "id": "g5-bid-four-reserve",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "5e8b044ff64ac6cba452e2fb79b43c79f22eb483f3d6594fec14a8fff1f1f6df",
+  "sourceSha256": "548fa24308d4d1ec1937ec7b42d212040f19af36413d0cee222d3ec88059d0a6",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260819:g06:g6-signed-central",
+  "experimentId": "market-loop-20260819-2:g05:g5-bid-four-reserve",
   "experiment": {
-    "runId": "market-loop-20260819",
-    "generation": 6,
-    "candidateId": "g6-signed-central"
+    "runId": "market-loop-20260819-2",
+    "generation": 5,
+    "candidateId": "g5-bid-four-reserve"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1300,
-    "combinedPnlCents": 12976,
+    "combinedPnlCents": 14136,
     "minimumCapital": {
-      "endingCashCents": 815,
+      "endingCashCents": 797,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0

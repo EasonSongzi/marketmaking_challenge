@@ -447,10 +447,6 @@ class MarketMaker:
             and signed_reserve + 3 * (1.0 - offer_price) <= available_capacity
         ):
             offer_quantity = 3
-        if bid_quantity == 3 and not repeat_request:
-            bid_price += 0.01
-        if bid_quantity == 3 and not repeat_request and signed_reserve + 4 * bid_price <= available_capacity:
-            bid_quantity = 4
         quote_snapshots[option_id] = (
             counterparty_id,
             self.position.option_quantity_by_option_id.get(option_id, 0),
