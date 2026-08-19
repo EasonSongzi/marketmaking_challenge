@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260819
 
-- Status: active
+- Status: complete
 - Started: 2026-08-19T14:53:19.420Z
 - Starting baseline: g6-cap-bid-only (12.80/16.00)
-- Current baseline: g5-central-offer (13.00/16.00)
-- Stop condition: not reached
-- Score trend: 12.80 → 13.00 → 13.00 → 13.00
+- Current baseline: g6-signed-central (13.00/16.00)
+- Stop condition: generation limit reached
+- Score trend: 12.80 → 13.00 → 13.00 → 13.00 → 13.00
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -235,7 +235,7 @@ Parent: champion `g5-central-offer` (`7cf6418c949258d9a1b31b483c3689f04ffdfda57b
 - Baseline delta: 0.00 points; PnL 1.27
 
 Selection: g6-signed-central.
-Promotion: none.
+Promotion: g6-signed-central (ff223cfbad9ddc60377ec9f675748e9c2bc50f6b).
 Finding: All three recombination candidates passed 20/20 with zero bankruptcies and runtime errors, held 13.00, and kept minimum capital at 8.15/10.00. Substituting the probability-weighted signed reserve for the crude unit count inside the capital-20 central offer branch led at 129.76 combined PnL, 1.27 above the champion, and produced the best case-14 result of the entire run at 11.76 while holding case 15 first at 8.68. Unioning the central gate with the guaranteed-reducing predicate added only 0.06 PnL and left cases 13 and 14 at the champion's 8.96 and 11.19, confirming the Generation 5 observation that the reducing arm is nearly inactive and does not compose additively. Post-fill bid reserve was the only candidate to move case 13, raising it from 8.96 to 9.03, but it cost 0.90 PnL overall by reducing case 14 to 10.69 and case 15 to 8.93, and it failed the promotion gate at 127.59. Every candidate preserved cases 16, 17, and 20 first and cases 18 and 19 second at unchanged values, so the offer-side recombination is rank-neutral outside the capital-20 group. No candidate crossed a rank boundary: case 13 still needs 3.00 against Fixed Width 0.1 and case 14 still needs 11.50 against Lattice, so the accurate collateral model buys PnL inside the existing rank set rather than new points.
 Next-generation rationale: Promote the signed-reserve central offer winner and finish the run at the six-generation limit. The run establishes that probability-weighted reserve strictly dominates the absolute unit count wherever it has been substituted, on bids in Generation 4 and now on the capital-20 central offer branch, and that further capital-20 predicate recombination is exhausted: six generations moved combined PnL from 122.35 to 129.76 without moving a single rank. Any future loop should stop refining quantity predicates and attack the one remaining reachable boundary, case 13's 3.00 gap, with a structurally different lever, since case 14 at 11.50 and cases 18 and 19 at 40.90 and 20.86 are out of range of allocation changes of this magnitude.
 Challenger update: admitted market-loop-20260819-g06-g6-postfill-central.
