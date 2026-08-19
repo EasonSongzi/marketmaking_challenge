@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-19T01:47:53.800Z
 - Starting baseline: g6-contract-rfq-wide (12.80/16.00)
-- Current baseline: g1-low-loss-third (12.80/16.00)
+- Current baseline: cash-floor-coarse-075 (12.80/16.00)
 - Stop condition: not reached
-- Score trend: 12.80 → 12.80
+- Score trend: 12.80 → 12.80 → 12.80
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -128,6 +128,44 @@ The capital-gated challenger passed 20/20, won case 17 by 1.85, raised case-14 P
 - Baseline delta: -0.20 points; PnL 12.02
 
 Selection: cash-floor-coarse-075.
-Promotion: none.
+Promotion: cash-floor-coarse-075 (fc64e451f1fdb8fc22a8e2b43ada92df053bca31).
 Finding: All eight cash-floor variants passed 20/20 with zero bankruptcies and runtime errors. Fractions 0.26 through 0.55 all scored 12.60: each preserved cases 9, 15, and 16 first and kept the challenger's new case-17 win, but case 13 remained third. The 0.75 coarse sample restored 12.80 points, produced 116.54 combined PnL, and improved minimum capital to 8.38/10.00. Relative to the 12.80 low-loss champion it swaps the two target boundaries rather than reaching 13.00: case 13 falls from second to third by 4.71 behind second, while case 17 moves from second to first by 0.96. It keeps case 9 first by 8.32, case 15 first by 0.25, case 16 first by 14.40, and case 14 second with 10.69 PnL. The fixed selector nevertheless ranks 0.75 above the current champion because it ties at 12.80 and adds 2.04 combined PnL while also improving minimum capital by 0.25. No sampled floor recovered case 13 while retaining the case-17 win, so the one-dimensional cash-floor family did not meet the research note's 13.00 no-rank-regression target.
 Next-generation rationale: Archive the tuned 0.75 revision and follow the pipeline's fixed promotion decision. Stop further cash-floor sweeps: the entire predeclared range showed a discrete case-13/case-17 rank trade rather than a 13.00 overlap. Move to the next structural family from the docs, using estimator-execution crosses or trade-confirmed side-specific RFQ information instead of another adjacent cash-floor constant.
+
+## Generation 3: explore warm_up
+
+The selective-size family produced only a case-13/case-17 rank trade, so follow the docs' next priority. Use the active full-source 12.80 contract-RFQ challenger, which preserves the exact tail-only sixth-cent execution stack, to test the two unmeasured rate-estimator crosses and one structurally separate company-shrinkage estimator while holding every execution method fixed.
+
+Parent: challenger `market-loop-20260818-6-g01-champion-g6-contract-rfq-wide r00` (`353ad16d0004889c9ed825971d416fe543ec6b51e5dc9851a9e32d5bcf7be2fe`).
+
+### g3-tail-pure-rate
+
+- Hypothesis: Pure profiled transition likelihood combined with the exact tail-only sixth-cent execution stack can retain the 12.80 rank set while improving the case-17 boundary beyond the 10/1 estimator.
+- Implementation plan: Keep the existing bounded reversion grid, moment-profiled up/down probabilities, probability feasibility handling, and all company estimates, but score candidates using transition log likelihood alone with no probability or reversion penalties. Preserve quote, FOK, and pricing behavior exactly.
+- Worker summary: Replaced the 10/1 objective in the profiled rate-fit helper with pure transition log likelihood while preserving the complete parent execution stack. Scope validation, compilation, diff inspection, and an independent deterministic grid-fit check passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 102.35; minimum capital 7.41/10.00
+- Baseline delta: -0.20 points; PnL -14.19
+
+### g3-tail-rate-25-2
+
+- Hypothesis: The 25/2 penalized rate fit may provide more case-13 and case-9 boundary protection than pure likelihood while retaining enough likelihood signal to win or tighten case 17 under the tail-only quote structure.
+- Implementation plan: Keep the current profiled grid and feasibility logic, but use coefficient 25 on each squared up/down anchor deviation and coefficient 2 on the squared reversion anchor deviation. Preserve all company estimation and every execution rule exactly.
+- Worker summary: Changed only the profiled rate-fit penalties to 25 on both probability-anchor deviations and 2 on reversion deviation, preserving all other estimation and execution behavior. Scope validation, compilation, diff inspection, and a deterministic fit check passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 109.94; minimum capital 7.32/10.00
+- Baseline delta: -0.20 points; PnL -6.60
+
+### g3-company-shrink
+
+- Hypothesis: Finite-sample shrinkage of company drift, rate beta, and residual covariance can improve penny decisions on company contracts without disturbing the proven 10/1 rate process or any execution boundary.
+- Implementation plan: Retain the current 10/1 rate estimator. After the two company regressions, shrink each drift and rate beta by 25 percent toward the cross-company mean, and shrink residual covariance by 25 percent toward zero before covariance decomposition while leaving residual variances unchanged. Preserve the exact pricer, quote, and FOK logic.
+- Worker summary: Kept the 10/1 rate fit, shrank each company drift and rate beta 25 percent toward the pairwise mean, and multiplied residual covariance by 0.75 before decomposition and diagnostics. Scope validation, compilation, diff inspection, and synthetic shrinkage arithmetic checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 11.50/16.00 points; PnL 72.76; minimum capital 7.70/10.00
+- Baseline delta: -1.30 points; PnL -43.78
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three estimator candidates passed 20/20 with zero bankruptcies and runtime errors, but none beat either the 12.80 research parent or current champion. Pure likelihood scored 12.60 with 102.35 PnL and moved case 17 from the parent's second place to third, 1.72 behind second; case 9 remained first by only 0.78. The 25/2 fit also scored 12.60 with 109.94 PnL and left case 17 third, 0.55 behind second, while cases 9, 13, 15, and 16 retained the parent ranks. These two exact tail-six crosses therefore fail the docs' strict gate and exhaust further rate-estimator work. Company shrinkage was decisively harmful at 11.50 points and 72.76 PnL: case 14 fell from second to third, case 16 from first to third, and case 17 remained third, despite cases 9, 13, and 15 holding. None strictly improved the selected parent, so no derived challenger has tuning upside.
+Next-generation rationale: Keep the current champion unchanged and stop both rate-estimator and simple company-shrinkage work. Use the next generation on the docs' remaining structural counterparty hypothesis: infer actual same-contract fill direction from position changes across quote calls and apply only a side-specific repeat adjustment, preserving all first-contact prices, size policy, estimator, and FOK behavior.
