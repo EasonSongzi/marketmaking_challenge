@@ -149,7 +149,7 @@ async function main() {
     if (!(await profileExists())) {
       throw new AuthenticationError("No saved HackerRank browser profile was found");
     }
-    context = await launchAuthenticatedBrowser();
+    context = await launchAuthenticatedBrowser({ headed: request.headed });
     const page = await context.newPage();
     for (const stalePage of context.pages()) {
       if (stalePage !== page) {

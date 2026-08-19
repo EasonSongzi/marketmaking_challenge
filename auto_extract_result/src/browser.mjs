@@ -3,14 +3,58 @@ import { chromium } from "playwright";
 
 import { authenticationStateFile, browserProfileDirectory } from "./config.mjs";
 
-export async function launchBrowser() {
+export const headedEnvironmentVariable = "AUTO_EXTRACT_HEADED";
+
+const headlessViewport = { width: 1600, height: 1000 };
+
+function environmentRequestsHeaded(environment) {
+  const value = environment[headedEnvironmentVariable];
+  if (value === undefined) {
+    return false;
+  }
+  const normalized = value.trim().toLowerCase();
+  return normalized !== "" && normalized !== "0" && normalized !== "false";
+}
+
+export function headedRequested(options = {}, environment = process.env) {
+  return options.headed === true || environmentRequestsHeaded(environment);
+}
+
+export function launchOptions(options = {}, environment = process.env) {
+  if (headedRequested(options, environment)) {
+    return { headless: false, viewport: null };
+  }
+  return { headless: true, channel: "chromium", viewport: headlessViewport };
+}
+
+export function visibleUserAgent(userAgent) {
+  return userAgent.replace("HeadlessChrome/", "Chrome/");
+}
+
+let cachedUserAgent = null;
+
+async function headlessUserAgent() {
+  if (cachedUserAgent === null) {
+    const browser = await chromium.launch({ headless: true, channel: "chromium" });
+    try {
+      const page = await browser.newPage();
+      cachedUserAgent = visibleUserAgent(await page.evaluate(() => navigator.userAgent));
+    } finally {
+      await browser.close();
+    }
+  }
+  return cachedUserAgent;
+}
+
+export async function launchBrowser(options = {}) {
   await fs.mkdir(browserProfileDirectory, { recursive: true, mode: 0o700 });
   await fs.chmod(browserProfileDirectory, 0o700);
 
-  return chromium.launchPersistentContext(browserProfileDirectory, {
-    headless: false,
-    viewport: null,
-  });
+  const launch = launchOptions(options);
+  if (launch.headless) {
+    launch.userAgent = await headlessUserAgent();
+  }
+  return chromium.launchPersistentContext(browserProfileDirectory, launch);
 }
 
 export async function saveAuthentication(context, page) {
@@ -25,9 +69,9 @@ export async function saveAuthentication(context, page) {
   await fs.chmod(authenticationStateFile, 0o600);
 }
 
-export async function launchAuthenticatedBrowser() {
+export async function launchAuthenticatedBrowser(options = {}) {
   const authentication = JSON.parse(await fs.readFile(authenticationStateFile, "utf8"));
-  const context = await launchBrowser();
+  const context = await launchBrowser(options);
   await context.addCookies(authentication.storageState.cookies);
   await context.addInitScript(({ origins, sessionStorage }) => {
     const storedOrigin = origins.find(({ origin }) => origin === window.location.origin);

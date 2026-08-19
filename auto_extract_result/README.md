@@ -17,11 +17,11 @@ Node.js 20 or newer is required. From the repository root:
 ```
 
 `login.sh` asks for the invitation link without echoing it, then opens the full
-email invitation flow in a dedicated browser. Complete every redirect and any
-first-time name, work-experience, disclosure, or agreement step yourself. The
-script waits for up to ten minutes and finishes automatically only after the
-exact coding-question URL, its `Run Code` button, and the Monaco code model
-appear. Each editor attempt waits up to three seconds. If it does not initialize,
+email invitation flow in a dedicated **visible** browser. Login is always headed,
+because only you can complete every redirect and any first-time name,
+work-experience, disclosure, or agreement step yourself. The script waits for up
+to ten minutes and finishes automatically only after the exact coding-question
+URL, its `Run Code` button, and the Monaco code model appear. Each editor attempt waits up to three seconds. If it does not initialize,
 the login flow opens the exact question in a new page and tries again, up to ten
 total attempts, before failing without saving.
 
@@ -56,6 +56,36 @@ using HackerRank, later processes wait instead of starting another browser.
 The lock records its owning process and automatically recovers when that process
 no longer exists.
 
+## Headless by default
+
+Every automated run — `run.sh` with or without arguments, and everything the
+`candidate_pipeline/` research loop invokes — launches Chromium **headless**, so
+unattended evaluation never steals the screen. The persistent profile,
+authentication state, cookies, localStorage, sessionStorage, and HackerRank
+interaction logic are identical in both modes; only the window is hidden.
+
+Two flows stay visible:
+
+- `login.sh` is always headed. Establishing or repairing authentication needs
+  you at the keyboard.
+- `run.sh --headed` forces a visible browser for debugging a run.
+
+The same escape hatch is available as an environment variable, which is useful
+when the runner is invoked indirectly by the pipeline:
+
+```bash
+./auto_extract_result/run.sh --headed
+AUTO_EXTRACT_HEADED=1 ./auto_extract_result/run.sh
+```
+
+`AUTO_EXTRACT_HEADED` is treated as unset when it is empty, `0`, or `false`.
+
+Headless Chromium reports itself as `HeadlessChrome`, and HackerRank's CDN
+answers that user agent with an `Access Denied` page at the correct question
+URL, so no `Run Code` button ever appears. Headless launches therefore reuse the
+same browser's own user agent with that one token normalized, leaving the
+version, platform, and client hints untouched. Headed launches are unchanged.
+
 ## Run an experiment
 
 ```bash
@@ -78,10 +108,10 @@ rather than asking subagents to launch Chromium. All paths must be absolute:
   --label agent-name
 ```
 
-`--source`, `--result-dir`, and `--label` are optional. A custom source without
-a label defaults to the source worktree directory name. Before waiting for the
-shared lock, the runner reads the complete source into memory and calculates
-its SHA-256. Later edits in that worktree cannot change the queued run. The
+`--source`, `--result-dir`, `--label`, and `--headed` are optional. A custom
+source without a label defaults to the source worktree directory name. Before
+waiting for the shared lock, the runner reads the complete source into memory
+and calculates its SHA-256. Later edits in that worktree cannot change the queued run. The
 report is written to the requested result directory and records the label,
 absolute source path, and source SHA-256.
 
@@ -90,8 +120,8 @@ taken independently, but the shared lock serializes all HackerRank browser,
 editor, run, and extraction operations. Reports use timestamped names and are
 created without overwriting existing files.
 
-The command opens a visible Chromium browser, verifies that the complete local
-source matches the HackerRank editor, runs the tests, and writes a timestamped
+The command opens headless Chromium, verifies that the complete local source
+matches the HackerRank editor, runs the tests, and writes a timestamped
 report. Each Monaco initialization attempt waits up to three seconds, and the
 script opens a fresh question page for up to ten total attempts before failing.
 A report pair looks like:

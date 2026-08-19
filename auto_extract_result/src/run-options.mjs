@@ -13,12 +13,17 @@ function optionValue(argumentsList, index, option) {
 }
 
 export function parseRunOptions(argumentsList) {
+  let headed = false;
   let label;
   let resultDirectory = resultsDirectory;
   let sourcePath = sourceFile;
 
   for (let index = 0; index < argumentsList.length; index += 1) {
     const option = argumentsList[index];
+    if (option === "--headed") {
+      headed = true;
+      continue;
+    }
     const value = optionValue(argumentsList, index, option);
     if (option === "--source") {
       sourcePath = value;
@@ -43,6 +48,7 @@ export function parseRunOptions(argumentsList) {
   }
 
   return {
+    headed,
     label: label ?? (sourcePath === sourceFile ? "main" : path.basename(path.dirname(sourcePath))),
     resultDirectory: path.normalize(resultDirectory),
     sourcePath: path.normalize(sourcePath),

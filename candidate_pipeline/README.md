@@ -10,6 +10,11 @@ The pipeline delegates raw HackerRank extraction to the single main-worktree
 cross-process runner lock. Evaluation, state management, and selection are
 local operations.
 
+Every run the pipeline launches is headless, so a long lifecycle never takes
+over the screen. Only `auto_extract_result/login.sh` opens a visible browser, and
+`auto_extract_result/run.sh --headed` (or `AUTO_EXTRACT_HEADED=1`) forces one for
+debugging.
+
 ## Autonomous lifecycle
 
 Choose a lowercase, hyphenated run ID, start the run, and inspect its status:

@@ -10,7 +10,7 @@ async function main() {
   let context;
 
   try {
-    context = await launchBrowser();
+    context = await launchBrowser({ headed: true });
     const page = await activePage(context);
     await page.goto(invitationUrl, { waitUntil: "domcontentloaded", timeout: 60_000 });
     console.log("The HackerRank invitation flow is open in the dedicated browser.");
