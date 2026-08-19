@@ -425,14 +425,11 @@ class MarketMaker:
             if active_exposure + 3 * bid_price <= available_capacity or bid_price <= 0.25
             else 2
         )
-        offer_quantity = 3 if 1.0 - offer_price <= 0.25 else 2
-        if (
-            offer_quantity == 2
-            and self.cash_balance >= 40.0
-            and active_exposure <= available_capacity / 2.0
-            and active_exposure + 3 * (1.0 - offer_price) <= available_capacity
-        ):
-            offer_quantity = 3
+        offer_quantity = (
+            3
+            if 1.0 - offer_price <= 0.25
+            else 2
+        )
         quote_snapshots[option_id] = (
             counterparty_id,
             self.position.option_quantity_by_option_id.get(option_id, 0),

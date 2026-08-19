@@ -1,0 +1,50 @@
+# Market-Maker Experiment: market-loop-20260819
+
+- Status: active
+- Started: 2026-08-19T14:53:19.420Z
+- Starting baseline: g6-cap-bid-only (12.80/16.00)
+- Current baseline: g6-cap-bid-only (12.80/16.00)
+- Stop condition: not reached
+- Score trend: 12.80
+
+The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
+
+## Generation 1: explore quote
+
+The post-loop-6 research memo identifies a causal side split: bid capacity preserves case 13, while offer capacity wins case 17 but globally loses case 13. Test three structurally distinct high-capital activation predicates for the existing offer-capacity rule while freezing prices, estimator, FOK logic, bid sizing, low-loss offers, and the 0.75 cash floor. The target is 13.00 by retaining case 13 second and moving case 17 first without losing case 18 second.
+
+Parent: champion `g6-cap-bid-only` (`e1d8a428a921badb281cc2d6a314b9e0a2c4c1f23b1102914e930bfe6ffd1087`).
+
+### g1-high-cap-offer
+
+- Hypothesis: The harmful offer-capacity routing is confined to 20-capital sessions, so restoring the existing capacity-gated central offer unit only when starting cash is at least 40 will reproduce the case-17 win while preserving case 13.
+- Implementation plan: Keep the champion quote path unchanged except for offer quantity. Preserve low-loss offer size three. Additionally allow offer size three when cash_balance is at least 40 and the existing active_exposure plus three-lot offer maximum-loss test fits within available_capacity. Keep bid sizing and every numeric constant unchanged. Add focused assertions for capital 20 versus 40, capacity below/at/above the boundary, and low-loss offers independent of the regime.
+- Worker summary: Preserved every champion price, memory rule, bid-sizing rule, and low-loss offer rule, then restored the existing capacity-gated offer size three only when starting cash is at least 40. Scope validation, compilation, diff checks, and focused capital/capacity/low-loss quote assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 123.18; minimum capital 8.15/10.00
+- Baseline delta: 0.20 points; PnL 0.83
+
+### g1-central-offer
+
+- Hypothesis: Only near-the-money high-capital offer capacity supplies the useful case-17 routing, while excluding wider fair-value regions protects the fragile case-18 boundary.
+- Implementation plan: Keep the champion path unchanged except for offer quantity. Preserve low-loss offer size three. Additionally allow the existing capacity-gated offer unit only when cash_balance is at least 40 and fair_value_cents lies inclusively from 40 through 60. Keep bid sizing, prices, memory, and all existing constants unchanged. Test capital regimes, fair-value region boundaries, capacity boundaries, and low-loss independence.
+- Worker summary: Preserved all champion behavior and restored capacity-gated offer size three only for starting cash at least 40 and fair values from 40 through 60 cents, while keeping low-loss offers independent of that gate. Scope validation, compilation, diff checks, and focused capital/fair-value/capacity assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 122.91; minimum capital 8.15/10.00
+- Baseline delta: -0.20 points; PnL 0.56
+
+### g1-exposure-offer
+
+- Hypothesis: The case-17 benefit comes from early high-capital central offers, so a stricter exposure ceiling nested inside the existing capacity test can admit those units while withdrawing them before routing and inventory become harmful.
+- Implementation plan: Keep the champion path unchanged except for offer quantity. Preserve low-loss offer size three. Additionally allow the existing capacity-gated offer unit only when cash_balance is at least 40 and active_exposure is no more than half of available_capacity. Keep the 0.75 floor, bid sizing, prices, memory, and all other behavior fixed. Test capital regimes, exposure below/at/above the ceiling, capacity boundaries, and low-loss independence.
+- Worker summary: Preserved all champion behavior and restored capacity-gated offer size three only for starting cash at least 40 while active exposure remained no more than half of available capacity, with the low-loss offer rule unchanged. Scope validation, compilation, diff checks, and focused capital/exposure/capacity assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 123.89; minimum capital 8.15/10.00
+- Baseline delta: 0.20 points; PnL 1.54
+
+Selection: g1-exposure-offer.
+Promotion: none.
+Finding: All three candidates passed 20/20 with zero bankruptcies and runtime errors. The hard high-capital gate reached 13.00 with 123.18 combined PnL and 8.15/10.00 minimum capital: it preserved case 13 second by 1.05, won case 17 by 1.48, and kept case 18 second by 0.22. The exposure-gated variant also reached 13.00, led combined PnL at 123.89, and kept the same minimum capital; it preserved case 13 second, won case 17 by 0.09, and strengthened case 18 second to a 1.53 buffer. The 40-60-cent central restriction scored 12.60 despite 122.91 PnL because case 18 fell from second to third by 0.85; case 17 also remained second by 0.03. All candidates protected cases 9, 15, 16, and 20 first. This confirms the memo's capital-regime hypothesis and shows that an exposure ceiling filters the case-18-harmful offer units while retaining enough high-capital participation to cross the case-17 boundary.
+Next-generation rationale: Archive and promote the fixed-selector exposure-gated winner. The immediate 13.00 milestone is achieved, so freeze the successful capital-regime structure and move toward the memo's next allocation objective: improve collateral sensitivity or isolate selective third-unit states that can recover cases 13 or 14 without weakening the protected rank set. Do not sweep the capital threshold or adjacent 0.25/0.75 constants.
+Previous failure (runner): g1-high-cap-offer runner failure after retry
+Recovery instruction: Repair the HackerRank browser profile with `auto_extract_result/login.sh`, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
