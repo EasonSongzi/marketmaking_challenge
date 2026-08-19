@@ -2428,7 +2428,7 @@
     },
     {
       "id": "market-loop-20260819-3-g04-g4-cheap-bid-four",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It is one of only two sources in the project's history to suppress Fixed Width 0.1 in case 13, and the only one on the current architecture, holding it to 11.26 against the champion's 12.06 while also raising our own case-13 PnL to 8.57. Generation 4 established that this effect survives neither signed-reserve certification nor capital gating, so this source is the sole surviving carrier of the only mechanism known to move the only reachable remaining case, and it must be retained as the research parent for any further case-13 work. It also reaches 145.00 combined PnL, 1.14 above the champion, despite scoring 0.30 lower, making it the strongest PnL source currently in the pool. Its tuning upside is explicit and entirely unswept: the 0.25 cheap-bid threshold is the trigger's only free parameter and has never been varied in any generation, so the price region that carries the suppression is unknown and could be narrower or wider; the fourth-unit multiple has never been tested against this trigger; and because the effect is known to vanish under certification, a sweep of the threshold is the only remaining way to find a setting that suppresses case 13 without releasing case-14 Lattice.",
@@ -2472,7 +2472,11 @@
           "createdAt": "2026-08-19T22:00:31.798Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "13.00 and 145.00 PnL, dominated on both axes by 0.30 points and 9.75 PnL. It is the unrestricted cheap fourth unit, superseded within the same run by the single-leg restriction that both preserves its case-13 suppression and keeps case 14 first; that restricted form is now the champion. Its unique value was the suppression carrier, which is absorbed, and the retained g5-short-cheap-bid-four holds a strictly better case-13 result at the same score.",
+        "at": "2026-08-19T22:13:42.265Z"
+      }
     },
     {
       "id": "market-loop-20260819-3-g05-g5-short-cheap-bid-four",
