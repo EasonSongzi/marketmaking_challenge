@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-both-four",
+  "valid": true,
+  "eligible": true,
+  "sourcePath": "results/challengers/market-loop-20260819-2-g06-g6-both-four/r00.py",
+  "sourceSha256": "f2c1033e9f7250eac6a347464acfb1270b35d0c913e060ad96fe46636d069f62",
+  "modifiedLines": 6,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 14605,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 469
+  },
+  "reasons": []
+}

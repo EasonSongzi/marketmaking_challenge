@@ -453,12 +453,6 @@ class MarketMaker:
             and active_exposure + 4 * (1.0 - offer_price) <= available_capacity
         ):
             offer_quantity = 4
-        if (
-            offer_quantity == 4
-            and not repeat_request
-            and active_exposure + 5 * (1.0 - offer_price) <= available_capacity
-        ):
-            offer_quantity = 5
         if bid_quantity == 3 and not repeat_request:
             bid_price += 0.01
         if bid_quantity == 3 and not repeat_request and signed_reserve + 4 * bid_price <= available_capacity:
