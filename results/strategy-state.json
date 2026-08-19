@@ -2276,7 +2276,7 @@
     },
     {
       "id": "market-loop-20260819-3-g02-champion-g6-offer-five",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g2-lowcap-offer-six",
@@ -2320,7 +2320,11 @@
           "createdAt": "2026-08-19T21:47:18.201Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "13.00 and 149.22 PnL, dominated on both axes by 0.30 points and 5.53 PnL. It held the project PnL record until this run and is now beaten on both criteria at once by the champion, which is the same architecture plus the capital gate, the sub-20 offer-q3 rule, the capital-gated offer-Q6 and the single-leg cheap fourth and fifth units.",
+        "at": "2026-08-19T22:13:41.883Z"
+      }
     },
     {
       "id": "market-loop-20260819-3-g03-g3-lowcap-exposure-offer-three",
