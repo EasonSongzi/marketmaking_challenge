@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "g6-single-leg-cheap-five",
+  "id": "g2-hold-five-short-rate",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "090a7ce191dbaf37923aa618008e5b0f1ce17bfcf9fe1aa9fc9358c4bac339b1",
+  "sourceSha256": "b5173bc952719264bb42bb5a66ceccd693464cf8a3bb8a0a92cf5c530b08867a",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260819-3:g06:g6-single-leg-cheap-five",
+  "experimentId": "market-loop-20260819-4:g02:g2-hold-five-short-rate",
   "experiment": {
-    "runId": "market-loop-20260819-3",
-    "generation": 6,
-    "candidateId": "g6-single-leg-cheap-five"
+    "runId": "market-loop-20260819-4",
+    "generation": 2,
+    "candidateId": "g2-hold-five-short-rate"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 15475,
+    "combinedPnlCents": 15486,
     "minimumCapital": {
       "endingCashCents": 765,
       "startingCapitalCents": 1000
