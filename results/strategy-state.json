@@ -2224,7 +2224,7 @@
     },
     {
       "id": "market-loop-20260819-3-g01-g1-highcap-bid-four",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It is the only source ever produced that holds case-14 Lattice at 14.82 while keeping the case-17 fourth-unit gains, and it improves case 17 to 17.50, above the champion's 16.24 and far above the 13.94 of the repeat-request relocation that previously achieved the same suppression. That combination is the exact structural evidence the memo asked to retain, and at a 0.40 case-14 gap it is a strictly better research parent than the champion's 6.27 gap despite being 4.50 behind on combined PnL. Its tuning upside is explicit and entirely unswept: the new 40.0 capital boundary was taken unchanged from the offer q3 rule and has never been varied as a bid-side gate, so the true separating capital level is unknown and could sit anywhere between the 20 and 40 starting capitals; the fourth-unit certification multiple of four has never been varied jointly with that gate, only in isolation where it was just refuted; and the not-repeat restriction on the fourth unit remains an untested conjunct that could be relaxed independently now that the capital regime carries the separation.",
@@ -2268,7 +2268,11 @@
           "createdAt": "2026-08-19T21:42:10.262Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "13.00 and 144.72 PnL, dominated on both axes by 0.30 points and 10.03 PnL. Its sole mechanism, the cash-balance-40 gate on the fourth bid unit, is absorbed verbatim into the champion, so it no longer isolates anything. Its identifying evidence is preserved in the generation-1 archive and report.",
+        "at": "2026-08-19T22:13:41.752Z"
+      }
     },
     {
       "id": "market-loop-20260819-3-g02-champion-g6-offer-five",
