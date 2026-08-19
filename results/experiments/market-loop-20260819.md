@@ -86,3 +86,41 @@ Selection: No candidate passed the promotion gate.
 Promotion: none.
 Finding: All three predicate-tomography candidates passed 20/20 with zero bankruptcies and runtime errors and retained 13.00, but none strictly exceeded the promoted champion. Nonnegative-inventory offers produced 122.30 PnL; first-contact offers produced 123.10; both won case 17 by 1.40 but left case 18 second by only 0.22. The one-day-expiry gate produced 123.32 PnL, won case 17 by 0.13, and kept case 18 second by 0.92. Each preserved case 13 second and cases 9, 15, 16, and 20 first. The champion remains preferable at 123.89 PnL with case 17 first by 0.09 and the strongest case-18 buffer of 1.53. The three restrictions expose a direct robustness trade rather than score upside, and none affects capital-20 cases 13 or 14.
 Next-generation rationale: Keep the 13.00 champion and stop high-capital offer tomography. Move to the memo's collateral-allocation objective using quote-local, signed maximum-loss proxies that can change third-unit participation in 20-capital sessions while preserving the successful high-capital offer branch. Test structurally distinct collateral approximations rather than sweeping the existing 0.75 or 0.25 constants.
+
+## Generation 3: explore quote
+
+The 13.00 high-capital offer branch is validated, while cases 13 and 14 still require better allocation of third units in 20-capital sessions. Replace the crude unit-count exposure proxy with three structurally distinct quote-local collateral approximations based on signed net positions and binary maximum loss. Preserve prices, memory, low-loss sizing, the 0.75 cash floor, estimator, and FOK logic; do not sweep constants. The target is a safe 13.20+ rank improvement or clear attribution of which reserve architecture supplies useful participation.
+
+Parent: champion `g1-exposure-offer` (`ebf1e3c5cb2212308449ec840670a6f02aad2ca6430206c7a8110dbaa336a1cd`).
+
+### g3-signed-reserve
+
+- Hypothesis: Valuing active long and short net positions by their respective probability-weighted maximum-loss side will release capacity that the absolute-unit proxy falsely blocks, allowing useful third units in cases 13 or 14 without global size-three bankruptcy.
+- Implementation plan: Inside quote, replace active_exposure with one signed reserve total over active options: positive quantity times that option's current theoretical value, and negative quantity magnitude times one minus theoretical value. Permit bid or offer size three when this reserve plus the side's full three-lot quote maximum loss fits available_capacity, or when the existing low-loss rule passes. Remove the capital-40-only offer restriction because collateral now gates both sides. Preserve the 0.75 floor and all non-size behavior. Keep the calculation inline unless a short helper materially improves clarity.
+- Worker summary: Replaced absolute-unit exposure with a total signed probability-weighted reserve across active positions and used it to gate both bid and offer size three, preserving the 0.75 floor, low-loss exceptions, prices, memory, estimator, and FOK behavior. Scope validation, compilation, diff checks, and signed-position/capacity assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 129.73; minimum capital 8.15/10.00
+- Baseline delta: -0.40 points; PnL 5.84
+
+### g3-postfill-reserve
+
+- Hypothesis: Capacity should be evaluated on the net position after a possible full fill, because a bid can cover a short and an offer can reduce a long; hypothetical post-fill reserve can admit inventory-reducing size while rejecting genuinely risk-increasing size.
+- Implementation plan: Compute current probability-weighted signed reserve over active options, then compute separate bid and offer post-fill reserves by replacing the target option's current net quantity with quantity plus three or quantity minus three. Reserve positive net quantity at current theoretical value and negative net quantity at one minus that value. Set each side to size three only when its post-fill reserve fits available_capacity or its existing low-loss rule passes. Remove the capital-40-only offer restriction; preserve the 0.75 floor, prices, memory, estimator, FOK, and every unrelated rule.
+- Worker summary: Computed probability-weighted reserve on hypothetical target positions after full bid or offer fills, allowing netting before testing each side against available capacity. Preserved the 0.75 floor, low-loss exceptions, prices, memory, estimator, and FOK behavior. Scope validation, compilation, diff checks, and post-fill/netting assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 127.60; minimum capital 8.15/10.00
+- Baseline delta: -0.40 points; PnL 3.71
+
+### g3-side-reserve
+
+- Hypothesis: Profitable third-unit routing is side-specific, so separately budgeting long and short reserve can prevent unrelated opposite-side inventory from suppressing a safe quote side while still capping its own maximum loss.
+- Implementation plan: Compute separate active long reserve as positive quantity times current theoretical value and active short reserve as negative quantity magnitude times one minus theoretical value. Permit bid size three when long reserve plus three-lot bid loss fits available_capacity or bid is low-loss; permit offer size three when short reserve plus three-lot offer loss fits available_capacity or offer is low-loss. Remove the capital-40-only offer restriction. Preserve the 0.75 floor, quote prices, memory, estimator, FOK, and all unrelated behavior.
+- Worker summary: Computed separate long and short probability-weighted reserves and budgeted bid and offer size independently, preserving the 0.75 floor, low-loss exceptions, prices, memory, estimator, and FOK behavior. Scope validation, compilation, diff checks, and mixed-portfolio/side-isolation assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 130.26; minimum capital 7.68/10.00
+- Baseline delta: -0.40 points; PnL 6.37
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three collateral-proxy candidates passed 20/20 with zero bankruptcies and runtime errors, but each scored 12.60 after losing cases 13 and 18 from second to third. Signed total reserve produced 129.73 PnL and lifted case 14 from 9.72 to 12.99; post-fill reserve produced 127.60 and case-14 PnL 12.49; side-separated reserve led PnL at 130.26 and lifted case 14 to 14.10. All preserved cases 9, 15, 16, 17, and 20 first, with case-17 leads from 1.74 to 1.82, but case 13 fell 2.07 to 2.70 behind second and case 18 fell 0.98 to 1.26 behind second. Because every architecture shared the removal of the champion's offer regime restriction, the common rank regression attributes the failure primarily to broad collateral-gated offer participation; the reserve models still show a useful case-14 and aggregate-PnL signal worth isolating on bids.
+Next-generation rationale: Keep the 13.00 champion. Restore its offer sizing byte-for-byte and test the same three reserve architectures only on bid capacity. This side isolation follows the established evidence that bid allocation protects case 13 while avoiding the broad offer path that lost case 18. Do not tune the 0.75 floor.
