@@ -2046,7 +2046,7 @@
     },
     {
       "id": "market-loop-20260819-2-g06-champion-g5-bid-four-reserve",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g6-offer-five",
@@ -2090,7 +2090,11 @@
           "createdAt": "2026-08-19T20:41:11.070Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Demoted champion at 13.00 points and 141.36 combined PnL, structurally contained in the active market-loop-20260819-2-g06-g6-both-four, which is this exact source plus the offer fourth unit at 146.05 with the same rank profile and the same 7.97 minimum capital. Its only distinguishing property is the absence of the offer unit, which the retained escalation-depth control already represents better.",
+        "at": "2026-08-19T20:47:21.136Z"
+      }
     },
     {
       "id": "market-loop-20260819-2-g05-g5-offer-four-exposure",
