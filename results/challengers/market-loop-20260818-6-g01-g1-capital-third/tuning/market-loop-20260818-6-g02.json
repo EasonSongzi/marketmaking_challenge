@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "c33cfbf41419a90846a105d51f8d49eb55fd5c7138d3c83ad89ae17862ef25bd",
+  "variants": [
+    {
+      "id": "cash-floor-coarse-040",
+      "granularity": "coarse",
+      "parameters": {
+        "cashFloorFraction": 0.4
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-6/g02/tune-02/.tuning/market-loop-20260818-6/g02/variants/cash-floor-coarse-040/Market_making_binary_option.py",
+      "sourceSha256": "46b8881c336f4b100899635684952743e2e74927098ec6c17e5e6a7a69edc54f",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cash-floor-coarse-055",
+      "granularity": "coarse",
+      "parameters": {
+        "cashFloorFraction": 0.55
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-6/g02/tune-02/.tuning/market-loop-20260818-6/g02/variants/cash-floor-coarse-055/Market_making_binary_option.py",
+      "sourceSha256": "9a7a5a7f57b9e58d97d1e8bedc706815ce54686108e533d7ce9a27c2f79283bf",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cash-floor-coarse-075",
+      "granularity": "coarse",
+      "parameters": {
+        "cashFloorFraction": 0.75
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-6/g02/tune-02/.tuning/market-loop-20260818-6/g02/variants/cash-floor-coarse-075/Market_making_binary_option.py",
+      "sourceSha256": "115b5a6ad6c2cb921318b6cc0ac47696a2eae331b6095422065e81b582665ca7",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cash-floor-medium-030",
+      "granularity": "medium",
+      "parameters": {
+        "cashFloorFraction": 0.3
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-6/g02/tune-02/.tuning/market-loop-20260818-6/g02/variants/cash-floor-medium-030/Market_making_binary_option.py",
+      "sourceSha256": "c2cbb0107e53d32005b9c9d4baaa1517c1b4ff8534f0de2fff0503b5769e96ad",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cash-floor-medium-035",
+      "granularity": "medium",
+      "parameters": {
+        "cashFloorFraction": 0.35
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-6/g02/tune-02/.tuning/market-loop-20260818-6/g02/variants/cash-floor-medium-035/Market_making_binary_option.py",
+      "sourceSha256": "d18385383064627709762fd68404deeea353f10d67b3cb48d8c5bf1f30f8d789",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cash-floor-medium-045",
+      "granularity": "medium",
+      "parameters": {
+        "cashFloorFraction": 0.45
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-6/g02/tune-02/.tuning/market-loop-20260818-6/g02/variants/cash-floor-medium-045/Market_making_binary_option.py",
+      "sourceSha256": "bfa005328f545f302633397b8c5cd6d4819f2712ec81171425bc7d5e6bb3c21e",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cash-floor-fine-026",
+      "granularity": "fine",
+      "parameters": {
+        "cashFloorFraction": 0.26
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-6/g02/tune-02/.tuning/market-loop-20260818-6/g02/variants/cash-floor-fine-026/Market_making_binary_option.py",
+      "sourceSha256": "bd6109f39d781ee3370e49ffcdc45c2ea1d8823ccfc72533481fbbab20426461",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cash-floor-fine-028",
+      "granularity": "fine",
+      "parameters": {
+        "cashFloorFraction": 0.28
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260818-6/g02/tune-02/.tuning/market-loop-20260818-6/g02/variants/cash-floor-fine-028/Market_making_binary_option.py",
+      "sourceSha256": "4af918df6ea1a760a241252247320b672d6c9e32bf032583493e8b04f3e3789e",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}

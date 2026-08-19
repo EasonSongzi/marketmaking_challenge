@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-19T01:47:53.800Z
 - Starting baseline: g6-contract-rfq-wide (12.80/16.00)
-- Current baseline: g6-contract-rfq-wide (12.80/16.00)
+- Current baseline: g1-low-loss-third (12.80/16.00)
 - Stop condition: not reached
-- Score trend: 12.80
+- Score trend: 12.80 → 12.80
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -43,10 +43,91 @@ Parent: champion `g6-contract-rfq-wide` (`353ad16d0004889c9ed825971d416fe543ec6b
 - Baseline delta: -0.20 points; PnL 21.02
 
 Selection: g1-low-loss-third.
-Promotion: none.
+Promotion: g1-low-loss-third (7c07e04b1661c77c785f7593deffa67a358506ff).
 Finding: All three selective-size candidates passed 20/20 with zero bankruptcies and runtime errors. Low-loss-side size three preserved 12.80 points, raised combined PnL from 105.88 to 114.50, and improved minimum capital from 7.38/10.00 to 8.13/10.00. It protected case 9 first by 8.81, case 13 second by 0.40, case 15 first by 1.08, and case 16 first by 13.70; it also narrowed case 17's upward gap from 1.57 to 0.63 while increasing its third-place buffer to 0.92. Case 14 remained second but rose from 8.97 to 9.70 PnL. Position-reducing size three was nearly inactive economically: it held 12.80 but reduced PnL by 0.08 and left the critical boundaries essentially unchanged. The 25-percent cash-floor proxy scored 12.60 with 126.90 PnL and 7.45/10.00 minimum capital: it won case 17 by 1.85 and lifted case 14 PnL to 12.08, while losing case 13 from second to third by 3.01. Thus low-loss activation is the safe broad signal, while the cash-floor activation has explicit parameter upside toward a 13.00 rank set if a stricter floor can restore case 13 without surrendering its new case-17 win.
 Next-generation rationale: Archive the low-loss winner under the fixed selector and retain the capital-gated non-winner as the single focused challenger. Next tune only its 25-percent cash-floor constant with predeclared coarse, medium, and fine samples; the target is to recover case 13 to second while keeping case 17 first and cases 9, 15, and 16 first.
 Challenger update: admitted market-loop-20260818-6-g01-g1-capital-third.
 Previous failure (setup): git -C /Users/easonhao/Documents/dev/Akuna_challenge worktree add --detach /tmp/akuna-market-maker/market-loop-20260818-6/g01/g1-low-loss-third bb95d64c3528198f500bec8730a1c7580a270422 failed: Preparing worktree (detached HEAD bb95d64)
 fatal: could not create leading directories of '.git/worktrees/g1-low-loss-third': Operation not permitted
 Recovery instruction: Inspect the archived/state evidence and source hashes, correct the integrity problem, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+
+## Generation 2: tune quote
+
+The capital-gated challenger passed 20/20, won case 17 by 1.85, raised case-14 PnL from 8.97 to 12.08, and kept cases 9, 15, and 16 first, but its permissive 25-percent cash floor moved case 13 from second to third. Tune only the cash-floor fraction upward so progressively fewer third units are admitted, seeking the boundary that restores case 13 while retaining the new case-17 win.
+
+### cash-floor-coarse-040
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-6-g01-g1-capital-third
+- Implementation plan: {"cashFloorFraction":0.4}
+- Worker summary: Designed eight unique, frozen cashFloorFraction samples spanning 0.26 to 0.75 with coarse, medium, and fine coverage and no parent vector. The lead materialized them as AST-only replacements of MarketMaker.quote constant ordinal 23; all variants compiled and passed scope validation before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 126.63; minimum capital 7.46/10.00
+- Baseline delta: -0.20 points; PnL 12.13
+
+### cash-floor-coarse-055
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-6-g01-g1-capital-third
+- Implementation plan: {"cashFloorFraction":0.55}
+- Worker summary: Designed eight unique, frozen cashFloorFraction samples spanning 0.26 to 0.75 with coarse, medium, and fine coverage and no parent vector. The lead materialized them as AST-only replacements of MarketMaker.quote constant ordinal 23; all variants compiled and passed scope validation before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 122.29; minimum capital 8.44/10.00
+- Baseline delta: -0.20 points; PnL 7.79
+
+### cash-floor-coarse-075
+
+- Hypothesis: coarse parameter tuning for market-loop-20260818-6-g01-g1-capital-third
+- Implementation plan: {"cashFloorFraction":0.75}
+- Worker summary: Designed eight unique, frozen cashFloorFraction samples spanning 0.26 to 0.75 with coarse, medium, and fine coverage and no parent vector. The lead materialized them as AST-only replacements of MarketMaker.quote constant ordinal 23; all variants compiled and passed scope validation before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 116.54; minimum capital 8.38/10.00
+- Baseline delta: 0.00 points; PnL 2.04
+
+### cash-floor-medium-030
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-6-g01-g1-capital-third
+- Implementation plan: {"cashFloorFraction":0.3}
+- Worker summary: Designed eight unique, frozen cashFloorFraction samples spanning 0.26 to 0.75 with coarse, medium, and fine coverage and no parent vector. The lead materialized them as AST-only replacements of MarketMaker.quote constant ordinal 23; all variants compiled and passed scope validation before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 127.36; minimum capital 7.27/10.00
+- Baseline delta: -0.20 points; PnL 12.86
+
+### cash-floor-medium-035
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-6-g01-g1-capital-third
+- Implementation plan: {"cashFloorFraction":0.35}
+- Worker summary: Designed eight unique, frozen cashFloorFraction samples spanning 0.26 to 0.75 with coarse, medium, and fine coverage and no parent vector. The lead materialized them as AST-only replacements of MarketMaker.quote constant ordinal 23; all variants compiled and passed scope validation before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 127.29; minimum capital 6.99/10.00
+- Baseline delta: -0.20 points; PnL 12.79
+
+### cash-floor-medium-045
+
+- Hypothesis: medium parameter tuning for market-loop-20260818-6-g01-g1-capital-third
+- Implementation plan: {"cashFloorFraction":0.45}
+- Worker summary: Designed eight unique, frozen cashFloorFraction samples spanning 0.26 to 0.75 with coarse, medium, and fine coverage and no parent vector. The lead materialized them as AST-only replacements of MarketMaker.quote constant ordinal 23; all variants compiled and passed scope validation before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 127.97; minimum capital 7.58/10.00
+- Baseline delta: -0.20 points; PnL 13.47
+
+### cash-floor-fine-026
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-6-g01-g1-capital-third
+- Implementation plan: {"cashFloorFraction":0.26}
+- Worker summary: Designed eight unique, frozen cashFloorFraction samples spanning 0.26 to 0.75 with coarse, medium, and fine coverage and no parent vector. The lead materialized them as AST-only replacements of MarketMaker.quote constant ordinal 23; all variants compiled and passed scope validation before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 126.90; minimum capital 7.45/10.00
+- Baseline delta: -0.20 points; PnL 12.40
+
+### cash-floor-fine-028
+
+- Hypothesis: fine parameter tuning for market-loop-20260818-6-g01-g1-capital-third
+- Implementation plan: {"cashFloorFraction":0.28}
+- Worker summary: Designed eight unique, frozen cashFloorFraction samples spanning 0.26 to 0.75 with coarse, medium, and fine coverage and no parent vector. The lead materialized them as AST-only replacements of MarketMaker.quote constant ordinal 23; all variants compiled and passed scope validation before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.60/16.00 points; PnL 126.52; minimum capital 7.33/10.00
+- Baseline delta: -0.20 points; PnL 12.02
+
+Selection: cash-floor-coarse-075.
+Promotion: none.
+Finding: All eight cash-floor variants passed 20/20 with zero bankruptcies and runtime errors. Fractions 0.26 through 0.55 all scored 12.60: each preserved cases 9, 15, and 16 first and kept the challenger's new case-17 win, but case 13 remained third. The 0.75 coarse sample restored 12.80 points, produced 116.54 combined PnL, and improved minimum capital to 8.38/10.00. Relative to the 12.80 low-loss champion it swaps the two target boundaries rather than reaching 13.00: case 13 falls from second to third by 4.71 behind second, while case 17 moves from second to first by 0.96. It keeps case 9 first by 8.32, case 15 first by 0.25, case 16 first by 14.40, and case 14 second with 10.69 PnL. The fixed selector nevertheless ranks 0.75 above the current champion because it ties at 12.80 and adds 2.04 combined PnL while also improving minimum capital by 0.25. No sampled floor recovered case 13 while retaining the case-17 win, so the one-dimensional cash-floor family did not meet the research note's 13.00 no-rank-regression target.
+Next-generation rationale: Archive the tuned 0.75 revision and follow the pipeline's fixed promotion decision. Stop further cash-floor sweeps: the entire predeclared range showed a discrete case-13/case-17 rank trade rather than a 13.00 overlap. Move to the next structural family from the docs, using estimator-execution crosses or trade-confirmed side-specific RFQ information instead of another adjacent cash-floor constant.

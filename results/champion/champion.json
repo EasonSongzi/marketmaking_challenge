@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "id": "g1-low-loss-third",
+  "id": "cash-floor-coarse-075",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "d5f25b899d7f2ad984520ff691ba44e0c001361d4923452a82f73180a8a218af",
+  "sourceSha256": "115b5a6ad6c2cb921318b6cc0ac47696a2eae331b6095422065e81b582665ca7",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260818-6:g01:g1-low-loss-third",
+  "experimentId": "market-loop-20260818-6:g02:cash-floor-coarse-075",
   "experiment": {
     "runId": "market-loop-20260818-6",
-    "generation": 1,
-    "candidateId": "g1-low-loss-third"
+    "generation": 2,
+    "candidateId": "cash-floor-coarse-075"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1280,
-    "combinedPnlCents": 11450,
+    "combinedPnlCents": 11654,
     "minimumCapital": {
-      "endingCashCents": 813,
+      "endingCashCents": 838,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0

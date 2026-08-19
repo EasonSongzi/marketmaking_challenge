@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g1-low-loss-third",
+    "id": "cash-floor-coarse-075",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "d5f25b899d7f2ad984520ff691ba44e0c001361d4923452a82f73180a8a218af",
+    "sourceSha256": "115b5a6ad6c2cb921318b6cc0ac47696a2eae331b6095422065e81b582665ca7",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260818-6:g01:g1-low-loss-third",
+    "experimentId": "market-loop-20260818-6:g02:cash-floor-coarse-075",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1280,
-      "combinedPnlCents": 11450,
+      "combinedPnlCents": 11654,
       "minimumCapital": {
-        "endingCashCents": 813,
+        "endingCashCents": 838,
         "startingCapitalCents": 1000
       },
       "runtimeErrors": 0
@@ -1255,11 +1255,11 @@
     },
     {
       "id": "market-loop-20260818-6-g01-g1-capital-third",
-      "status": "active",
+      "status": "promoted",
       "method": "quote",
       "origin": "explore",
       "rationale": "It is the only non-winner with focused tuning upside: it converted case 17 from second to first and materially improved case 14, but its permissive 25-percent cash floor moved case 13 from second to third. A stricter single activation threshold may retain the added-unit wins while filtering the routing change that harmed case 13.",
-      "tuningAttempts": 0,
+      "tuningAttempts": 1,
       "currentRevision": 0,
       "revisions": [
         {
@@ -1299,7 +1299,15 @@
           "createdAt": "2026-08-19T01:55:42.863Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [
+        {
+          "runId": "market-loop-20260818-6",
+          "generation": 2,
+          "manifestPath": "results/challengers/market-loop-20260818-6-g01-g1-capital-third/tuning/market-loop-20260818-6-g02.json",
+          "bestCandidateId": "cash-floor-coarse-075",
+          "improved": true
+        }
+      ]
     },
     {
       "id": "market-loop-20260818-6-g01-champion-g6-contract-rfq-wide",
@@ -1345,6 +1353,54 @@
             ]
           },
           "createdAt": "2026-08-19T01:56:05.594Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260818-6-g02-champion-g1-low-loss-third",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by cash-floor-coarse-075",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260818-6-g02-champion-g1-low-loss-third/r00.py",
+          "sourceSha256": "d5f25b899d7f2ad984520ff691ba44e0c001361d4923452a82f73180a8a218af",
+          "evaluationPath": "results/challengers/market-loop-20260818-6-g02-champion-g1-low-loss-third/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260818-6-g02-champion-g1-low-loss-third/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g1-low-loss-third",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260818-6-g02-champion-g1-low-loss-third/r00.py",
+            "sourceSha256": "d5f25b899d7f2ad984520ff691ba44e0c001361d4923452a82f73180a8a218af",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1280,
+              "combinedPnlCents": 11450,
+              "minimumCapital": {
+                "endingCashCents": 813,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-19T02:03:46.318Z"
         }
       ],
       "tuningHistory": []
@@ -3226,7 +3282,7 @@
     },
     "d5f25b899d7f2ad984520ff691ba44e0c001361d4923452a82f73180a8a218af": {
       "valid": true,
-      "modifiedLines": 4,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -3239,7 +3295,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "c2e8a0b10aee6badd6d43bad36540460595451a2fccfbb9de2560c6555784ee5": {
       "valid": true,
@@ -3271,6 +3329,156 @@
         "combinedPnlCents": 12690,
         "minimumCapital": {
           "endingCashCents": 745,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "46b8881c336f4b100899635684952743e2e74927098ec6c17e5e6a7a69edc54f": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 12663,
+        "minimumCapital": {
+          "endingCashCents": 746,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "9a7a5a7f57b9e58d97d1e8bedc706815ce54686108e533d7ce9a27c2f79283bf": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 12229,
+        "minimumCapital": {
+          "endingCashCents": 844,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "115b5a6ad6c2cb921318b6cc0ac47696a2eae331b6095422065e81b582665ca7": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1280,
+        "combinedPnlCents": 11654,
+        "minimumCapital": {
+          "endingCashCents": 838,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "c2cbb0107e53d32005b9c9d4baaa1517c1b4ff8534f0de2fff0503b5769e96ad": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 12736,
+        "minimumCapital": {
+          "endingCashCents": 727,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "d18385383064627709762fd68404deeea353f10d67b3cb48d8c5bf1f30f8d789": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 12729,
+        "minimumCapital": {
+          "endingCashCents": 699,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "bfa005328f545f302633397b8c5cd6d4819f2712ec81171425bc7d5e6bb3c21e": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 12797,
+        "minimumCapital": {
+          "endingCashCents": 758,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "bd6109f39d781ee3370e49ffcdc45c2ea1d8823ccfc72533481fbbab20426461": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 12690,
+        "minimumCapital": {
+          "endingCashCents": 745,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "4af918df6ea1a760a241252247320b672d6c9e32bf032583493e8b04f3e3789e": {
+      "valid": true,
+      "modifiedLines": null,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1260,
+        "combinedPnlCents": 12652,
+        "minimumCapital": {
+          "endingCashCents": 733,
           "startingCapitalCents": 1000
         },
         "runtimeErrors": 0
