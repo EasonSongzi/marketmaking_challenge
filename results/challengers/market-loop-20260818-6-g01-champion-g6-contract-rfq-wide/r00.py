@@ -395,9 +395,9 @@ class MarketMaker:
                 offer_price = min(offer_price + 0.01, 1.0)
         return Quote(
             bid_price=bid_price,
-            bid_quantity=3 if bid_price <= 0.25 else 2,
+            bid_quantity=2,
             offer_price=offer_price,
-            offer_quantity=3 if 1.0 - offer_price <= 0.25 else 2,
+            offer_quantity=2,
         )
 
     def respond_to_fok(self, option: BinaryOption, fok_order: FokOrder) -> bool:  # type: ignore[empty-body]

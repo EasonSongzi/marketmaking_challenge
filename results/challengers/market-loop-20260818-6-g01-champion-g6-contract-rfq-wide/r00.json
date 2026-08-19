@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-contract-rfq-wide",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-6-g01-champion-g6-contract-rfq-wide/r00.py",
+  "sourceSha256": "353ad16d0004889c9ed825971d416fe543ec6b51e5dc9851a9e32d5bcf7be2fe",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1280,
+    "combinedPnlCents": 10588,
+    "minimumCapital": {
+      "endingCashCents": 738,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}

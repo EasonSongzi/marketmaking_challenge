@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g6-contract-rfq-wide`
+- Current champion: `g1-low-loss-third`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `353ad16d0004889c9ed825971d416fe543ec6b51e5dc9851a9e32d5bcf7be2fe`
-- Experiment: `market-loop-20260818-5`, generation 6, candidate `g6-contract-rfq-wide`
+- Source SHA-256: `d5f25b899d7f2ad984520ff691ba44e0c001361d4923452a82f73180a8a218af`
+- Experiment: `market-loop-20260818-6`, generation 1, candidate `g1-low-loss-third`
 - SCORED points: 12.80/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0

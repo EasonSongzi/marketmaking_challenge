@@ -393,11 +393,20 @@ class MarketMaker:
             offer_price = min(offer_price + 0.01, 1.0)
             if fair_value_cents < 25:
                 offer_price = min(offer_price + 0.01, 1.0)
+        active_option_ids = {active_option.option_id for active_option in self.active_option_state}
+        active_exposure = sum(
+            abs(self.position.option_quantity_by_option_id.get(option_id, 0))
+            for option_id in active_option_ids
+        )
+        cash_floor = 0.25 * self.cash_balance
+        available_capacity = self.cash_balance - cash_floor
+        bid_quantity = 3 if active_exposure + 3 * bid_price <= available_capacity else 2
+        offer_quantity = 3 if active_exposure + 3 * (1.0 - offer_price) <= available_capacity else 2
         return Quote(
             bid_price=bid_price,
-            bid_quantity=3 if bid_price <= 0.25 else 2,
+            bid_quantity=bid_quantity,
             offer_price=offer_price,
-            offer_quantity=3 if 1.0 - offer_price <= 0.25 else 2,
+            offer_quantity=offer_quantity,
         )
 
     def respond_to_fok(self, option: BinaryOption, fok_order: FokOrder) -> bool:  # type: ignore[empty-body]

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g1-capital-third",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-6-g01-g1-capital-third/r00.py",
+  "sourceSha256": "c33cfbf41419a90846a105d51f8d49eb55fd5c7138d3c83ad89ae17862ef25bd",
+  "modifiedLines": 13,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1260,
+    "combinedPnlCents": 12690,
+    "minimumCapital": {
+      "endingCashCents": 745,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -20,
+    "combinedPnlCents": 2102
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
