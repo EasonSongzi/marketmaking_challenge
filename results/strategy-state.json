@@ -1948,7 +1948,7 @@
     },
     {
       "id": "market-loop-20260819-2-g05-champion-g6-signed-central",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g5-bid-four-reserve",
@@ -1992,7 +1992,11 @@
           "createdAt": "2026-08-19T20:37:11.254Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Demoted champion at 13.00 points and 129.76 combined PnL whose complete source is structurally contained in two stronger active members: market-loop-20260819-2-g06-g6-both-four is this source plus the bid and offer fourth units at 146.05, and the current champion adds the fifth offer unit at 149.22. Identical rank profile, 16.29 less PnL, and no mechanism absent from its own descendants.",
+        "at": "2026-08-19T20:47:21.015Z"
+      }
     },
     {
       "id": "market-loop-20260819-2-g06-g6-both-four",
