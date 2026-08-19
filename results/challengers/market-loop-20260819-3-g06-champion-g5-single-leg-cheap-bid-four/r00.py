@@ -484,8 +484,6 @@ class MarketMaker:
             bid_quantity = 4
         if bid_quantity == 3 and not repeat_request and bid_price <= 0.25 and len(option.legs) == 1:
             bid_quantity = 4
-        if bid_quantity == 4 and not repeat_request and bid_price <= 0.25 and len(option.legs) == 1:
-            bid_quantity = 5
         quote_snapshots[option_id] = (
             counterparty_id,
             self.position.option_quantity_by_option_id.get(option_id, 0),

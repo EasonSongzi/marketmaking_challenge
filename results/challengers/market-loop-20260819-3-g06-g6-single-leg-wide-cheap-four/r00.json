@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-single-leg-wide-cheap-four",
+  "valid": true,
+  "eligible": true,
+  "sourcePath": "results/challengers/market-loop-20260819-3-g06-g6-single-leg-wide-cheap-four/r00.py",
+  "sourceSha256": "f9c60c98d387e175cf9f6d986477969855f8f8af248fb9a80ec15cd719a8c196",
+  "modifiedLines": 2,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 14751,
+    "minimumCapital": {
+      "endingCashCents": 781,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 132
+  },
+  "reasons": []
+}

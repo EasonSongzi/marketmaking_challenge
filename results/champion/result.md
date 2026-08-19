@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-19T22:02:32.765Z
+- Date: 2026-08-19T22:06:31.050Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g5-single-leg-cheap-bid-four
+- Label: g6-single-leg-cheap-five
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `c63044aff2ba438908192018c71657aa89090a6ad234be0d5bb23a8c47cc5109`
+- Source SHA-256: `090a7ce191dbaf37923aa618008e5b0f1ce17bfcf9fe1aa9fc9358c4bac339b1`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -33,9 +33,9 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $0.02
-2. Stalemate Quoter: $0.0
-Mola mola bankrupt: False (cash balance: 10.02, starting capital: 10.0)
+1. Stalemate Quoter: $0.0
+2. Mola mola: $-0.07
+Mola mola bankrupt: False (cash balance: 9.93, starting capital: 10.0)
 > FED: 5.75, AJR: 1391.0, THR: 2269.23
 > FOK from counterparty 783057: buy 0.01 for 1 5498600 (2d THR >= 2419.00)
 > Mola mola ignored the FOK (theo=0.2218)
@@ -43,8 +43,8 @@ Mola mola bankrupt: False (cash balance: 10.02, starting capital: 10.0)
 [Underlying state advanced by one step]
 > FED: 5.5, AJR: 1327.04, THR: 2258.07
 > RFQ from counterparty 689497: sell 6 8734500 (1d THR >= 2371.00)
-> Mola mola quoted buy 0.09 for 4 / sell 2 @ 0.18000000000000002 (theo=0.1164)
-> Mola mola bought 0.09 for 4 8734500 (1d THR >= 2371.00) (counterparty 689497)
+> Mola mola quoted buy 0.09 for 5 / sell 2 @ 0.18000000000000002 (theo=0.1164)
+> Mola mola bought 0.09 for 5 8734500 (1d THR >= 2371.00) (counterparty 689497)
 > RFQ from counterparty 689497: buy 2 8734500 (1d THR >= 2371.00)
 > Mola mola quoted buy 0.060000000000000005 for 3 / sell 2 @ 0.19000000000000003 (theo=0.1164)
 > Mola mola sold 2 @ 0.19 8734500 (1d THR >= 2371.00) (counterparty 689497)
@@ -72,7 +72,7 @@ Mola mola bankrupt: False (cash balance: 20.64, starting capital: 20.0)
 > FOK from counterparty 482453: buy 0.99 for 2 4895269 (2d THR >= 1735.00)
 > Mola mola ignored the FOK (theo=0.9990)
 > RFQ from counterparty 309546: buy 3 3857985 (1d FED >= 1.75)
-> Mola mola quoted buy 0.24000000000000002 for 4 / sell 2 @ 0.32 (theo=0.2700)
+> Mola mola quoted buy 0.24000000000000002 for 5 / sell 2 @ 0.32 (theo=0.2700)
 > Mola mola sold 2 @ 0.32 3857985 (1d FED >= 1.75) (counterparty 309546)
 
 [Underlying state advanced by one step]
@@ -168,9 +168,9 @@ Compiler Message
 
 Ranking:
 1. Fixed Width 0.25: $10.93
-2. Mola mola: $0.11
+2. Mola mola: $0.09
 3. Stalemate Quoter: $0.0
-Mola mola bankrupt: False (cash balance: 10.11, starting capital: 10.0)
+Mola mola bankrupt: False (cash balance: 10.09, starting capital: 10.0)
 Result: PASS (score=0.70)
 
 Hidden Test Case
@@ -184,8 +184,8 @@ Compiler Message
 
 Ranking:
 1. Fixed Width 0.25: $20.14
-2. Mola mola: $-2.19
-Mola mola bankrupt: False (cash balance: 7.81, starting capital: 10.0)
+2. Mola mola: $-2.35
+Mola mola bankrupt: False (cash balance: 7.65, starting capital: 10.0)
 Result: PASS (score=0.40)
 
 Hidden Test Case
@@ -199,9 +199,9 @@ Compiler Message
 
 Ranking:
 1. Fixed Width 0.1: $30.7
-2. Mola mola: $1.62
+2. Mola mola: $1.61
 3. Stalemate Quoter: $0.0
-Mola mola bankrupt: False (cash balance: 11.62, starting capital: 10.0)
+Mola mola bankrupt: False (cash balance: 11.61, starting capital: 10.0)
 Result: PASS (score=0.70)
 
 Hidden Test Case
@@ -214,10 +214,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $31.35
+1. Mola mola: $32.3
 2. Fixed Width 0.1: $6.68
-3. Fixed Width 0.25: $2.0
-Mola mola bankrupt: False (cash balance: 41.35, starting capital: 10.0)
+3. Fixed Width 0.25: $1.0
+Mola mola bankrupt: False (cash balance: 42.3, starting capital: 10.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -230,10 +230,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.1: $34.47
-2. Mola mola: $10.88
+1. Fixed Width 0.1: $33.83
+2. Mola mola: $11.15
 3. Stalemate Quoter: $4.0
-Mola mola bankrupt: False (cash balance: 30.88, starting capital: 20.0)
+Mola mola bankrupt: False (cash balance: 31.15, starting capital: 20.0)
 Result: PASS (score=0.70)
 
 Hidden Test Case
@@ -246,10 +246,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $18.1
+1. Mola mola: $21.06
 2. Fixed Width 0.1: $0.17
-3. Fixed Width 0.05: $-12.29
-Mola mola bankrupt: False (cash balance: 38.1, starting capital: 20.0)
+3. Fixed Width 0.05: $-15.42
+Mola mola bankrupt: False (cash balance: 41.06, starting capital: 20.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -262,9 +262,9 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $2.78
-2. Fixed Width 0.05: $-7.03
-Mola mola bankrupt: False (cash balance: 22.78, starting capital: 20.0)
+1. Mola mola: $3.17
+2. Fixed Width 0.05: $-7.59
+Mola mola bankrupt: False (cash balance: 23.17, starting capital: 20.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -277,11 +277,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.1: $11.26
-2. Mola mola: $8.57
-3. Lattice: $7.18
-4. Situational Unawareness: $2.83
-Mola mola bankrupt: False (cash balance: 28.57, starting capital: 20.0)
+1. Fixed Width 0.1: $11.39
+2. Mola mola: $8.51
+3. Lattice: $6.97
+4. Situational Unawareness: $2.85
+Mola mola bankrupt: False (cash balance: 28.51, starting capital: 20.0)
 Result: PASS (score=0.80)
 
 Hidden Test Case
@@ -294,10 +294,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $16.46
-2. Lattice: $14.81
-3. Fixed Width 0.05: $5.21
-Mola mola bankrupt: False (cash balance: 36.46, starting capital: 20.0)
+1. Mola mola: $16.98
+2. Lattice: $14.07
+3. Fixed Width 0.05: $5.38
+Mola mola bankrupt: False (cash balance: 36.98, starting capital: 20.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -310,10 +310,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $9.56
-2. Situational Unawareness: $5.73
-3. Lattice: $1.71
-Mola mola bankrupt: False (cash balance: 29.56, starting capital: 20.0)
+1. Mola mola: $8.91
+2. Situational Unawareness: $5.96
+3. Lattice: $1.5
+Mola mola bankrupt: False (cash balance: 28.91, starting capital: 20.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -326,10 +326,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $26.25
-2. Fixed Width 0.05: $9.5
-3. Lattice: $8.32
-Mola mola bankrupt: False (cash balance: 66.25, starting capital: 40.0)
+1. Mola mola: $27.05
+2. Fixed Width 0.05: $8.43
+3. Lattice: $8.36
+Mola mola bankrupt: False (cash balance: 67.05, starting capital: 40.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -342,11 +342,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $17.49
-2. Situational Unawareness: $9.92
-3. Lattice: $9.06
+1. Mola mola: $18.17
+2. Situational Unawareness: $9.52
+3. Lattice: $9.07
 4. Mongoose: $-31.7
-Mola mola bankrupt: False (cash balance: 57.49, starting capital: 40.0)
+Mola mola bankrupt: False (cash balance: 58.17, starting capital: 40.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -359,11 +359,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.05: $38.8
-2. Mola mola: $7.84
-3. Lattice: $2.21
+1. Fixed Width 0.05: $39.17
+2. Mola mola: $8.1
+3. Lattice: $2.25
 4. Mongoose: $-30.65
-Mola mola bankrupt: False (cash balance: 47.84, starting capital: 40.0)
+Mola mola bankrupt: False (cash balance: 48.1, starting capital: 40.0)
 Result: PASS (score=0.80)
 
 Hidden Test Case
@@ -376,11 +376,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Situational Unawareness: $22.1
-2. Mola mola: $-2.46
-3. Mongoose: $-14.02
-4. Fixed Width 0.05: $-24.25
-Mola mola bankrupt: False (cash balance: 37.54, starting capital: 40.0)
+1. Situational Unawareness: $22.08
+2. Mola mola: $-2.71
+3. Mongoose: $-13.96
+4. Fixed Width 0.05: $-24.2
+Mola mola bankrupt: False (cash balance: 37.29, starting capital: 40.0)
 Result: PASS (score=0.80)
 
 Hidden Test Case
@@ -393,11 +393,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $-2.4
-2. Lattice: $-8.55
-3. Mongoose: $-27.87
-4. Fixed Width 0.05: $-101.07
-Mola mola bankrupt: False (cash balance: 37.6, starting capital: 40.0)
+1. Mola mola: $0.48
+2. Lattice: $-10.65
+3. Mongoose: $-29.77
+4. Fixed Width 0.05: $-99.97
+Mola mola bankrupt: False (cash balance: 40.48, starting capital: 40.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case

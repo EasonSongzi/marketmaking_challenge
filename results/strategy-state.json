@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g5-single-leg-cheap-bid-four",
+    "id": "g6-single-leg-cheap-five",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "c63044aff2ba438908192018c71657aa89090a6ad234be0d5bb23a8c47cc5109",
+    "sourceSha256": "090a7ce191dbaf37923aa618008e5b0f1ce17bfcf9fe1aa9fc9358c4bac339b1",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260819-3:g05:g5-single-leg-cheap-bid-four",
+    "experimentId": "market-loop-20260819-3:g06:g6-single-leg-cheap-five",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 14619,
+      "combinedPnlCents": 15475,
       "minimumCapital": {
-        "endingCashCents": 781,
+        "endingCashCents": 765,
         "startingCapitalCents": 1000
       },
       "runtimeErrors": 0
@@ -2530,6 +2530,100 @@
             ]
           },
           "createdAt": "2026-08-19T22:04:22.463Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-3-g06-g6-single-leg-wide-cheap-four",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It reaches 13.30 with 147.51 combined PnL and every protected rank held, and it is the only source that widens the fourth-unit trigger region rather than deepening it, making it structurally orthogonal to the winner: the winner adds a fifth unit at the original 0.25 bid threshold, this adds a fourth unit across the whole region below the 40-cent fair-value boundary. Because the two changes are independent and both improved case 14, they compose, and this challenger is the natural parent for testing that composition without disturbing the promoted source. Its tuning upside is explicit and unswept: the 40-cent boundary was taken unchanged from the lower edge of the strategy's existing central band and has never been varied as a fourth-unit trigger, so the true width of the productive region is unknown anywhere between the 0.25 bid threshold it replaced and the 60-cent upper edge of that band. It also preserves the champion's 7.81 minimum capital against the winner's 7.65, so it is the safer parent for any future work that pushes size further.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-3-g06-g6-single-leg-wide-cheap-four/r00.py",
+          "sourceSha256": "f9c60c98d387e175cf9f6d986477969855f8f8af248fb9a80ec15cd719a8c196",
+          "evaluationPath": "results/challengers/market-loop-20260819-3-g06-g6-single-leg-wide-cheap-four/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-3-g06-g6-single-leg-wide-cheap-four/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g6-single-leg-wide-cheap-four",
+            "valid": true,
+            "eligible": true,
+            "sourcePath": "results/challengers/market-loop-20260819-3-g06-g6-single-leg-wide-cheap-four/r00.py",
+            "sourceSha256": "f9c60c98d387e175cf9f6d986477969855f8f8af248fb9a80ec15cd719a8c196",
+            "modifiedLines": 2,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 14751,
+              "minimumCapital": {
+                "endingCashCents": 781,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 132
+            },
+            "reasons": []
+          },
+          "createdAt": "2026-08-19T22:08:23.532Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-3-g06-champion-g5-single-leg-cheap-bid-four",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g6-single-leg-cheap-five",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-3-g06-champion-g5-single-leg-cheap-bid-four/r00.py",
+          "sourceSha256": "c63044aff2ba438908192018c71657aa89090a6ad234be0d5bb23a8c47cc5109",
+          "evaluationPath": "results/challengers/market-loop-20260819-3-g06-champion-g5-single-leg-cheap-bid-four/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-3-g06-champion-g5-single-leg-cheap-bid-four/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-single-leg-cheap-bid-four",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-3-g06-champion-g5-single-leg-cheap-bid-four/r00.py",
+            "sourceSha256": "c63044aff2ba438908192018c71657aa89090a6ad234be0d5bb23a8c47cc5109",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 14619,
+              "minimumCapital": {
+                "endingCashCents": 781,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-19T22:08:26.833Z"
         }
       ],
       "tuningHistory": []
@@ -5759,7 +5853,7 @@
     },
     "c63044aff2ba438908192018c71657aa89090a6ad234be0d5bb23a8c47cc5109": {
       "valid": true,
-      "modifiedLines": 2,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -5772,7 +5866,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "63d59fa3b81f94eee27eb6495b48c58488ba8ca4c762e6fc206358049d09d386": {
       "valid": true,
@@ -5792,6 +5888,59 @@
       "reasons": [
         "Candidate did not strictly exceed the baseline"
       ]
+    },
+    "090a7ce191dbaf37923aa618008e5b0f1ce17bfcf9fe1aa9fc9358c4bac339b1": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15475,
+        "minimumCapital": {
+          "endingCashCents": 765,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "7aab45c96426bd32322577cca864d69cedfeda21ab1df483523a82d9f55818ed": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 14605,
+        "minimumCapital": {
+          "endingCashCents": 781,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "f9c60c98d387e175cf9f6d986477969855f8f8af248fb9a80ec15cd719a8c196": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 14751,
+        "minimumCapital": {
+          "endingCashCents": 781,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
     }
   }
 }

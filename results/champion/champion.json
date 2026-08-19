@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "id": "g5-single-leg-cheap-bid-four",
+  "id": "g6-single-leg-cheap-five",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "c63044aff2ba438908192018c71657aa89090a6ad234be0d5bb23a8c47cc5109",
+  "sourceSha256": "090a7ce191dbaf37923aa618008e5b0f1ce17bfcf9fe1aa9fc9358c4bac339b1",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260819-3:g05:g5-single-leg-cheap-bid-four",
+  "experimentId": "market-loop-20260819-3:g06:g6-single-leg-cheap-five",
   "experiment": {
     "runId": "market-loop-20260819-3",
-    "generation": 5,
-    "candidateId": "g5-single-leg-cheap-bid-four"
+    "generation": 6,
+    "candidateId": "g6-single-leg-cheap-five"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 14619,
+    "combinedPnlCents": 15475,
     "minimumCapital": {
-      "endingCashCents": 781,
+      "endingCashCents": 765,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0
