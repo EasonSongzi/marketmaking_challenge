@@ -1503,7 +1503,7 @@
     },
     {
       "id": "market-loop-20260818-6-g06-champion-g5-union-both-third",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g6-cap-bid-only",
@@ -1551,7 +1551,7 @@
     },
     {
       "id": "market-loop-20260819-g01-champion-g6-cap-bid-only",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g1-exposure-offer",
@@ -1599,7 +1599,7 @@
     },
     {
       "id": "market-loop-20260819-g04-champion-g1-exposure-offer",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g4-signed-bid",
@@ -1647,7 +1647,7 @@
     },
     {
       "id": "market-loop-20260819-g05-champion-g4-signed-bid",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g5-central-offer",
@@ -1743,7 +1743,7 @@
     },
     {
       "id": "market-loop-20260819-g06-champion-g5-central-offer",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g6-signed-central",
@@ -1785,6 +1785,54 @@
             ]
           },
           "createdAt": "2026-08-19T16:20:54.155Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-g03-g3-side-reserve",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "Restored from the Generation 3 archive by operator decision. It scored 12.60 because broad collateral-gated offer participation lost cases 13 and 18, but it holds the highest combined PnL ever observed at 130.26 and the best case-14 result in run history at 14.10, from a structurally distinct side-separated reserve that budgets long and short collateral independently. Generations 4 and 6 later established that restricting a reserve model to one side removes exactly that regression, so this lineage carries explicit upside that no active challenger reproduces.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-g03-g3-side-reserve/r00.py",
+          "sourceSha256": "fa9bdfac22fc1a71d915f773eb1b7ad6eebb6c35ce6f15e9a68e7198dd9fa651",
+          "evaluationPath": "results/challengers/market-loop-20260819-g03-g3-side-reserve/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-g03-g3-side-reserve/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g3-side-reserve",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-g03-g3-side-reserve/r00.py",
+            "sourceSha256": "fa9bdfac22fc1a71d915f773eb1b7ad6eebb6c35ce6f15e9a68e7198dd9fa651",
+            "modifiedLines": 30,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1260,
+              "combinedPnlCents": 13026,
+              "minimumCapital": {
+                "endingCashCents": 768,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": -40,
+              "combinedPnlCents": 637
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-19T16:30:28.339Z"
         }
       ],
       "tuningHistory": []

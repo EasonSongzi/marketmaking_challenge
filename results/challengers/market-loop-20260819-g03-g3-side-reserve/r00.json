@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g3-side-reserve",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-g03-g3-side-reserve/r00.py",
+  "sourceSha256": "fa9bdfac22fc1a71d915f773eb1b7ad6eebb6c35ce6f15e9a68e7198dd9fa651",
+  "modifiedLines": 30,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1260,
+    "combinedPnlCents": 13026,
+    "minimumCapital": {
+      "endingCashCents": 768,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -40,
+    "combinedPnlCents": 637
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
