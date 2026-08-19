@@ -2168,7 +2168,7 @@
     },
     {
       "id": "market-loop-20260819-2-g05-g5-bid-four-cheap",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "curated",
       "rationale": "Restored from the Generation 5 archive by operator decision. It failed the promotion gate at 127.28 combined PnL, below the champion of the time, but it is the only source in run history to suppress the case-13 leader: Fixed Width 0.1 fell from its otherwise invariant 11.96 to 12.11 band down to 11.26, while our own case 13 reached 8.57 without the rank moving. Case 13 is the second target on the research ladder and no other strategy has ever moved its leader at all, so this is an unexplained and unreproduced routing signal. Tuning upside is explicit: the fourth unit is gated only by the 0.25 cheap-bid threshold with no capacity test, so both the threshold and the addition of a capacity guard are open parameters, and the same cheapness gate has never been tried on the offer side.",
@@ -2216,6 +2216,10 @@
       "curation": {
         "admittedFrom": "results/runs/market-loop-20260819-2/archive/g05/g5-bid-four-cheap",
         "at": "2026-08-19T20:47:04.651Z"
+      },
+      "retirement": {
+        "reason": "13.00 and 127.28 PnL, dominated on both axes by 0.30 points and 27.47 PnL. It is the original cheap-Q4 source, and this run decomposed its mechanism completely: generation 4 proved the suppression requires the uncertified form, generation 5 proved leg structure separates it from the case-14 release, and the resulting single-leg rule is now in the champion. Its evidence is spent and superseded by the challenger g5-short-cheap-bid-four, which holds a strictly better case-13 result.",
+        "at": "2026-08-19T22:13:41.624Z"
       }
     },
     {
