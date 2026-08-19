@@ -2524,7 +2524,7 @@
     },
     {
       "id": "market-loop-20260819-3-g05-champion-g3-lowcap-central-offer-three",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g5-single-leg-cheap-bid-four",
@@ -2568,7 +2568,11 @@
           "createdAt": "2026-08-19T22:04:22.463Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "13.30 but 143.86 PnL, 10.89 behind the champion. Both of its distinguishing mechanisms, the capital-gated offer-Q6 and the sub-20 central offer-q3 rule, are absorbed into the champion. The retained challenger g5-single-leg-cheap-bid-four is a strictly tighter one-step control on the current champion, differing only by the fifth unit, so this two-step-back control is redundant.",
+        "at": "2026-08-19T22:13:42.141Z"
+      }
     },
     {
       "id": "market-loop-20260819-3-g06-g6-single-leg-wide-cheap-four",
