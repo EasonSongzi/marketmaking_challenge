@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-19T14:53:19.420Z
 - Starting baseline: g6-cap-bid-only (12.80/16.00)
-- Current baseline: g1-exposure-offer (13.00/16.00)
+- Current baseline: g4-signed-bid (13.00/16.00)
 - Stop condition: not reached
-- Score trend: 12.80 → 13.00
+- Score trend: 12.80 → 13.00 → 13.00
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -159,6 +159,44 @@ Parent: champion `g1-exposure-offer` (`ebf1e3c5cb2212308449ec840670a6f02aad2ca64
 - Baseline delta: 0.00 points; PnL 3.39
 
 Selection: g4-signed-bid.
-Promotion: none.
+Promotion: g4-signed-bid (a4aa1a82dc69e410d0c59523ad59e6ef5b7c2ec7).
 Finding: All three bid-only reserve candidates passed 20/20 with zero bankruptcies and runtime errors, retained 13.00, and strictly improved the champion by PnL. Signed total reserve led at 127.33 with unchanged 8.15/10.00 minimum capital; it raised case 13 from 8.78 to 8.96, case 14 from 9.72 to 10.51, and case 15 from 9.07 to 10.02 while preserving their ranks. Post-fill bid reserve produced 126.34 and the strongest case-13 PnL at 9.03 but slightly reduced case 14 to 9.60. Long-only reserve produced 127.28 and matched signed reserve on case-14 and case-15 PnL, but minimum capital fell to 7.68/10.00. All three protected cases 9, 16, 17, and 20 first, moved case 17 to a 0.36 lead, and strengthened case 18 second to a 1.90 buffer. This decisively attributes the Generation-3 regressions to broad offer activation and validates probability-weighted reserve as a safe bid-allocation improvement.
 Next-generation rationale: Archive and promote the fixed-selector signed-bid winner. With the protected 13.00 rank set stronger, use Generation 5 to test mutually exclusive capital-20 offer predicates on top of this bid reserve, targeting the remaining cases 13 and 14. Keep the successful high-capital offer branch intact and activate any new offer unit under one interpretable condition at a time.
+
+## Generation 5: explore quote
+
+The promoted signed-bid reserve safely improves 20-capital PnL and strengthens the 13.00 protected rank set. The remaining historical case-13/14 upside requires selective offer participation without repeating the broad-offer regressions. Keep the signed-bid rule and existing high-capital offer branch unchanged, and test one interpretable capital-20 offer activation family per candidate under the existing unit-count capacity gate.
+
+Parent: champion `g4-signed-bid` (`970a7fa0950b84b94a7ea6d50d87954027432d6cf0c3f283ea2f72ddc6f98adf`).
+
+### g5-reducing-offer
+
+- Hypothesis: Additional capital-20 central offers are safe and useful only when a full three-lot maker sell is guaranteed to reduce an existing long position without crossing flat.
+- Implementation plan: Preserve the champion offer_quantity logic, then add one alternative for 20 <= cash_balance < 40: active_exposure plus three-lot offer loss must fit available_capacity and the current target position must be at least +3. Keep low-loss offers, the high-capital exposure branch, signed-bid reserve, prices, memory, 0.75 floor, estimator, and FOK unchanged.
+- Worker summary: Preserved signed-bid reserve and the full champion offer path, then allowed a capital-20 capacity-gated central offer only when the current target position was at least three, guaranteeing a full fill reduced inventory. Scope validation, compilation, diff checks, and capital/position/capacity assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 127.39; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL 0.06
+
+### g5-one-day-offer
+
+- Hypothesis: The profitable capital-20 third offer units are concentrated in one-day contracts whose collateral resolves at the next settlement, limiting persistent inventory risk.
+- Implementation plan: Preserve the champion offer_quantity logic, then add one alternative for 20 <= cash_balance < 40: active_exposure plus three-lot offer loss must fit available_capacity and option.steps_until_expiry must be at most 1. Keep low-loss offers, the high-capital exposure branch, signed-bid reserve, prices, memory, 0.75 floor, estimator, and FOK unchanged.
+- Worker summary: Preserved signed-bid reserve and the full champion offer path, then allowed a capital-20 capacity-gated central offer only for one-day options. Scope validation, compilation, diff checks, and capital/expiry/capacity assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 126.50; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL -0.83
+
+### g5-central-offer
+
+- Hypothesis: The capital-20 size-three signal lies in near-the-money offers, while the existing low-loss rule already covers tail offers and central restriction avoids broad routing changes.
+- Implementation plan: Preserve the champion offer_quantity logic, then add one alternative for 20 <= cash_balance < 40: active_exposure plus three-lot offer loss must fit available_capacity and fair_value_cents must lie inclusively from 40 through 60. Keep low-loss offers, the high-capital exposure branch, signed-bid reserve, prices, memory, 0.75 floor, estimator, and FOK unchanged.
+- Worker summary: Preserved signed-bid reserve and the full champion offer path, then allowed a capital-20 capacity-gated central offer only when fair value was between 40 and 60 cents inclusive. Scope validation, compilation, diff checks, and capital/fair-value/capacity assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.00/16.00 points; PnL 128.49; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL 1.16
+
+Selection: g5-central-offer.
+Promotion: none.
+Finding: All three selective capital-20 offer candidates passed 20/20 with zero bankruptcies and runtime errors and preserved 13.00. The 40-60-cent central gate led at 128.49 PnL, 1.16 above the champion, with unchanged 8.15/10.00 minimum capital. It kept case 13 second at 8.96, lifted case 14 from 10.51 to 11.19 while remaining second, and kept case 15 first at 8.56 with a 1.14 lead. Guaranteed-reducing offers were nearly inactive, adding 0.06 PnL and only 0.06 to case 15. One-day offers reduced PnL by 0.83 and did not change cases 13 or 14. All candidates preserved cases 9, 16, 17, and 20 first and case 18 second. Central fair value is therefore the only capital-20 offer predicate with a material positive allocation signal, though it does not yet cross the case-13 or case-14 first-place boundary.
+Next-generation rationale: Archive and promote the fixed-selector central-offer winner. For the final generation, combine only independently validated structures: union the central gate with the safe reducing-offer rule, and cross the central gate with the already validated post-fill-bid and long-only-bid reserve architectures. Do not introduce new predicates or tune constants.

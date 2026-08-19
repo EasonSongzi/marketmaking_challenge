@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g4-signed-bid",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-g05-champion-g4-signed-bid/r00.py",
+  "sourceSha256": "970a7fa0950b84b94a7ea6d50d87954027432d6cf0c3f283ea2f72ddc6f98adf",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1300,
+    "combinedPnlCents": 12733,
+    "minimumCapital": {
+      "endingCashCents": 815,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}
