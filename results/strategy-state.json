@@ -1795,7 +1795,7 @@
     },
     {
       "id": "market-loop-20260819-g03-g3-side-reserve",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "Restored from the Generation 3 archive by operator decision. It scored 12.60 because broad collateral-gated offer participation lost cases 13 and 18, but it holds the highest combined PnL ever observed at 130.26 and the best case-14 result in run history at 14.10, from a structurally distinct side-separated reserve that budgets long and short collateral independently. Generations 4 and 6 later established that restricting a reserve model to one side removes exactly that regression, so this lineage carries explicit upside that no active challenger reproduces.",
@@ -1839,7 +1839,11 @@
           "createdAt": "2026-08-19T16:30:28.339Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Lowest score in the pool at 12.60 and 130.26 PnL, dominated by the champion by 0.70 points and 24.49 PnL. It predates the capital-regime, single-leg and offer-escalation architecture entirely and carries no mechanism that survived into the current strategy.",
+        "at": "2026-08-19T22:13:40.970Z"
+      }
     },
     {
       "id": "market-loop-20260819-2-g01-g1-bid-narrow",
