@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g2-lowcap-central-offer-six",
+  "valid": true,
+  "eligible": true,
+  "sourcePath": "results/challengers/market-loop-20260819-3-g02-g2-lowcap-central-offer-six/r00.py",
+  "sourceSha256": "526a71e575f5238ba4f28b957845cb79cb329f88221a7cdfca874ef4f77ff3bc",
+  "modifiedLines": 15,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 14374,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 30,
+    "combinedPnlCents": -548
+  },
+  "reasons": []
+}

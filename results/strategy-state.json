@@ -2627,6 +2627,56 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-3-g02-g2-lowcap-central-offer-six",
+      "status": "active",
+      "method": "quote",
+      "origin": "curated",
+      "rationale": "The only archived source at champion-equal 13.30 that never entered the pool: g02's challenger nomination was dropped because that generation ran from a challenger parent and its winner beat the champion outright, so neither the auto-preservation path nor the analysis decision applied. It is the exact fair-value-gated sibling of the offer-Q6 rule the champion carries ungated, restricting the sixth offer unit to the 40-to-60 central band as well as the 20-to-40 capital band. It brackets a real and otherwise unexplained trade against its sibling, better on case 18 at 7.90 against 7.76 and case 20 at -0.25 against -0.59, worse on case 15 at 8.61 against 9.23, with cases 13, 14, 16, 17 and 19 identical. Its tuning upside is explicit and unswept: the 40-to-60 band was inherited verbatim from the offer-q3 rule and has never been varied as a sixth-unit gate, and generation 6 showed that widening a fair-value trigger on the bid side was productive, which makes the untested offer-side analogue the natural companion axis.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-3-g02-g2-lowcap-central-offer-six/r00.py",
+          "sourceSha256": "526a71e575f5238ba4f28b957845cb79cb329f88221a7cdfca874ef4f77ff3bc",
+          "evaluationPath": "results/challengers/market-loop-20260819-3-g02-g2-lowcap-central-offer-six/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-3-g02-g2-lowcap-central-offer-six/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g2-lowcap-central-offer-six",
+            "valid": true,
+            "eligible": true,
+            "sourcePath": "results/challengers/market-loop-20260819-3-g02-g2-lowcap-central-offer-six/r00.py",
+            "sourceSha256": "526a71e575f5238ba4f28b957845cb79cb329f88221a7cdfca874ef4f77ff3bc",
+            "modifiedLines": 15,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 14374,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 30,
+              "combinedPnlCents": -548
+            },
+            "reasons": []
+          },
+          "createdAt": "2026-08-19T22:13:15.965Z"
+        }
+      ],
+      "tuningHistory": [],
+      "curation": {
+        "admittedFrom": "results/runs/market-loop-20260819-3/archive/g02/g2-lowcap-central-offer-six",
+        "at": "2026-08-19T22:13:15.971Z"
+      }
     }
   ],
   "evaluations": {
