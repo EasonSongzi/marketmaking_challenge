@@ -1699,7 +1699,7 @@
     },
     {
       "id": "market-loop-20260819-g06-g6-postfill-central",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It is the only source in the run to improve case 13, the sole reachable rank boundary, lifting it from 8.96 to 9.03 while holding 20/20, zero bankruptcies, and 8.15/10.00 minimum capital. Its post-fill netting model is orthogonal to the promoted offer-side change and carries explicit tuning upside in the assumed fill size and the capacity margin, which is the natural way to convert its case-13 signal without its case-14 and case-15 cost.",
@@ -1743,7 +1743,11 @@
           "createdAt": "2026-08-19T16:20:43.047Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "13.00 and 127.59 PnL, dominated by the champion on both axes by 0.30 points and 27.16 PnL. Its post-fill central mechanism was never adopted and the fill-signal skew it varies is frozen; three runs of subsequent architecture have superseded it.",
+        "at": "2026-08-19T22:13:41.122Z"
+      }
     },
     {
       "id": "market-loop-20260819-g06-champion-g5-central-offer",
