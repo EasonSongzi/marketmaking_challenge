@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g2-lowcap-offer-six",
+    "id": "g3-lowcap-central-offer-three",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "16baf737306ca011fd266dedda1c54483e9cf4dd83afb60561b09d4eaa0edd06",
+    "sourceSha256": "2e73b21aa0b903d74c7035c789b8865d800f452c96fc84f4b14d59a5ea74ac7b",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260819-3:g02:g2-lowcap-offer-six",
+    "experimentId": "market-loop-20260819-3:g03:g3-lowcap-central-offer-three",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 14375,
+      "combinedPnlCents": 14386,
       "minimumCapital": {
         "endingCashCents": 797,
         "startingCapitalCents": 1000
@@ -2290,6 +2290,102 @@
             ]
           },
           "createdAt": "2026-08-19T21:47:18.201Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-3-g03-g3-lowcap-exposure-offer-three",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It reaches the same 13.30 and preserves every rank while differing from the winner in exactly one design decision, whether the sub-20 offer-q3 rule should be gated by fair value or by gross exposure, so it is the precise control for the only open question the winner leaves behind. It is strictly better than the winner on case 9 at 30.44 against 30.38 and on case 12 at 3.74 against 3.34, and strictly worse on case 10 at 9.99 against 10.61 and on case 14 at 14.94 against 15.42, so the two sources bracket a real trade rather than duplicating each other. Its tuning upside is explicit and unswept: it is the only rule in the strategy carrying the available_capacity / 2.0 half-capacity guard into the sub-20 regime, and that divisor has never been varied anywhere in the project despite being inherited unchanged into a capital band an order of magnitude smaller than the one it was designed for. The three-unit multiple in its headroom check is likewise untested at this capital level, and because the winner is the same rule with a fair-value conjunct instead of an exposure guard, any sweep here directly measures which of the two gating idioms the sub-20 regime actually wants.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-3-g03-g3-lowcap-exposure-offer-three/r00.py",
+          "sourceSha256": "49c6a028a705cba4739ab88b4d4ee915292970f76d2dc1c01b5e55ac11136701",
+          "evaluationPath": "results/challengers/market-loop-20260819-3-g03-g3-lowcap-exposure-offer-three/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-3-g03-g3-lowcap-exposure-offer-three/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g3-lowcap-exposure-offer-three",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-3-g03-g3-lowcap-exposure-offer-three/r00.py",
+            "sourceSha256": "49c6a028a705cba4739ab88b4d4ee915292970f76d2dc1c01b5e55ac11136701",
+            "modifiedLines": 7,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 14322,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -53
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-19T21:53:21.238Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-3-g03-champion-g2-lowcap-offer-six",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g3-lowcap-central-offer-three",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-3-g03-champion-g2-lowcap-offer-six/r00.py",
+          "sourceSha256": "16baf737306ca011fd266dedda1c54483e9cf4dd83afb60561b09d4eaa0edd06",
+          "evaluationPath": "results/challengers/market-loop-20260819-3-g03-champion-g2-lowcap-offer-six/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-3-g03-champion-g2-lowcap-offer-six/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g2-lowcap-offer-six",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-3-g03-champion-g2-lowcap-offer-six/r00.py",
+            "sourceSha256": "16baf737306ca011fd266dedda1c54483e9cf4dd83afb60561b09d4eaa0edd06",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 14375,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-19T21:53:27.823Z"
         }
       ],
       "tuningHistory": []
@@ -5350,7 +5446,7 @@
     },
     "16baf737306ca011fd266dedda1c54483e9cf4dd83afb60561b09d4eaa0edd06": {
       "valid": true,
-      "modifiedLines": 14,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -5363,7 +5459,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "526a71e575f5238ba4f28b957845cb79cb329f88221a7cdfca874ef4f77ff3bc": {
       "valid": true,
@@ -5381,6 +5479,61 @@
         "runtimeErrors": 0
       },
       "reasons": []
+    },
+    "9e12db6c051ebb8f9d3882e31a7568039a381749a769864e4d2096a87426fc60": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1300,
+        "combinedPnlCents": 13753,
+        "minimumCapital": {
+          "endingCashCents": 700,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "2e73b21aa0b903d74c7035c789b8865d800f452c96fc84f4b14d59a5ea74ac7b": {
+      "valid": true,
+      "modifiedLines": 7,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 14386,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "49c6a028a705cba4739ab88b4d4ee915292970f76d2dc1c01b5e55ac11136701": {
+      "valid": true,
+      "modifiedLines": 7,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 14322,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
     }
   }
 }

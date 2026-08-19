@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g3-lowcap-exposure-offer-three",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-3-g03-g3-lowcap-exposure-offer-three/r00.py",
+  "sourceSha256": "49c6a028a705cba4739ab88b4d4ee915292970f76d2dc1c01b5e55ac11136701",
+  "modifiedLines": 7,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 14322,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -53
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

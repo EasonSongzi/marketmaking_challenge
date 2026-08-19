@@ -448,13 +448,6 @@ class MarketMaker:
         ):
             offer_quantity = 3
         if (
-            offer_quantity == 2
-            and self.cash_balance < 20.0
-            and 40 <= fair_value_cents <= 60
-            and signed_reserve + 3 * (1.0 - offer_price) <= available_capacity
-        ):
-            offer_quantity = 3
-        if (
             offer_quantity == 3
             and not repeat_request
             and active_exposure + 4 * (1.0 - offer_price) <= available_capacity

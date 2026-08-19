@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-19T21:45:06.726Z
+- Date: 2026-08-19T21:51:52.436Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g2-lowcap-offer-six
+- Label: g3-lowcap-central-offer-three
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `16baf737306ca011fd266dedda1c54483e9cf4dd83afb60561b09d4eaa0edd06`
+- Source SHA-256: `2e73b21aa0b903d74c7035c789b8865d800f452c96fc84f4b14d59a5ea74ac7b`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -198,10 +198,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.1: $29.68
-2. Mola mola: $2.77
+1. Fixed Width 0.1: $30.7
+2. Mola mola: $1.63
 3. Stalemate Quoter: $0.0
-Mola mola bankrupt: False (cash balance: 12.77, starting capital: 10.0)
+Mola mola bankrupt: False (cash balance: 11.63, starting capital: 10.0)
 Result: PASS (score=0.70)
 
 Hidden Test Case
@@ -230,10 +230,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.1: $35.51
-2. Mola mola: $9.4
+1. Fixed Width 0.1: $34.11
+2. Mola mola: $10.61
 3. Stalemate Quoter: $5.0
-Mola mola bankrupt: False (cash balance: 29.4, starting capital: 20.0)
+Mola mola bankrupt: False (cash balance: 30.61, starting capital: 20.0)
 Result: PASS (score=0.70)
 
 Hidden Test Case
@@ -262,9 +262,9 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $3.78
-2. Fixed Width 0.05: $-7.86
-Mola mola bankrupt: False (cash balance: 23.78, starting capital: 20.0)
+1. Mola mola: $3.34
+2. Fixed Width 0.05: $-7.43
+Mola mola bankrupt: False (cash balance: 23.34, starting capital: 20.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -294,10 +294,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $14.94
+1. Mola mola: $15.42
 2. Lattice: $14.82
-3. Fixed Width 0.05: $7.02
-Mola mola bankrupt: False (cash balance: 34.94, starting capital: 20.0)
+3. Fixed Width 0.05: $6.54
+Mola mola bankrupt: False (cash balance: 35.42, starting capital: 20.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
