@@ -375,21 +375,6 @@ class MarketMaker:
         return min(max(price, 0.0), 1.0)
 
     def quote(self, option: BinaryOption, counterparty_id: int) -> Quote:  # type: ignore[empty-body]
-        quote_snapshots = getattr(self, "_quote_snapshots", None)
-        if quote_snapshots is None:
-            quote_snapshots = self._quote_snapshots = {}
-        fill_signals = getattr(self, "_fill_signals", None)
-        if fill_signals is None:
-            fill_signals = self._fill_signals = {}
-        option_id = option.option_id
-        prior_quote = quote_snapshots.get(option_id)
-        if prior_quote is not None:
-            prior_counterparty, prior_position = prior_quote
-            position = self.position.option_quantity_by_option_id.get(option_id, 0)
-            position_delta = position - prior_position
-            if position_delta:
-                fill_signals[(prior_counterparty, option_id)] = 1 if position_delta > 0 else -1
-
         request_counts = getattr(self, "_quote_request_counts", None)
         if request_counts is None:
             request_counts = self._quote_request_counts = {}
@@ -408,11 +393,6 @@ class MarketMaker:
             offer_price = min(offer_price + 0.01, 1.0)
             if fair_value_cents < 25:
                 offer_price = min(offer_price + 0.01, 1.0)
-        fill_signal = fill_signals.pop(request_key, 0)
-        if fill_signal > 0:
-            bid_price = max(bid_price - 0.01, 0.0)
-        elif fill_signal < 0:
-            offer_price = min(offer_price + 0.01, 1.0)
         active_option_ids = {active_option.option_id for active_option in self.active_option_state}
         active_exposure = sum(
             abs(self.position.option_quantity_by_option_id.get(option_id, 0))
@@ -422,10 +402,6 @@ class MarketMaker:
         available_capacity = self.cash_balance - cash_floor
         bid_quantity = 3 if active_exposure + 3 * bid_price <= available_capacity else 2
         offer_quantity = 3 if active_exposure + 3 * (1.0 - offer_price) <= available_capacity else 2
-        quote_snapshots[option_id] = (
-            counterparty_id,
-            self.position.option_quantity_by_option_id.get(option_id, 0),
-        )
         return Quote(
             bid_price=bid_price,
             bid_quantity=bid_quantity,

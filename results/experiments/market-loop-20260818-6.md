@@ -169,3 +169,41 @@ Selection: No candidate passed the promotion gate.
 Promotion: none.
 Finding: All three estimator candidates passed 20/20 with zero bankruptcies and runtime errors, but none beat either the 12.80 research parent or current champion. Pure likelihood scored 12.60 with 102.35 PnL and moved case 17 from the parent's second place to third, 1.72 behind second; case 9 remained first by only 0.78. The 25/2 fit also scored 12.60 with 109.94 PnL and left case 17 third, 0.55 behind second, while cases 9, 13, 15, and 16 retained the parent ranks. These two exact tail-six crosses therefore fail the docs' strict gate and exhaust further rate-estimator work. Company shrinkage was decisively harmful at 11.50 points and 72.76 PnL: case 14 fell from second to third, case 16 from first to third, and case 17 remained third, despite cases 9, 13, and 15 holding. None strictly improved the selected parent, so no derived challenger has tuning upside.
 Next-generation rationale: Keep the current champion unchanged and stop both rate-estimator and simple company-shrinkage work. Use the next generation on the docs' remaining structural counterparty hypothesis: infer actual same-contract fill direction from position changes across quote calls and apply only a side-specific repeat adjustment, preserving all first-contact prices, size policy, estimator, and FOK behavior.
+
+## Generation 4: explore quote
+
+Rate and company estimation are exhausted. Test the docs' final counterparty hypothesis on the current 12.80 champion: infer a completed prior RFQ fill from the option-position change observed after the last quote, attribute its direction to that recorded counterparty/contract pair, and adjust only the side matching the prior execution. Preserve first-contact behavior, the 0.75 capital-size gate, pricing, estimator, and FOK rules.
+
+Parent: champion `cash-floor-coarse-075` (`115b5a6ad6c2cb921318b6cc0ac47696a2eae331b6095422065e81b582665ca7`).
+
+### g4-fill-side-wide
+
+- Hypothesis: A persistent one-cent widening only on the side previously executed by the same counterparty in the same contract will filter repeat adverse flow without weakening the untraded side or unrelated RFQs.
+- Implementation plan: Lazily record the last quote's counterparty and position snapshot per option. On the next quote call, infer a prior maker buy when position increased or maker sell when it decreased, persist that signed direction for the prior counterparty/option pair, and widen only its matching bid or offer by one cent on later quotes from that pair. Apply this after the champion price logic, clamp prices, retain the 0.75 quantity gate, and update the snapshot for the current request.
+- Worker summary: Added per-option last-quote snapshots, inferred the prior counterparty's maker fill from the next observed position delta, persisted its signed direction per counterparty/contract pair, and widened only that side by one cent on later matching RFQs. After one repair pass, champion repeat pricing and all quantity logic were preserved; scope, compilation, isolation, clamp, and persistence checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 117.59; minimum capital 8.40/10.00
+- Baseline delta: 0.00 points; PnL 1.05
+
+### g4-fill-side-once
+
+- Hypothesis: The adverse-selection signal may be short-lived, so widening only the next same-pair quote on the previously executed side can protect immediate repeat flow without permanently sacrificing routing competitiveness.
+- Implementation plan: Infer prior fill direction from the last per-option quote snapshot and current position as above, but store a one-shot signed signal for that counterparty/option pair. Widen only the matching side by one cent on the next quote from that pair and consume the signal. Preserve all other champion price and quantity behavior and refresh the last-quote snapshot.
+- Worker summary: Added per-option last-quote snapshots and a one-shot signed signal attributed to the prior counterparty/contract when the next position delta confirmed a fill. The next matching RFQ widened only that executed side by one cent and consumed the signal. Scope, compilation, pair isolation, one-shot, clamp, and quantity checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 117.59; minimum capital 8.40/10.00
+- Baseline delta: 0.00 points; PnL 1.05
+
+### g4-fill-side-two
+
+- Hypothesis: Requiring two inferred same-direction fills before side-specific widening will distinguish persistent informed behavior from one benign execution and preserve fragile case-13/15 routing.
+- Implementation plan: Infer each prior fill from the last quote snapshot, keep a signed consecutive-fill count per counterparty/option pair, reset it on direction reversal, and widen only the matching side by one cent after the count reaches two. Preserve first and single-fill quotes, all champion price/quantity logic, and update the current snapshot.
+- Worker summary: Added per-option last-quote snapshots and signed consecutive fill streaks per counterparty/contract, widening only the matching side after two same-direction inferred fills. A repair pass restored the champion's request-count repeat widening and cross-counterparty attribution. Scope, compilation, streak/reversal/isolation, and quantity checks passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 116.54; minimum capital 8.38/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+Selection: g4-fill-side-once.
+Promotion: none.
+Finding: All three inferred fill-direction policies passed 20/20 with zero bankruptcies and runtime errors and preserved 12.80 points. Persistent and one-shot side-specific widening produced identical complete results: 117.59 combined PnL and 8.40/10.00 minimum capital, improving the champion by 1.05 PnL and 0.02 capital. They kept case 9 first by 8.34, case 15 first by 0.29, case 16 first by 16.97, and case 17 first by 0.99, but case 13 remained third, 4.69 behind second; case 14 remained second at 10.71. The two-fill gate exactly reproduced the parent metrics, showing it did not activate on score-relevant flow. Identical persistent/one-shot evidence implies the useful inferred fill signal is consumed immediately or does not recur later; the simpler one-shot source wins the fixed selector's modified-line tiebreak. This family improves economics but does not meet the 13.00 no-rank-regression target and has no justified constant-tuning upside.
+Next-generation rationale: Promote the simpler one-shot fill-side rule under the fixed selector. With estimator and memory structures exhausted, combine the two independently safe size signals structurally: retain the 0.75 active-exposure gate that wins case 17, then add unconditional third units only on low-loss sides, testing both-sided and bid/offer-attributed unions. The target is to restore case 13 to second without surrendering case 17 first.

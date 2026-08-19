@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "cash-floor-coarse-075",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260818-6-g04-champion-cash-floor-coarse-075/r00.py",
+  "sourceSha256": "115b5a6ad6c2cb921318b6cc0ac47696a2eae331b6095422065e81b582665ca7",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1280,
+    "combinedPnlCents": 11654,
+    "minimumCapital": {
+      "endingCashCents": 838,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}
