@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260819-2
 
-- Status: active
+- Status: complete
 - Started: 2026-08-19T16:56:50.146Z
 - Starting baseline: g6-signed-central (13.00/16.00)
-- Current baseline: g5-bid-four-reserve (13.00/16.00)
-- Stop condition: not reached
-- Score trend: 13.00 → 13.00
+- Current baseline: g6-offer-five (13.00/16.00)
+- Stop condition: generation limit reached
+- Score trend: 13.00 → 13.00 → 13.00
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -237,7 +237,7 @@ Parent: champion `g5-bid-four-reserve` (`548fa24308d4d1ec1937ec7b42d212040f19af3
 - Baseline delta: 0.00 points; PnL 7.86
 
 Selection: g6-offer-five.
-Promotion: none.
+Promotion: g6-offer-five (4a61b1ff819776997f1bfaec4dd57185a9cd7786).
 Finding: All three candidates passed 20/20 with zero bankruptcies, zero runtime errors, and 7.97 minimum capital, and two of them cleared the promotion gate, so the composition generation confirmed the generation-5 hypothesis that the bid and offer fourth units are independent mechanisms. g6-offer-five is the strongest strategy this project has produced: 13.00 points, 149.22 combined PnL, every protected rank held with cases 15, 16, 17, and 20 first and cases 13, 14, 18, and 19 second. It is 7.86 above the champion promoted earlier in this generation cycle and 19.46 above the 129.76 champion this run started from. Its gains over the current champion are concentrated exactly where the offer mechanism was predicted to pay: case 15 from 7.83 to 9.58, case 16 from 24.86 to 26.25, and case 14 from 13.89 to 14.60, while case 17 held at 16.24 and case 18 at 8.67. The fifth unit is worth having on top of the fourth. g6-both-four, which stops at four, reached 146.05 and also cleared the gate, so the marginal fifth offer unit added 3.17 combined PnL with no rank cost and no capital cost, both candidates ending at the same 7.97 minimum capital. The exposure test is doing real work rather than merely permitting more size, since the same arithmetic that certified four certified five only where capacity allowed. g6-four-repeat-bid answers the tension question and answers it negatively. Moving the bid fourth unit onto repeat requests did restore the case-14 mechanism exactly as predicted, holding Lattice at 14.82 and our own case 14 at 14.50 where every other candidate in this generation released Lattice to 20.87, and it produced the generation's best case 20 at plus 2.25 and best case 19 at minus 1.85. But it cost more than it recovered: case 17 fell from 16.46 to 13.94 and case 18 from 9.03 to 4.27, and combined PnL landed at 135.66, below the champion's 141.36, so it failed the gate. The first-touch state is therefore where the bid fourth unit earns cases 17 and 18, and the case-14 tension is inherent to that state rather than an artefact of overlapping conditions. The score remains 13.00 because no rank transition occurred anywhere in this run. Case 14 is the closest boundary at 14.60 against Lattice 20.87 under the new leader, and notably the boundary is now further away in competitor terms than it was under the pure first-touch narrowing at 14.57 against 14.82, even though our own PnL is higher. The run therefore ends with the score unchanged and the strategy materially stronger, having lifted combined PnL from 129.76 to 149.22 while never once losing a protected rank or going bankrupt.
 Next-generation rationale: The next run should treat the two size mechanisms as the new frozen core and return to rank transitions, because six generations have now shown that PnL and rank have decoupled: combined PnL rose 19.46 while the score never moved. The most valuable unexploited evidence in this run is that two different configurations hold case 14 near first place through opposite means, our own PnL at 14.60 with Lattice released to 20.87, or Lattice suppressed to 14.82 with our own PnL at 14.50, and no candidate has yet achieved both at once. A run that pins the offer escalation as frozen and searches for a bid-side rule that keeps Lattice suppressed while retaining the case-17 and case-18 gains is the direct path to the 0.20 that case 14 is worth. The second target should be case 13, where g5-bid-four-cheap uniquely dropped Fixed Width 0.1 to 11.26 from its usual 12.06 without ever improving our own PnL there, the only competitor suppression ever observed in that case and an unexplained lead worth one generation. Do not resume price research on either side: nine candidates across generations 1 through 4 established that our own case-14 PnL peaks under the parent's exact one-cent first-touch rule and falls under every perturbation of magnitude, region, side, recency, and inventory.
 Challenger update: admitted market-loop-20260819-2-g06-g6-both-four.
