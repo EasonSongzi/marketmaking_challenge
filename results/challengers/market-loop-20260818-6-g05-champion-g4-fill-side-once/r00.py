@@ -420,17 +420,8 @@ class MarketMaker:
         )
         cash_floor = 0.75 * self.cash_balance
         available_capacity = self.cash_balance - cash_floor
-        bid_quantity = (
-            3
-            if active_exposure + 3 * bid_price <= available_capacity or bid_price <= 0.25
-            else 2
-        )
-        offer_quantity = (
-            3
-            if active_exposure + 3 * (1.0 - offer_price) <= available_capacity
-            or 1.0 - offer_price <= 0.25
-            else 2
-        )
+        bid_quantity = 3 if active_exposure + 3 * bid_price <= available_capacity else 2
+        offer_quantity = 3 if active_exposure + 3 * (1.0 - offer_price) <= available_capacity else 2
         quote_snapshots[option_id] = (
             counterparty_id,
             self.position.option_quantity_by_option_id.get(option_id, 0),

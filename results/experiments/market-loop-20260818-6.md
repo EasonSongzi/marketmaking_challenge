@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-19T01:47:53.800Z
 - Starting baseline: g6-contract-rfq-wide (12.80/16.00)
-- Current baseline: cash-floor-coarse-075 (12.80/16.00)
+- Current baseline: g4-fill-side-once (12.80/16.00)
 - Stop condition: not reached
-- Score trend: 12.80 → 12.80 → 12.80
+- Score trend: 12.80 → 12.80 → 12.80 → 12.80
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -204,6 +204,46 @@ Parent: champion `cash-floor-coarse-075` (`115b5a6ad6c2cb921318b6cc0ac47696a2eae
 - Baseline delta: 0.00 points; PnL 0.00
 
 Selection: g4-fill-side-once.
-Promotion: none.
+Promotion: g4-fill-side-once (19bdccda68a93e3ccb6b560c289c9242e4e87a66).
 Finding: All three inferred fill-direction policies passed 20/20 with zero bankruptcies and runtime errors and preserved 12.80 points. Persistent and one-shot side-specific widening produced identical complete results: 117.59 combined PnL and 8.40/10.00 minimum capital, improving the champion by 1.05 PnL and 0.02 capital. They kept case 9 first by 8.34, case 15 first by 0.29, case 16 first by 16.97, and case 17 first by 0.99, but case 13 remained third, 4.69 behind second; case 14 remained second at 10.71. The two-fill gate exactly reproduced the parent metrics, showing it did not activate on score-relevant flow. Identical persistent/one-shot evidence implies the useful inferred fill signal is consumed immediately or does not recur later; the simpler one-shot source wins the fixed selector's modified-line tiebreak. This family improves economics but does not meet the 13.00 no-rank-regression target and has no justified constant-tuning upside.
 Next-generation rationale: Promote the simpler one-shot fill-side rule under the fixed selector. With estimator and memory structures exhausted, combine the two independently safe size signals structurally: retain the 0.75 active-exposure gate that wins case 17, then add unconditional third units only on low-loss sides, testing both-sided and bid/offer-attributed unions. The target is to restore case 13 to second without surrendering case 17 first.
+
+## Generation 5: explore quote
+
+The 0.75 active-exposure gate wins case 17 but leaves case 13 third, while the independently safe low-loss-side rule kept case 13 second and moved case 17 closer to first. Combine these two non-global size signals without changing prices or memory: test the union on both sides and isolate bid-side versus offer-side low-loss participation to identify whether one direction can restore case 13 while preserving the case-17 win.
+
+Parent: champion `g4-fill-side-once` (`bdb36cb25de46bbd30c9c349742aef0ced17527e40969e35a361c36347833949`).
+
+### g5-union-both-third
+
+- Hypothesis: Allowing a third unit whenever either the 0.75 portfolio-capacity gate passes or that quote side's incremental maximum loss is at most 0.25 can combine the case-17 capital signal with the safe case-13/14 tail participation signal.
+- Implementation plan: Preserve all champion prices, request/fill memory, and calculations. Set each side independently to quantity three when its existing capital-capacity condition passes OR its final per-contract maximum loss is at most 0.25; otherwise keep size two. Do not change the 0.75 floor or any other behavior.
+- Worker summary: Preserved all champion prices, fill/request memory, and the 0.75 capacity gate, then admitted quantity three independently on either side when the capacity gate passed or final per-contract maximum loss was at most 0.25. Scope, compilation, diff, price/memory, and central/tail/capacity assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 122.05; minimum capital 8.15/10.00
+- Baseline delta: 0.00 points; PnL 4.46
+
+### g5-union-bid-third
+
+- Hypothesis: Case 13 may need only additional low-loss maker-buy participation, so adding the low-loss union on bids while retaining the pure 0.75 capacity gate on offers can restore its rank without adding harmful sell-side units.
+- Implementation plan: Preserve champion prices and memory. Keep offer quantity exactly on the existing capital-capacity rule. Set bid quantity to three when the capital rule passes OR final bid price is at most 0.25; otherwise two. Preserve every constant and non-size rule.
+- Worker summary: Preserved the offer capacity rule and all champion behavior, adding only a bid-side OR condition for final bid price at most 0.25. Scope, compilation, one-line diff, price/memory, and side-isolation assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.50/16.00 points; PnL 121.50; minimum capital 8.14/10.00
+- Baseline delta: -0.30 points; PnL 3.91
+
+### g5-union-offer-third
+
+- Hypothesis: Case 13 may instead need only additional low-loss maker-sell participation, so adding the low-loss union on offers while retaining the pure 0.75 capacity gate on bids can restore its rank with less routing disturbance.
+- Implementation plan: Preserve champion prices and memory. Keep bid quantity exactly on the existing capital-capacity rule. Set offer quantity to three when the capital rule passes OR one minus final offer price is at most 0.25; otherwise two. Preserve every constant and non-size rule.
+- Worker summary: Preserved the bid capacity rule and all champion behavior, adding only an offer-side OR condition for final sell maximum loss at most 0.25. Scope, compilation, diff, price/memory, and side-isolation assertions passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.80/16.00 points; PnL 120.24; minimum capital 8.41/10.00
+- Baseline delta: 0.00 points; PnL 2.65
+
+Selection: g5-union-both-third.
+Promotion: none.
+Finding: All three hybrid size candidates completed 20/20 with zero bankruptcies and runtime errors; the bid-only source required one successful automatic retry after a browser navigation timeout. Both-sided union preserved 12.80, raised combined PnL from 117.59 to 122.05, and held minimum capital at 8.15/10.00. It kept cases 9, 15, 16, and 17 first, with case-17 lead increased to 1.48, but case 13 remained third by 4.36 behind second; case 14 stayed second at 10.81. Offer-only union also held 12.80 with 120.24 PnL and the strongest 8.41/10.00 minimum capital, but case 13 remained third. Bid-only union scored 12.50 because case 15 fell from first to second by 0.09, while case 13 still stayed third. Adding the low-loss rule therefore does not counteract the case-13 routing effect of capital-gated units, and extra bid-side low-loss participation is specifically risky to case 15. The fixed selector chooses the both-sided union on PnL.
+Next-generation rationale: Promote the both-sided union, then use the final generation to isolate which capital-gated side creates the case-17 win and case-13 loss. Keep low-loss quantity three on both sides, but enable additional capacity-gated central units on bid only, offer only, or only when a full three-lot fill is position-reducing. A successful split must restore case 13 to second while keeping case 17 first and protecting cases 9, 15, and 16.
+Previous failure (runner): g5-union-bid-third runner failure; automatic retry requested
+Recovery instruction: Repair the HackerRank browser profile with `auto_extract_result/login.sh`, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
