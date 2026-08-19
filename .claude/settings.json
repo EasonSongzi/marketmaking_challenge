@@ -1,0 +1,19 @@
+{
+  "model": "opus",
+  "env": { "CLAUDE_CODE_EFFORT_LEVEL": "high" },
+  "permissions": {
+    "additionalDirectories": ["/tmp/akuna-market-maker", "/private/tmp/akuna-market-maker"],
+    "allow": [
+      "Bash(candidate_pipeline/loop.sh:*)",
+      "Bash(candidate_pipeline/run-generation.sh:*)",
+      "Bash(candidate_pipeline/validate-candidate.sh:*)",
+      "Bash(candidate_pipeline/materialize-tuning.sh:*)",
+      "Bash(candidate_pipeline/candidate.sh:*)",
+      "Bash(candidate_pipeline/select.sh:*)",
+      "Bash(candidate_pipeline/evaluate.sh:*)",
+      "Bash(npm test:*)", "Bash(npm run check:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)"
+    ],
+    "deny": ["Bash(git push:*)", "Bash(git tag:*)", "Bash(git worktree add:*)"]
+  }
+}
