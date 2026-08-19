@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260818-6
 
-- Status: active
+- Status: complete
 - Started: 2026-08-19T01:47:53.800Z
 - Starting baseline: g6-contract-rfq-wide (12.80/16.00)
-- Current baseline: g5-union-both-third (12.80/16.00)
-- Stop condition: not reached
-- Score trend: 12.80 → 12.80 → 12.80 → 12.80 → 12.80
+- Current baseline: g6-cap-bid-only (12.80/16.00)
+- Stop condition: generation limit reached
+- Score trend: 12.80 → 12.80 → 12.80 → 12.80 → 12.80 → 12.80
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -282,6 +282,6 @@ Parent: champion `g5-union-both-third` (`cf60d776f00d9be63fbb195912fd0ebd6843d03
 - Baseline delta: 0.00 points; PnL -6.45
 
 Selection: g6-cap-bid-only.
-Promotion: none.
+Promotion: g6-cap-bid-only (6a369c9e29a51705f403658852ce4ea2047885de).
 Finding: All final-generation candidates passed 20/20 with zero bankruptcies and runtime errors. Bid-only capital participation was the strongest and the fixed-selector winner: it preserved 12.80, raised combined PnL from 122.05 to 122.35, and held minimum capital at 8.15/10.00. It restored case 13 from third to second with a 1.05 buffer, protected case 9 first by 9.63, case 15 first by 2.02, and case 16 first by 13.29, and left case 14 second. It narrowly moved case 17 from first to second, only 0.03 behind first and 1.00 above third; this is the closest repository result to the 13.00 overlap. Offer-only capital participation kept case 17 first but scored 12.30 because case 13 remained third and case 15 fell second. Position-reducing capital units kept 12.80 and restored case 13 second, but case 17 was second by 0.61 and PnL fell to 115.60. The attribution is decisive: capacity-gated bids contain the case-13 recovery, capacity-gated offers contain much of the case-17 win, and their full union changes routing enough to lose case 13. No candidate achieved both ranks simultaneously.
 Next-generation rationale: The configured six-generation limit is reached. Promote bid-only capital participation under the fixed selector and finish the run. Preserve its 0.03 case-17 boundary as the highest-value starting point for a future structural loop; do not infer a constant sweep from this single hidden boundary.
