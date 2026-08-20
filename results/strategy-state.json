@@ -3520,6 +3520,54 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260820-g02-g2-fed-flat-fv25",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It creates a new best competitor-routing state in the project, reducing Fixed Width 0.1 in case 13 to 11.11 while preserving all protected ranks, and isolates the activation to the bounded 23-to-25-cent cumulative band. At 154.74 combined PnL it is also 0.91 above the full-withdrawal control, making it a distinct and useful research source rather than a duplicate threshold vector.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-g02-g2-fed-flat-fv25/r00.py",
+          "sourceSha256": "382db990cb1df6003e6c889944c34af809feb8c5a80bdc928d41b062d6a278c8",
+          "evaluationPath": "results/challengers/market-loop-20260820-g02-g2-fed-flat-fv25/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-g02-g2-fed-flat-fv25/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g2-fed-flat-fv25",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-g02-g2-fed-flat-fv25/r00.py",
+            "sourceSha256": "382db990cb1df6003e6c889944c34af809feb8c5a80bdc928d41b062d6a278c8",
+            "modifiedLines": 1,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15474,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -251
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-20T15:33:27.049Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -7558,6 +7606,44 @@
         "bankruptcies": 0,
         "scoredPointsHundredths": 1330,
         "combinedPnlCents": 15383,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "1902aa16f39d37dd3bf563744568f7e72ab68d2fd6a3d80350ad336ff7395578": {
+      "valid": true,
+      "modifiedLines": 4,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15390,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "382db990cb1df6003e6c889944c34af809feb8c5a80bdc928d41b062d6a278c8": {
+      "valid": true,
+      "modifiedLines": 1,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15474,
         "minimumCapital": {
           "endingCashCents": 797,
           "startingCapitalCents": 1000

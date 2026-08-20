@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g2-fed-flat-fv25",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-g02-g2-fed-flat-fv25/r00.py",
+  "sourceSha256": "382db990cb1df6003e6c889944c34af809feb8c5a80bdc928d41b062d6a278c8",
+  "modifiedLines": 1,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 15474,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -251
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
