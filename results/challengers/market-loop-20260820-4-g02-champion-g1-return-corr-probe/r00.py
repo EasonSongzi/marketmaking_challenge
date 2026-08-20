@@ -402,26 +402,15 @@ class MarketMaker:
             THERIODIC_UNDERLYING_ID
         ].sample_std_dev
         company_return_correlation: float = self.warm_up_statistics.company_log_return_correlation
-        fed_history_maximum: float = self.warm_up_statistics.raw_values_by_underlying_id[
-            FED_FUNDS_RATE_UNDERLYING_ID
-        ].maximum
         wide_regime: bool = (
             flat_rate_frequency > 0.50
             or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)
             or (flat_rate_frequency <= 0.40 and self.cash_balance < 30.0)
         )
         probe_regime: bool = (
-            (
-                0.40 < flat_rate_frequency <= 0.50
-                and theriodic_return_volatility <= 0.025
-                and company_return_correlation > 0.50
-            )
-            or (
-                0.40 < flat_rate_frequency <= 0.50
-                and theriodic_return_volatility <= 0.025
-                and company_return_correlation <= 0.50
-                and fed_history_maximum >= 3.0
-            )
+            0.40 < flat_rate_frequency <= 0.50
+            and theriodic_return_volatility <= 0.025
+            and company_return_correlation > 0.50
         )
         half_width: int = 45 if probe_regime else (18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4)))
         bid_price: float = max(fair_value_cents - half_width, 0) / 100

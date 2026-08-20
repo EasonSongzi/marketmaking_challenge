@@ -1,24 +1,24 @@
 {
   "schemaVersion": 1,
-  "id": "g1-return-corr-probe",
+  "id": "g2-fed-max-probe",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "5e9b84a57796dd206a74d63494592c522d6e8362e98b38149eb6230334ccf1be",
+  "sourceSha256": "6ea3c0dfee02dbb4c4092cd29bc53d63e4a6d31bff21bb876552b723bc853133",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260820-4:g01:g1-return-corr-probe",
+  "experimentId": "market-loop-20260820-4:g02:g2-fed-max-probe",
   "experiment": {
     "runId": "market-loop-20260820-4",
-    "generation": 1,
-    "candidateId": "g1-return-corr-probe"
+    "generation": 2,
+    "candidateId": "g2-fed-max-probe"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 17794,
+    "combinedPnlCents": 18099,
     "minimumCapital": {
-      "endingCashCents": 975,
-      "startingCapitalCents": 1000
+      "endingCashCents": 3998,
+      "startingCapitalCents": 4000
     },
     "runtimeErrors": 0
   }

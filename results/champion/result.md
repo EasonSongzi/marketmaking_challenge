@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T23:32:54.837Z
+- Date: 2026-08-20T23:40:00.199Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g1-return-corr-probe
+- Label: g2-fed-max-probe
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `5e9b84a57796dd206a74d63494592c522d6e8362e98b38149eb6230334ccf1be`
+- Source SHA-256: `6ea3c0dfee02dbb4c4092cd29bc53d63e4a6d31bff21bb876552b723bc853133`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -179,9 +179,9 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.25: $20.14
-2. Mola mola: $-0.25
-Mola mola bankrupt: False (cash balance: 9.75, starting capital: 10.0)
+1. Fixed Width 0.25: $23.11
+2. Mola mola: $2.8
+Mola mola bankrupt: False (cash balance: 12.8, starting capital: 10.0)
 Result: PASS (score=0.40)
 
 Hidden Test Case

@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g1-return-corr-probe`
+- Current champion: `g2-fed-max-probe`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `5e9b84a57796dd206a74d63494592c522d6e8362e98b38149eb6230334ccf1be`
-- Experiment: `market-loop-20260820-4`, generation 1, candidate `g1-return-corr-probe`
+- Source SHA-256: `6ea3c0dfee02dbb4c4092cd29bc53d63e4a6d31bff21bb876552b723bc853133`
+- Experiment: `market-loop-20260820-4`, generation 2, candidate `g2-fed-max-probe`
 - SCORED points: 13.30/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0

@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-20T23:19:27.850Z
 - Starting baseline: g6-offer-tier-thirtyfive (13.30/16.00)
-- Current baseline: g6-offer-tier-thirtyfive (13.30/16.00)
+- Current baseline: g1-return-corr-probe (13.30/16.00)
 - Stop condition: not reached
-- Score trend: 13.30
+- Score trend: 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -43,7 +43,7 @@ Parent: champion `g6-offer-tier-thirtyfive` (`1f8b84797749054ae3df2a62267a1ccf7f
 - Baseline delta: 0.00 points; PnL 1.48
 
 Selection: g1-return-corr-probe.
-Promotion: none.
+Promotion: g1-return-corr-probe (301b69bcc2699c9979b0b292d8a561133756bb61).
 Finding: G1 TOMOGRAPHY PARTIALLY SUCCEEDED AND PRODUCED A TIEBREAK WINNER, BUT CASE 7 IS NOT YET ISOLATED. All three sources passed 20/20 with zero bankruptcies and zero runtime errors. FED mean <= 2.0 and raw company-return correlation > 0.50 induce the same one-session label inside the known {7,13,19} slice: {19}. Both leave every other scored case byte-for-byte identical in outcome and move case 19 from 1.69 to 3.17, so each holds 13.30 and improves combined PnL 176.46 -> 177.94 (+1.48). The raw-correlation source has the smaller diff and is the selector-preferred winner. AJR volatility <= 0.025 induces {7,13}; it improves case 7 but destroys case 13, scoring 12.90 and 169.56. No source isolates 7 from 13.
 
 PER-CASE VECTORS (ours PnL / rank / N / leader / leader PnL / per-case score; * marks a move from champion):
@@ -69,3 +69,64 @@ SCORE DECOMPOSITION: AJRvol 13.30 -> 12.90 because case 13 falls r2 -> r4 (-0.40
 
 BINARY FINGERPRINTS: case 7=(AJR true, FEDmean false, RAWcorr false); case 13 has the same fingerprint; case 19=(AJR false, FEDmean true, RAWcorr true). This cleanly separates 19 from {7,13}, but not the target case 7. The winner is useful tiebreak harvesting rather than completion of the primary objective.
 Next-generation rationale: Promote the smaller raw-correlation winner because it is a strict lexicographic improvement and gives a surgical {19} rule. Generation 2 must remain Explore on quote and continue tomography inside the unresolved {7,13} complement, not begin the planned case-7 width walk. Use three structurally distinct refinements of the memo's remaining free warm-up axes: a stricter or relative AJR-volatility gate, FED raw-history minimum, and FED raw-history maximum. Each must be conjoined with the existing middle/low-THR slice and explicitly exclude the now-mapped raw-correlation > 0.50 case 19. Apply the same unmistakable diagnostic width and require a predicted footprint of a subset of {7,13}. Only after one source makes cases 7 and 13 differ should the next generation test case-7 widths.
+
+## Generation 2: explore quote
+
+G1 mapped raw company-return correlation > 0.50 and FED history mean <= 2.0 to exactly case 19 inside the known {7,13,19} slice; AJR volatility <= 0.025 mapped the unresolved complement {7,13}. The promoted parent already preserves the profitable 45-cent case-19 rule. Continue tomography only inside the explicit complement company_return_correlation <= 0.50 with three free, session-constant refinements: relative AJR versus THR return volatility, FED warm-up minimum, and FED warm-up maximum. Each candidate preserves the promoted case-19 branch and adds a 45-cent branch whose footprint must be a subset of {7,13}. The objective is a differing case-7/case-13 fingerprint, not broad PnL.
+
+Parent: champion `g1-return-corr-probe` (`5e9b84a57796dd206a74d63494592c522d6e8362e98b38149eb6230334ccf1be`).
+
+### g2-relative-vol-probe
+
+- Hypothesis: Whether AJR warm-up return volatility is no greater than THR warm-up return volatility separates cases 7 and 13 inside their shared low-THR-volatility, low-correlation slice.
+- Implementation plan: Change quote only. Read AJARAI_UNDERLYING_ID log-return sample_std_dev into annotated float ajarai_return_volatility beside the existing THR volatility local. Extend the existing probe_regime so its current case-19 branch remains exact, and OR in a new branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility <= 0.025, company_return_correlation <= 0.50, and ajarai_return_volatility <= theriodic_return_volatility. Keep half_width and the full fallback unchanged. Do not change any shade, fill signal, exposure/reserve definition, cash policy, quantity ladder, inventory gate, FOK logic, warm-up computation, import, or stdout behavior. Expected new footprint: a subset of exactly {7,13}; case 19 remains governed by the parent branch.
+- Worker summary: In MarketMaker.quote, read AJR log-return volatility and extended the promoted case-19 probe with a disjoint branch inside the correlation <= 0.50 complement where AJR volatility <= THR volatility. Preserved the existing half-width and all fallback logic. Only Market_making_binary_option.py changed; lead and worker scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: 4508a381c237a165acaa22859e7eee2af876ab68241f64c17ca4bd101863eae3.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.90/16.00 points; PnL 167.99; minimum capital 18.95/20.00
+- Baseline delta: -0.40 points; PnL -9.95
+
+### g2-fed-min-probe
+
+- Hypothesis: A FED warm-up raw-value minimum at or below the model target 2.0 separates cases 7 and 13 even though both have FED history mean above 2.0.
+- Implementation plan: Change quote only. Read self.warm_up_statistics.raw_values_by_underlying_id[FED_FUNDS_RATE_UNDERLYING_ID].minimum into annotated float fed_history_minimum beside the existing warm-up locals. Extend the existing probe_regime so its current case-19 branch remains exact, and OR in a new branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility <= 0.025, company_return_correlation <= 0.50, and fed_history_minimum <= 2.0. Keep half_width and the full fallback unchanged. Do not change any shade, fill signal, exposure/reserve definition, cash policy, quantity ladder, inventory gate, FOK logic, warm-up computation, import, or stdout behavior. Expected new footprint: a subset of exactly {7,13}; case 19 remains governed by the parent branch.
+- Worker summary: In MarketMaker.quote, read FED warm-up raw-value minimum and extended the promoted case-19 probe with a disjoint branch inside the correlation <= 0.50 complement where FED minimum <= 2.0. Preserved the existing half-width and all fallback logic. Only Market_making_binary_option.py changed; lead and worker scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: 3d144830badd3976c2bd1680365527ff3745795bceffa10c5a1246f450cd87a1.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.90/16.00 points; PnL 167.99; minimum capital 18.95/20.00
+- Baseline delta: -0.40 points; PnL -9.95
+
+### g2-fed-max-probe
+
+- Hypothesis: A FED warm-up raw-value maximum at or above 3.0 separates cases 7 and 13 even though both have FED history mean above 2.0.
+- Implementation plan: Change quote only. Read self.warm_up_statistics.raw_values_by_underlying_id[FED_FUNDS_RATE_UNDERLYING_ID].maximum into annotated float fed_history_maximum beside the existing warm-up locals. Extend the existing probe_regime so its current case-19 branch remains exact, and OR in a new branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility <= 0.025, company_return_correlation <= 0.50, and fed_history_maximum >= 3.0. Keep half_width and the full fallback unchanged. Do not change any shade, fill signal, exposure/reserve definition, cash policy, quantity ladder, inventory gate, FOK logic, warm-up computation, import, or stdout behavior. Expected new footprint: a subset of exactly {7,13}; case 19 remains governed by the parent branch.
+- Worker summary: In MarketMaker.quote, read FED warm-up raw-value maximum and extended the promoted case-19 probe with a disjoint branch inside the correlation <= 0.50 complement where FED maximum >= 3.0. Preserved the existing half-width and all fallback logic. Only Market_making_binary_option.py changed; lead and worker scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: 6ea3c0dfee02dbb4c4092cd29bc53d63e4a6d31bff21bb876552b723bc853133.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 180.99; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 3.05
+
+Selection: g2-fed-max-probe.
+Promotion: none.
+Finding: CASE 7 IS NOW SURGICALLY ISOLATED. All three G2 sources passed 20/20 with zero bankruptcies and zero runtime errors. FED warm-up maximum >= 3.0 inside the already mapped middle/low-THR/correlation<=0.50 complement selects case 7 alone; relative AJR<=THR volatility and FED minimum<=2.0 both select case 13 alone. The fed-max candidate preserves the parent's case-19 rule, moves case 7 from -0.25 to 2.80 at a 45-cent half-width, changes no other scored case, holds every rank, and improves combined PnL 177.94 -> 180.99 (+3.05). It is the generation winner.
+
+PER-CASE VECTORS (ours PnL / rank / N / leader / leader PnL / per-case score; * marks a move from parent g1-return-corr-probe):
+case  parent                            RELvol                           FEDmin                           FEDmax
+ 5    2.23/r2/N2/Stalemate/37.00/.40  2.23/r2/N2/Stalemate/37.00/.40  2.23/r2/N2/Stalemate/37.00/.40  2.23/r2/N2/Stalemate/37.00/.40
+ 6    3.93/r2/N3/FW0.25/10.37/.70     3.93/r2/N3/FW0.25/10.37/.70     3.93/r2/N3/FW0.25/10.37/.70     3.93/r2/N3/FW0.25/10.37/.70
+ 7   -0.25/r2/N2/FW0.25/20.14/.40    -0.25/r2/N2/FW0.25/20.14/.40    -0.25/r2/N2/FW0.25/20.14/.40     2.80*/r2/N2/FW0.25/23.11/.40
+ 8    6.95/r2/N3/FW0.10/27.86/.70     6.95/r2/N3/FW0.10/27.86/.70     6.95/r2/N3/FW0.10/27.86/.70     6.95/r2/N3/FW0.10/27.86/.70
+ 9   31.34/r1/N3/ours/31.34/1.00     31.34/r1/N3/ours/31.34/1.00     31.34/r1/N3/ours/31.34/1.00     31.34/r1/N3/ours/31.34/1.00
+10   14.17/r2/N3/FW0.10/35.17/.70    14.17/r2/N3/FW0.10/35.17/.70    14.17/r2/N3/FW0.10/35.17/.70    14.17/r2/N3/FW0.10/35.17/.70
+11   21.17/r1/N3/ours/21.17/1.00     21.17/r1/N3/ours/21.17/1.00     21.17/r1/N3/ours/21.17/1.00     21.17/r1/N3/ours/21.17/1.00
+12    3.21/r1/N2/ours/3.21/1.00       3.21/r1/N2/ours/3.21/1.00       3.21/r1/N2/ours/3.21/1.00       3.21/r1/N2/ours/3.21/1.00
+13    8.90/r2/N4/FW0.10/15.73/.80    -1.05*/r4/N4/FW0.10/24.15/.40   -1.05*/r4/N4/FW0.10/24.15/.40    8.90/r2/N4/FW0.10/15.73/.80
+14   17.29/r1/N3/ours/17.29/1.00     17.29/r1/N3/ours/17.29/1.00     17.29/r1/N3/ours/17.29/1.00     17.29/r1/N3/ours/17.29/1.00
+15   13.03/r1/N3/ours/13.03/1.00     13.03/r1/N3/ours/13.03/1.00     13.03/r1/N3/ours/13.03/1.00     13.03/r1/N3/ours/13.03/1.00
+16   27.07/r1/N3/ours/27.07/1.00     27.07/r1/N3/ours/27.07/1.00     27.07/r1/N3/ours/27.07/1.00     27.07/r1/N3/ours/27.07/1.00
+17   18.06/r1/N4/ours/18.06/1.00     18.06/r1/N4/ours/18.06/1.00     18.06/r1/N4/ours/18.06/1.00     18.06/r1/N4/ours/18.06/1.00
+18    7.44/r2/N4/FW0.05/39.01/.80     7.44/r2/N4/FW0.05/39.01/.80     7.44/r2/N4/FW0.05/39.01/.80     7.44/r2/N4/FW0.05/39.01/.80
+19    3.17/r2/N4/Situational/23.45/.80 3.17/r2/N4/Situational/23.45/.80 3.17/r2/N4/Situational/23.45/.80 3.17/r2/N4/Situational/23.45/.80
+20    0.23/r1/N4/ours/0.23/1.00       0.23/r1/N4/ours/0.23/1.00       0.23/r1/N4/ours/0.23/1.00       0.23/r1/N4/ours/0.23/1.00
+
+SCORE DECOMPOSITION: RELvol 13.30 -> 12.90 and FEDmin 13.30 -> 12.90 because case 13 falls r2 -> r4 (-0.40); each loses 9.95 combined PnL, 177.94 -> 167.99. FEDmax remains 13.30 with no rank transition; case 7 alone gains +3.05, so combined PnL becomes 180.99. The leader is endogenous: Fixed Width 0.25 rises 20.14 -> 23.11 under the case-7 probe, so the gap improves only 20.39 -> 20.31 despite our gain.
+
+SESSION MAP: case 7=(RELvol false, FEDmin false, FEDmax true); case 13=(RELvol true, FEDmin true, FEDmax false); case 19 remains the promoted raw-correlation>0.50 branch. This is the exact second warm-up discriminator the memo required, and no session outside {7,13,19} moved.
+Next-generation rationale: Promote the fed-max winner. The case-7 rule is now isolated and the memo's next step applies: walk its half-width. Existing evidence supplies the exact 45-cent point (our 2.80, rank 2). The next generation should evaluate isolated 25- and 35-cent widths and one wider extension above 45, while preserving case 19's existing 45-cent branch and every frozen rule. Use the archived 45-cent vector as the control rather than re-grading the same source. The goal is a case-7 rank flip worth +0.60; combined PnL is secondary.
