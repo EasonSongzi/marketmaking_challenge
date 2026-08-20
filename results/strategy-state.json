@@ -2626,7 +2626,7 @@
     },
     {
       "id": "market-loop-20260819-3-g06-champion-g5-single-leg-cheap-bid-four",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g6-single-leg-cheap-five",
@@ -2670,7 +2670,11 @@
           "createdAt": "2026-08-19T22:08:26.833Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Strict ancestor of the current champion at 146.19 against 155.53. Its only distinguishing line is the unconditioned form of a fourth-unit rule the champion now carries in inventory-conditioned form, and it lacks the cheap fifth unit entirely, so it is a pure subset with no mechanism the champion does not already contain in a strictly better form.",
+        "at": "2026-08-20T04:12:14.874Z"
+      }
     },
     {
       "id": "market-loop-20260819-3-g02-g2-lowcap-central-offer-six",
