@@ -2728,7 +2728,7 @@
     },
     {
       "id": "market-loop-20260819-4-g01-g1-short-company-leg-four",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "derived-explore",
       "rationale": "It is the cleanest expression of the isolated mechanism, matching the unrestricted single-leg form's case-13 gap of 2.11 against 2.12 and its case-14 rank while quoting strictly less size and carrying marginally more combined PnL, and it strictly improves on its parent by recovering case 14 and 0.30 of score. It has explicit tuning upside in two constants that have never been swept inside this restricted class, the steps_until_expiry threshold at 1 and the cheap threshold at 0.25, and it is the reference source for the case-13 mechanism that generation 2 will attempt to transplant onto the champion.",
@@ -2777,6 +2777,10 @@
         "challengerId": "market-loop-20260819-3-g05-g5-short-cheap-bid-four",
         "revision": 0,
         "sourceSha256": "d0b82db3121dffa8fe0aae562685010dea25c350c0826b54b57c1dd5cb9c8988"
+      },
+      "retirement": {
+        "reason": "Dominated on every axis by the challenger g3-cheap-four-company, which has a better case-13 gap of 1.81 against its 2.11, a far better case-14 margin of 3.01 against its 0.33, and higher PnL of 151.59 against 146.50. Its distinguishing conjunct is the short-tenor restriction on the fourth unit, an axis this run closed: both signs of the FED trade live in the same long-dated region and a global tenor restriction collapses the case-14 margin below 0.20.",
+        "at": "2026-08-20T04:12:37.548Z"
       }
     },
     {
