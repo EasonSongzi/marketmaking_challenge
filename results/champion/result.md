@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T04:00:10.128Z
+- Date: 2026-08-20T04:02:42.589Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g5-fed-four-hold-long-position
+- Label: g6-fed-five-hold-position
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `0a87cbf6d23962e8e07ed15c57295c92265667928479b7a9ba4ae719e9eed4d7`
+- Source SHA-256: `0c970912bce039d632813101d87184dc47a825a3cbf6b04584143a0e121697ac`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -342,11 +342,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $18.17
-2. Situational Unawareness: $9.52
-3. Lattice: $9.07
+1. Mola mola: $18.29
+2. Situational Unawareness: $9.49
+3. Lattice: $9.06
 4. Mongoose: $-31.7
-Mola mola bankrupt: False (cash balance: 58.17, starting capital: 40.0)
+Mola mola bankrupt: False (cash balance: 58.29, starting capital: 40.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -360,10 +360,10 @@ Compiler Message
 
 Ranking:
 1. Fixed Width 0.05: $39.01
-2. Mola mola: $7.43
+2. Mola mola: $7.44
 3. Lattice: $2.25
 4. Mongoose: $-30.65
-Mola mola bankrupt: False (cash balance: 47.43, starting capital: 40.0)
+Mola mola bankrupt: False (cash balance: 47.44, starting capital: 40.0)
 Result: PASS (score=0.80)
 
 Hidden Test Case

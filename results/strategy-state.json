@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g5-fed-four-hold-long-position",
+    "id": "g6-fed-five-hold-position",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "0a87cbf6d23962e8e07ed15c57295c92265667928479b7a9ba4ae719e9eed4d7",
+    "sourceSha256": "0c970912bce039d632813101d87184dc47a825a3cbf6b04584143a0e121697ac",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260819-4:g05:g5-fed-four-hold-long-position",
+    "experimentId": "market-loop-20260819-4:g06:g6-fed-five-hold-position",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 15540,
+      "combinedPnlCents": 15553,
       "minimumCapital": {
         "endingCashCents": 765,
         "startingCapitalCents": 1000
@@ -2915,6 +2915,102 @@
             ]
           },
           "createdAt": "2026-08-20T04:01:00.659Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-4-g06-g6-any-four-hold-position",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It produces the best case-14 state in the project, ours 17.29 against Lattice at 13.99 for a margin of 3.30 against the champion's 2.96, and gains across case 15 at 0.67, case 10 at 0.38, case 7 at 0.30 and case 14 at 0.26, while its entire 0.59 deficit is a single localized regression in case 11 from 21.06 to 18.95 with the rank preserved. That makes it a sharply diagnosable research parent rather than a diffuse loss, and it is the only source in the run that shows the already-long condition has substantial positive effects on the company branch. It also carries tuning upside in the cheap threshold at 0.25, which has never been swept inside an inventory-conditioned fourth unit.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-4-g06-g6-any-four-hold-position/r00.py",
+          "sourceSha256": "0b148237e0f76e9268efa5f48da55e0cb299401edf7ed680dfca346437966f7d",
+          "evaluationPath": "results/challengers/market-loop-20260819-4-g06-g6-any-four-hold-position/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-4-g06-g6-any-four-hold-position/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g6-any-four-hold-position",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-4-g06-g6-any-four-hold-position/r00.py",
+            "sourceSha256": "0b148237e0f76e9268efa5f48da55e0cb299401edf7ed680dfca346437966f7d",
+            "modifiedLines": 5,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15481,
+              "minimumCapital": {
+                "endingCashCents": 795,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -59
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-20T04:03:48.249Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-4-g06-champion-g5-fed-four-hold-long-position",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g6-fed-five-hold-position",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-4-g06-champion-g5-fed-four-hold-long-position/r00.py",
+          "sourceSha256": "0a87cbf6d23962e8e07ed15c57295c92265667928479b7a9ba4ae719e9eed4d7",
+          "evaluationPath": "results/challengers/market-loop-20260819-4-g06-champion-g5-fed-four-hold-long-position/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-4-g06-champion-g5-fed-four-hold-long-position/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-fed-four-hold-long-position",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-4-g06-champion-g5-fed-four-hold-long-position/r00.py",
+            "sourceSha256": "0a87cbf6d23962e8e07ed15c57295c92265667928479b7a9ba4ae719e9eed4d7",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15540,
+              "minimumCapital": {
+                "endingCashCents": 765,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-20T04:03:48.537Z"
         }
       ],
       "tuningHistory": []
@@ -6503,7 +6599,7 @@
     },
     "0a87cbf6d23962e8e07ed15c57295c92265667928479b7a9ba4ae719e9eed4d7": {
       "valid": true,
-      "modifiedLines": 11,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -6512,6 +6608,61 @@
         "combinedPnlCents": 15540,
         "minimumCapital": {
           "endingCashCents": 765,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Demoted champion"
+      ]
+    },
+    "0b148237e0f76e9268efa5f48da55e0cb299401edf7ed680dfca346437966f7d": {
+      "valid": true,
+      "modifiedLines": 5,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15481,
+        "minimumCapital": {
+          "endingCashCents": 795,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "0c970912bce039d632813101d87184dc47a825a3cbf6b04584143a0e121697ac": {
+      "valid": true,
+      "modifiedLines": 4,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15553,
+        "minimumCapital": {
+          "endingCashCents": 765,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "0fafbe22985b81376a84e3db4ebec947b303980c527228e7182c3d07305e7c67": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15544,
+        "minimumCapital": {
+          "endingCashCents": 767,
           "startingCapitalCents": 1000
         },
         "runtimeErrors": 0

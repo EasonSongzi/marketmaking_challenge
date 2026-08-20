@@ -487,10 +487,7 @@ class MarketMaker:
             and not repeat_request
             and bid_price <= 0.25
             and len(option.legs) == 1
-            and not (
-                option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
-            )
+            and self.position.option_quantity_by_option_id.get(option_id, 0) <= 0
         ):
             bid_quantity = 4
         if (
@@ -499,10 +496,6 @@ class MarketMaker:
             and bid_price <= 0.25
             and len(option.legs) == 1
             and not (option.steps_until_expiry <= 1 and option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID)
-            and not (
-                option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
-            )
         ):
             bid_quantity = 5
         quote_snapshots[option_id] = (

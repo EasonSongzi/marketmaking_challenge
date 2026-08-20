@@ -1,20 +1,20 @@
 {
   "schemaVersion": 2,
-  "strategy": "g5-fed-four-hold-long-position",
+  "strategy": "g6-fed-five-hold-position",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "0a87cbf6d23962e8e07ed15c57295c92265667928479b7a9ba4ae719e9eed4d7",
-  "experimentId": "market-loop-20260819-4:g05:g5-fed-four-hold-long-position",
+  "sourceSha256": "0c970912bce039d632813101d87184dc47a825a3cbf6b04584143a0e121697ac",
+  "experimentId": "market-loop-20260819-4:g06:g6-fed-five-hold-position",
   "experiment": {
     "runId": "market-loop-20260819-4",
-    "generation": 5,
-    "candidateId": "g5-fed-four-hold-long-position"
+    "generation": 6,
+    "candidateId": "g6-fed-five-hold-position"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 15540,
+    "combinedPnlCents": 15553,
     "minimumCapital": {
       "endingCashCents": 765,
       "startingCapitalCents": 1000
