@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260820
 
-- Status: active
+- Status: complete
 - Started: 2026-08-20T15:08:21.423Z
 - Starting baseline: g5-offer-six-hold-two-short (13.30/16.00)
-- Current baseline: g5-offer-six-hold-two-short (13.30/16.00)
-- Stop condition: not reached
-- Score trend: 13.30
+- Current baseline: g6-fed-flat-23-or-25 (13.30/16.00)
+- Stop condition: generation limit reached
+- Score trend: 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -237,6 +237,6 @@ Parent: champion `g5-offer-six-hold-two-short` (`da596c4f660892854e9167e362ebbb8
 - Baseline delta: 0.00 points; PnL 0.84
 
 Selection: g6-fed-flat-23-or-25.
-Promotion: none.
+Promotion: g6-fed-flat-23-or-25 (9e12069e1fdb1a9f72c43a8a3b9f5f6c68c60c8d).
 Finding: Generation 6 converts the cumulative tomography into a strict champion improvement and validates the two exact fair-value effects as perfectly additive. All three candidates are valid and eligible, 20/20 passed, zero bankruptcies, zero runtime errors, 13.30 points and 7.97/10.00 minimum capital. g6-fed-flat-exact23 reaches 157.65 combined PnL, +0.40 over the champion. Its twenty-case vector differs in exactly one place: protected case 15 rises from 9.66 to 10.06 while remaining rank one; case 13 and every other case are unchanged. g6-fed-flat-exact25 reaches 157.69, +0.44. Its vector differs in exactly one case: case 13 rises from ours 8.52 to 8.96 while Fixed Width 0.1 falls from 11.39 to 11.11, improving the gap from 2.87 to 2.15 at rank two; every protected case and every other Mola PnL are unchanged. g6-fed-flat-23-or-25 reaches 158.09, +0.84, and is the unique selector winner. It reproduces the exact25 case-13 state, ours 8.96 versus Fixed Width 11.11, and the exact23 case-15 state, ours 10.06 at rank one, while all eighteen other Mola PnLs are identical to the champion to the cent. The effects add with no overlap or hidden routing regression: +0.44 plus +0.40 equals the observed +0.84. Case 14 remains ours 17.29 against Lattice 13.99, case 10 remains 11.55, case 12 remains 4.27, case 18 remains 7.44, case 19 remains -2.59 and case 20 remains 0.30. The winner should be promoted; neither single-state sibling needs challenger retention because each mechanism is fully contained in the winning union.
 Next-generation rationale: The run stops at six generations after promoting the exact 23-or-25 fair-value union. Future work should keep this non-cumulative separator and avoid reopening the inert cumulative lower bands or the FOK inventory/long-tenor gates that produced identical vectors. Case 13 remains rank two with a 2.15 gap, while the full-withdrawal challenger still represents the smaller 1.81 gap at substantial PnL cost; a future loop may explore another genuinely new state variable or compose the exact25 route with an orthogonal source, but should not fit adjacent cents again.
