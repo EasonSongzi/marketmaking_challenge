@@ -2881,7 +2881,7 @@
     },
     {
       "id": "market-loop-20260819-4-g05-champion-g2-hold-five-short-rate",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g5-fed-four-hold-long-position",
@@ -2925,7 +2925,11 @@
           "createdAt": "2026-08-20T04:01:00.659Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Strict ancestor of the current champion at 154.86 against 155.53. The champion is this source plus the two already-long conditions, with nothing removed, so it is a pure subset. Retaining three stacked demoted champions from one run is clutter; the immediate predecessor at 155.40 is kept as the single fallback.",
+        "at": "2026-08-20T04:12:15.193Z"
+      }
     },
     {
       "id": "market-loop-20260819-4-g06-g6-any-four-hold-position",
