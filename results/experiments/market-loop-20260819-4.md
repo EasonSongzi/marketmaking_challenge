@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260819-4
 
-- Status: active
+- Status: complete
 - Started: 2026-08-19T22:25:41.526Z
 - Starting baseline: g6-single-leg-cheap-five (13.30/16.00)
-- Current baseline: g5-fed-four-hold-long-position (13.30/16.00)
-- Stop condition: not reached
-- Score trend: 13.30 → 13.30 → 13.30
+- Current baseline: g6-fed-five-hold-position (13.30/16.00)
+- Stop condition: generation limit reached
+- Score trend: 13.30 → 13.30 → 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -235,7 +235,7 @@ Parent: champion `g5-fed-four-hold-long-position` (`0a87cbf6d23962e8e07ed15c5729
 - Baseline delta: 0.00 points; PnL 0.04
 
 Selection: g6-fed-five-hold-position.
-Promotion: none.
+Promotion: g6-fed-five-hold-position (24fd0f04127280d144dc025a46bf2a8dda6e6941).
 Finding: The inventory mechanism generalizes on the fifth unit and on the sign of the position, but not across contract families. g6-fed-five-hold-position is the winner at 155.53 combined PnL against the champion's 155.40, 20/20 with zero bankruptcies, zero runtime errors, unchanged minimum capital of 7.65 and every case flat to the cent except case 17, which rises 0.12. That is the signature the hypothesis predicted: declining the fifth unit on a FED contract we already hold is very nearly costless, because generation 2 had already proved the fifth unit contributes nothing to competitor suppression, so removing the most concentrated repeat exposure in the strategy gives up almost nothing and keeps a small residual. g6-fed-four-hold-any-position also clears the champion at 155.44, gaining 0.04 by widening the fourth-unit predicate from a positive position to any non-zero position, which shows the harm is concentration of either sign rather than long accumulation specifically, but the increment is an order of magnitude smaller than the original positive-position gain of 0.54, so almost all of the effect is directional after all. g6-any-four-hold-position is the informative failure. Dropping the FED test and declining the fourth unit on every cheap single-leg contract we already hold produced the largest per-case movements of the entire run and the best case-14 state in the project, ours 17.29 against Lattice at 13.99 for a margin of 3.30 where the champion holds 2.96, together with case 15 at plus 0.67, case 10 at plus 0.38, case 7 at plus 0.30 and case 14 at plus 0.26. It nonetheless finished at 154.81, 0.59 below the champion, because of a single localized regression: case 11 fell 2.11 from 21.06 to 18.95 while staying first. The company branch of the already-long condition therefore carries real and mostly positive effects that the FED branch does not, and its net sign is decided entirely by one case. Every candidate held 13.30 with all protected ranks intact. The run ends with the score ceiling confirmed at 13.30 and combined PnL raised from 154.75 to 155.53 across three promotions, while the case-13 frontier established in generations 1 and 3 remains reachable only at a PnL cost.
 Next-generation rationale: The run is complete at six generations. The next loop starts from two well-specified assets rather than an open question. The first is the challenger g3-cheap-four-company, which holds the best case-13 state in the project, Fixed Width 0.1 suppressed to 11.21 with our own PnL at 9.40 for a gap of 1.81, and a case-14 margin of 3.01, its only deficit being 3.27 of combined PnL localized entirely to cases 20, 10, 18 and 12. The second is g6-any-four-hold-position, whose company-branch already-long condition produces the best case-14 margin on record at 3.30 and gains in four cases against a single 2.11 regression in case 11, making case 11 the precise object of the next investigation rather than a diffuse PnL problem. Both are ordinary Explore parents. The capital axis at the 40.0 boundary and the tenor axis are both closed for the cheap fourth unit and should not be reopened.
 Challenger update: admitted market-loop-20260819-4-g06-g6-any-four-hold-position.
