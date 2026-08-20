@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g1-fed-flat-full",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-g01-g1-fed-flat-full/r00.py",
+  "sourceSha256": "20971c765e01f13ce3e623324064b12d8843b805b7f2758641a707be18f99595",
+  "modifiedLines": 5,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 15383,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -342
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

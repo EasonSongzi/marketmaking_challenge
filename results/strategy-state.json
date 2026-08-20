@@ -3472,6 +3472,54 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260820-g01-g1-fed-flat-full",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It is the only candidate to create the alternate Fixed Width 0.1 routing state in the current champion architecture, improving case-13 gap from 2.87 to 1.81 with ours at 9.40 and Fixed Width at 11.21 while preserving all protected ranks. Although its 153.83 combined PnL is below the champion, it supplies a hash-pinned research parent/control and proves the bounded transition lies above nineteen cents.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-g01-g1-fed-flat-full/r00.py",
+          "sourceSha256": "20971c765e01f13ce3e623324064b12d8843b805b7f2758641a707be18f99595",
+          "evaluationPath": "results/challengers/market-loop-20260820-g01-g1-fed-flat-full/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-g01-g1-fed-flat-full/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g1-fed-flat-full",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-g01-g1-fed-flat-full/r00.py",
+            "sourceSha256": "20971c765e01f13ce3e623324064b12d8843b805b7f2758641a707be18f99595",
+            "modifiedLines": 5,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15383,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -342
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-20T15:28:46.740Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -7453,6 +7501,63 @@
         "bankruptcies": 0,
         "scoredPointsHundredths": 1330,
         "combinedPnlCents": 15631,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "2cbb2d19778d2c4895687a1778eac07c952197af237b376c2636d7c992fdd728": {
+      "valid": true,
+      "modifiedLines": 4,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15390,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "d3e62283f23caf35d981895740dc6da65cc8ebee3619d03e447440da1fad32bb": {
+      "valid": true,
+      "modifiedLines": 4,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15390,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "20971c765e01f13ce3e623324064b12d8843b805b7f2758641a707be18f99595": {
+      "valid": true,
+      "modifiedLines": 5,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15383,
         "minimumCapital": {
           "endingCashCents": 797,
           "startingCapitalCents": 1000
