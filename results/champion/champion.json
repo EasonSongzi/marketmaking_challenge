@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "g2-hold-five-short-rate",
+  "id": "g5-fed-four-hold-long-position",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "b5173bc952719264bb42bb5a66ceccd693464cf8a3bb8a0a92cf5c530b08867a",
+  "sourceSha256": "0a87cbf6d23962e8e07ed15c57295c92265667928479b7a9ba4ae719e9eed4d7",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260819-4:g02:g2-hold-five-short-rate",
+  "experimentId": "market-loop-20260819-4:g05:g5-fed-four-hold-long-position",
   "experiment": {
     "runId": "market-loop-20260819-4",
-    "generation": 2,
-    "candidateId": "g2-hold-five-short-rate"
+    "generation": 5,
+    "candidateId": "g5-fed-four-hold-long-position"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 15486,
+    "combinedPnlCents": 15540,
     "minimumCapital": {
       "endingCashCents": 765,
       "startingCapitalCents": 1000

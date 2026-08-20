@@ -482,16 +482,7 @@ class MarketMaker:
             and signed_reserve + 4 * bid_price <= available_capacity
         ):
             bid_quantity = 4
-        if (
-            bid_quantity == 3
-            and not repeat_request
-            and bid_price <= 0.25
-            and len(option.legs) == 1
-            and not (
-                option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
-            )
-        ):
+        if bid_quantity == 3 and not repeat_request and bid_price <= 0.25 and len(option.legs) == 1:
             bid_quantity = 4
         if (
             bid_quantity == 4
