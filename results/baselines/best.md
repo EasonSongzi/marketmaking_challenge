@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g6-fed-five-hold-position`
+- Current champion: `g1-fed-four-any-five-long`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `0c970912bce039d632813101d87184dc47a825a3cbf6b04584143a0e121697ac`
-- Experiment: `market-loop-20260819-4`, generation 6, candidate `g6-fed-five-hold-position`
+- Source SHA-256: `363827c381e127c71b3b6440608ec29506eb57244f6b705a50267a37c95e1e40`
+- Experiment: `market-loop-20260819-5`, generation 1, candidate `g1-fed-four-any-five-long`
 - SCORED points: 13.30/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0

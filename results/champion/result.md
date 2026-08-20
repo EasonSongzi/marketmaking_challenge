@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T04:02:42.589Z
+- Date: 2026-08-20T04:35:04.145Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g6-fed-five-hold-position
+- Label: g1-fed-four-any-five-long
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `0c970912bce039d632813101d87184dc47a825a3cbf6b04584143a0e121697ac`
+- Source SHA-256: `363827c381e127c71b3b6440608ec29506eb57244f6b705a50267a37c95e1e40`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -184,8 +184,8 @@ Compiler Message
 
 Ranking:
 1. Fixed Width 0.25: $20.14
-2. Mola mola: $-2.35
-Mola mola bankrupt: False (cash balance: 7.65, starting capital: 10.0)
+2. Mola mola: $-2.33
+Mola mola bankrupt: False (cash balance: 7.67, starting capital: 10.0)
 Result: PASS (score=0.40)
 
 Hidden Test Case
@@ -231,9 +231,9 @@ Compiler Message
 
 Ranking:
 1. Fixed Width 0.1: $33.83
-2. Mola mola: $11.15
+2. Mola mola: $11.17
 3. Stalemate Quoter: $4.0
-Mola mola bankrupt: False (cash balance: 31.15, starting capital: 20.0)
+Mola mola bankrupt: False (cash balance: 31.17, starting capital: 20.0)
 Result: PASS (score=0.70)
 
 Hidden Test Case

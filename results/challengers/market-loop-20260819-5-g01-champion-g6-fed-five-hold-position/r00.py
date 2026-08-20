@@ -489,7 +489,7 @@ class MarketMaker:
             and len(option.legs) == 1
             and not (
                 option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) != 0
+                and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
             )
         ):
             bid_quantity = 4
