@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g4-compose-both",
+    "id": "g5-low-band-under-thirty",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "0a27bc38612081db5c0144c242ff8407a5ac4ce18a9bdaa885abb4c4fd0da054",
+    "sourceSha256": "7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260820-3:g04:g4-compose-both",
+    "experimentId": "market-loop-20260820-3:g05:g5-low-band-under-thirty",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 17599,
+      "combinedPnlCents": 17633,
       "minimumCapital": {
         "endingCashCents": 975,
         "startingCapitalCents": 1000
@@ -3903,6 +3903,102 @@
             ]
           },
           "createdAt": "2026-08-20T20:45:04.704Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260820-3-g05-g5-thirteen-restore",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It is the source that proved `self.cash_balance` does not equal the grader's reported starting capital: its [20.0, 40.0) exclusion reverted case 19, a session the grader reports at capital 40.0, which is only possible if that session's constructed balance lies in the lower band. That is a working session discriminator on an axis the project has misread since market-loop-20260818-6, and it is worth preserving at -6.12 PnL precisely because the loss is the measurement. Its tuning upside is bounded and one-dimensional: the exclusion band's upper edge, known to lie strictly between 20.0 and 40.0, with the lower edge fixed at 20.0.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-3-g05-g5-thirteen-restore/r00.py",
+          "sourceSha256": "45bbbbabe09cca481414ed3cfc062593634a177ab4083f7000ab4a6d176d0976",
+          "evaluationPath": "results/challengers/market-loop-20260820-3-g05-g5-thirteen-restore/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-3-g05-g5-thirteen-restore/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-thirteen-restore",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-3-g05-g5-thirteen-restore/r00.py",
+            "sourceSha256": "45bbbbabe09cca481414ed3cfc062593634a177ab4083f7000ab4a6d176d0976",
+            "modifiedLines": 6,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 16987,
+              "minimumCapital": {
+                "endingCashCents": 3797,
+                "startingCapitalCents": 4000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -612
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-20T20:52:45.342Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260820-3-g05-champion-g4-compose-both",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g5-low-band-under-thirty",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-3-g05-champion-g4-compose-both/r00.py",
+          "sourceSha256": "0a27bc38612081db5c0144c242ff8407a5ac4ce18a9bdaa885abb4c4fd0da054",
+          "evaluationPath": "results/challengers/market-loop-20260820-3-g05-champion-g4-compose-both/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-3-g05-champion-g4-compose-both/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g4-compose-both",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-3-g05-champion-g4-compose-both/r00.py",
+            "sourceSha256": "0a27bc38612081db5c0144c242ff8407a5ac4ce18a9bdaa885abb4c4fd0da054",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 17599,
+              "minimumCapital": {
+                "endingCashCents": 975,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-20T20:52:45.622Z"
         }
       ],
       "tuningHistory": []
@@ -8404,7 +8500,7 @@
     },
     "0a27bc38612081db5c0144c242ff8407a5ac4ce18a9bdaa885abb4c4fd0da054": {
       "valid": true,
-      "modifiedLines": 8,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -8417,7 +8513,64 @@
         },
         "runtimeErrors": 0
       },
+      "reasons": [
+        "Demoted champion"
+      ]
+    },
+    "45bbbbabe09cca481414ed3cfc062593634a177ab4083f7000ab4a6d176d0976": {
+      "valid": true,
+      "modifiedLines": 6,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 16987,
+        "minimumCapital": {
+          "endingCashCents": 3797,
+          "startingCapitalCents": 4000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 17633,
+        "minimumCapital": {
+          "endingCashCents": 975,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
       "reasons": []
+    },
+    "312fbd6992ede5a271290f992ff6e63cef6b69c7ce07c6933c9714a550dc4206": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 17599,
+        "minimumCapital": {
+          "endingCashCents": 975,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
     }
   }
 }

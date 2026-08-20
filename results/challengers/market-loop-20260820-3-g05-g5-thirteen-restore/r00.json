@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g5-thirteen-restore",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-3-g05-g5-thirteen-restore/r00.py",
+  "sourceSha256": "45bbbbabe09cca481414ed3cfc062593634a177ab4083f7000ab4a6d176d0976",
+  "modifiedLines": 6,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 16987,
+    "minimumCapital": {
+      "endingCashCents": 3797,
+      "startingCapitalCents": 4000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -612
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

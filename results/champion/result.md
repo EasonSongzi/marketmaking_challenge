@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T20:40:22.866Z
+- Date: 2026-08-20T20:50:08.764Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g4-compose-both
+- Label: g5-low-band-under-thirty
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `0a27bc38612081db5c0144c242ff8407a5ac4ce18a9bdaa885abb4c4fd0da054`
+- Source SHA-256: `7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -338,11 +338,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $17.72
-2. Situational Unawareness: $10.69
-3. Lattice: $8.87
-4. Mongoose: $-31.88
-Mola mola bankrupt: False (cash balance: 57.72, starting capital: 40.0)
+1. Mola mola: $18.06
+2. Situational Unawareness: $10.54
+3. Lattice: $8.7
+4. Mongoose: $-32.17
+Mola mola bankrupt: False (cash balance: 58.06, starting capital: 40.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case

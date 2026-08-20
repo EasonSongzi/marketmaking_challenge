@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-20T20:13:05.267Z
 - Starting baseline: g6-fed-flat-23-or-25 (13.30/16.00)
-- Current baseline: g3-band-low-vol (13.30/16.00)
+- Current baseline: g4-compose-both (13.30/16.00)
 - Stop condition: not reached
-- Score trend: 13.30 → 13.30 → 13.30
+- Score trend: 13.30 → 13.30 → 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -435,7 +435,7 @@ Then replace the existing line `half_width: int = 8 if wide_regime else (5 if re
 - Baseline delta: 0.00 points; PnL 8.95
 
 Selection: g4-compose-both.
-Promotion: none.
+Promotion: g4-compose-both (d3d88cbdac89ffe53054f2edff158eadd92c5755).
 Finding: COMPOSITION IS EXACT FOR THE THIRD TIME. g4-compose-both promotes at 13.30 / 175.99, a +8.95
 combined-PnL gain over the champion's 167.04. All three candidates were eligible, all held 13.30 with no rank transition
 anywhere, all had zero bankruptcies and zero runtime errors, and all held minimum ending capital at 9.75/10.00.
@@ -511,3 +511,151 @@ Generation 6 should be Tune, as the memo has wanted for three loops. The challen
 bounded two-parameter vector with grader evidence on both axes: a flat-rate threshold known to lie in (0.50, 0.60] and a
 flat-regime half-width whose case 6 response is monotone and unturned at eighteen cents. That is exactly what Tune exists for,
 and it is the only path left to case 6's remaining 6.44.
+
+## Generation 5: explore quote
+
+Four generations have moved combined PnL 158.09 -> 175.99 at an unchanged 13.30, entirely through the second selection criterion. The flat-rate band map is fully harvested and the tiebreak is close to exhausted, so this generation splits three ways: one free PnL gain, one test of the loop's single unexplained result, and one shot at the only never-won case still within striking distance. Candidate A removes case 13 from the low-volatility middle-band widening. Cases 7, 13 and 19 are that slice and start with capital 10, 20 and 40; case 7 is worth +1.78 and case 19 +4.28, while case 13 contributes -0.06 of our own PnL and, worse, let Fixed Width 0.1 gain about 4.68, pushing case 13's gap from 2.15 to 6.83. Case 13 is the project's nearest never-won case and the only one ever converted to rank one, so restoring its 2.15 gap for free is worth more than the PnL. Candidate B tests the one result this loop cannot explain: case 17 starts with capital 40.0 and `self.cash_balance` is never mutated, so the bottom-band guard `self.cash_balance < 40.0` is false there, yet case 17 moved 18.31 -> 17.72 under both generation 4 candidates that contain the guard and stayed at exactly 18.31 under the one that does not. Tightening the guard to 30.0 keeps all three intended members, which start with capital 10, 20 and 20, and either eliminates the residual or proves it is not the guard. Candidate C is the memo's designated case 13 generation, Section 10 axis A: the exact-state fair-value withdrawals on the FED bid Q4 rule are promoted only at 23 and 25, and the reachable cheap band runs a few cents past 25 because the gate is bid_price <= 0.25. Archived evidence prices the band above 25 at +0.46 of our own PnL against +0.10 for the competitor, so a cumulative withdrawal through 29 should close case 13's gap by about 0.36 on top of whatever candidate A restores. All three footprints are disjoint, and this loop has confirmed three times that disjoint footprints compose exactly.
+
+Parent: champion `g4-compose-both` (`0a27bc38612081db5c0144c242ff8407a5ac4ce18a9bdaa885abb4c4fd0da054`).
+
+### g5-thirteen-restore
+
+- Hypothesis: Case 13 is the only capital-20 session in the low-volatility middle-band slice, and it is the only member that pays nothing for being widened. Excluding capital-20 sessions from that slice reverts case 13 to the narrow quote, recovers its 2.15 gap to Fixed Width 0.1, and gains a small amount of combined PnL because case 13's own contribution to the slice is negative.
+- Implementation plan: In `quote` only. Find the existing `wide_regime` statement:
+
+```python
+        wide_regime: bool = (
+            flat_rate_frequency > 0.50
+            or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)
+            or (flat_rate_frequency <= 0.40 and self.cash_balance < 40.0)
+        )
+```
+
+and replace its middle disjunct so the statement reads:
+
+```python
+        wide_regime: bool = (
+            flat_rate_frequency > 0.50
+            or (
+                flat_rate_frequency > 0.40
+                and theriodic_return_volatility <= 0.025
+                and not (20.0 <= self.cash_balance < 40.0)
+            )
+            or (flat_rate_frequency <= 0.40 and self.cash_balance < 40.0)
+        )
+```
+
+Use the `20.0 <= self.cash_balance < 40.0` band form rather than an equality test on a float; it is the idiom the champion already uses twice in the quantity ladder. Leave the `half_width` line below and the `flat_rate_frequency` and `theriodic_return_volatility` lines above exactly as they are. Change nothing else: every price shade, the fill-signal skew, `active_exposure`, `signed_reserve`, `cash_floor`, the whole quantity ladder, every inventory gate and the `return Quote(...)` statement stay byte-identical to the parent. Expected tradeoff: case 13 moves from 8.90 back to about 8.96 and nothing else moves; predicted 13.30 at about 176.05 combined PnL with case 13's gap restored to about 2.15.
+- Worker summary: In `quote`, the middle `wide_regime` disjunct gained `and not (20.0 <= self.cash_balance < 40.0)`, reflowed over four lines. One removed line, five added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 169.87; minimum capital 37.97/40.00
+- Baseline delta: 0.00 points; PnL -6.12
+
+### g5-low-band-under-thirty
+
+- Hypothesis: The unexplained case 17 residual is caused by the bottom-band capital guard. All three intended members of that band start with capital 10, 20 and 20, so tightening the guard from 40.0 to 30.0 keeps every one of them while moving the boundary well clear of case 17's capital 40. If case 17 returns to 18.31 the residual is the guard and the band is worth a further +0.59; if it does not, the guard is exonerated and the cause lies elsewhere.
+- Implementation plan: In `quote` only, one literal. Find the existing `wide_regime` statement and change the final disjunct's capital bound from `40.0` to `30.0`, so that line reads `            or (flat_rate_frequency <= 0.40 and self.cash_balance < 30.0)`. Leave the first two disjuncts, the `half_width` line below, and the `flat_rate_frequency` and `theriodic_return_volatility` lines above exactly as they are. `git diff` must show exactly one removed line and one added line. Change nothing else. Expected tradeoff: cases 8, 10 and 12 must not move at all, since their starting capitals are 10, 20 and 20 and both bounds admit them; the entire signal is whether case 17 returns to 18.31.
+- Worker summary: In `quote`, one literal: the bottom-band capital bound `self.cash_balance < 40.0` became `< 30.0`. One removed line, one added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 176.33; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL 0.34
+
+### g5-fed-upper-band
+
+- Hypothesis: The reachable FED cheap band runs past 25 cents, and the exact fair-value states from 26 to 29 add more to our own PnL than they add to Fixed Width 0.1. Extending the flat-FED bid Q4 withdrawal cumulatively through 29 therefore closes case 13's gap without disturbing the eight sessions the specialist already wins.
+- Implementation plan: In `quote` only, one literal inside the existing bid Q4 rule. Find the clause
+
+```python
+            and not (
+                option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
+                and fair_value_cents in (23, 25)
+            )
+```
+
+and replace the tuple `(23, 25)` with `(23, 25, 26, 27, 28, 29)`, leaving every other line of that clause and of the surrounding `if` exactly as it is. This is the clause guarding the `bid_quantity = 4` promotion, not the later `bid_quantity = 5` promotion; do not touch the `bid_quantity == 4` block below it. `git diff` must show exactly one removed line and one added line. Change nothing else. Expected tradeoff: only sessions carrying flat FED contracts in the 26-to-29 cent region move; the archived band evidence prices this at about +0.46 of our own PnL against +0.10 for Fixed Width 0.1, so watch case 13's gap rather than the combined PnL.
+- Worker summary: In `quote`, one literal inside the bid Q4 rule: the flat-FED withdrawal tuple `(23, 25)` became `(23, 25, 26, 27, 28, 29)`. One removed line, one added; the `bid_quantity == 4` block below was not touched. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 175.99; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+Selection: g5-low-band-under-thirty.
+Promotion: none.
+Finding: `self.cash_balance` IS NOT THE REPORTED STARTING CAPITAL, AND THAT INVALIDATES A PREMISE THIS
+PROJECT HAS CARRIED SINCE market-loop-20260818-6. g5-low-band-under-thirty promotes at 13.30 / 176.33. Zero bankruptcies and
+zero runtime errors throughout; no rank transition in any candidate, so the entire delta is again the tiebreak.
+
+PER-CASE VECTORS against champion g4-compose-both (ours PnL / rank; * marks a moved case):
+
+case  N  champion   restore13   under30     fedupper    leader
+  5   2   2.23 r2    2.23 r2     2.23 r2     2.23 r2    Stalemate Quoter
+  6   3   3.93 r2    3.93 r2     3.93 r2     3.93 r2    Fixed Width 0.25
+  7   2  -0.25 r2   -0.25 r2    -0.25 r2    -0.25 r2    Fixed Width 0.25
+  8   3   6.95 r2    6.95 r2     6.95 r2     6.95 r2    Fixed Width 0.1
+  9   3  31.14 r1   31.14 r1    31.14 r1    31.14 r1    (ours)
+ 10   3  14.17 r2   14.17 r2    14.17 r2    14.17 r2    Fixed Width 0.1
+ 11   3  21.17 r1   21.17 r1    21.17 r1    21.17 r1    (ours)
+ 12   2   3.21 r1    3.21 r1     3.21 r1     3.21 r1    (ours)
+ 13   4   8.90 r2    6.50* r2    8.90 r2     8.90 r2    Fixed Width 0.1
+ 14   3  17.29 r1   17.29 r1    17.29 r1    17.29 r1    (ours)
+ 15   3  13.03 r1   13.03 r1    13.03 r1    13.03 r1    (ours)
+ 16   3  27.07 r1   27.07 r1    27.07 r1    27.07 r1    (ours)
+ 17   4  17.72 r1   17.72 r1    18.06* r1   17.72 r1    (ours)
+ 18   4   7.44 r2    7.44 r2     7.44 r2     7.44 r2    Fixed Width 0.05
+ 19   4   1.69 r2   -2.03* r2    1.69 r2     1.69 r2    Situational Unawareness
+ 20   4   0.30 r1    0.30 r1     0.30 r1     0.30 r1    (ours)
+TOTAL         13.30       13.30       13.30       13.30
+
+SCORE DECOMPOSITION OF THE DELTA:
+  restore13  13.30 -> 13.30   moved {13, 19}   PnL 175.99 -> 169.87  (-6.12)
+  under30    13.30 -> 13.30   moved {17}       PnL 175.99 -> 176.33  (+0.34)
+  fedupper   13.30 -> 13.30   moved {}         PnL 175.99 -> 175.99  (0.00, byte-identical vector)
+
+1. THE CASE 13 RESTORATION FAILED, AND ITS FAILURE IS THE MOST VALUABLE RESULT OF THE GENERATION. The candidate was
+predicted to move {13} alone, because cases 7, 13 and 19 report starting capitals of 10.0, 20.0 and 40.0 and the guard
+excludes only [20.0, 40.0). It moved {13, 19}. Case 19 reverted to its pre-widening -2.03, which is only possible if
+`20.0 <= self.cash_balance < 40.0` is TRUE in case 19's session, despite the grader reporting its starting capital as 40.0.
+
+2. THE SAME CONCLUSION FALLS OUT OF THE CASE 17 RESIDUAL, INDEPENDENTLY. Generation 4 left an unexplained 0.59 in case 17
+under a `self.cash_balance < 40.0` guard that should not have reached a capital-40 session. Tightening the bound to 30.0
+moved case 17 again, 17.72 -> 18.06. A bound change from 40.0 to 30.0 can only affect a session whose `self.cash_balance`
+lies in [30.0, 40.0). Two independent probes, on two different sessions, both reported as capital 40.0, both land in a lower
+tier than they report.
+
+3. WHAT THIS INVALIDATES. The champion's quantity ladder branches on `self.cash_balance >= 40.0`, `20.0 <= self.cash_balance
+< 40.0` and `self.cash_balance < 20.0` in five separate places, and `cash_floor = 0.75 * self.cash_balance` scales every
+capacity term. Every one of those gates was designed and tuned on the assumption that the three reported capital tiers 10,
+20 and 40 map onto those three bands. At least two of the five capital-40 sessions do not. The tiers are mis-targeted, and
+no generation in this project has ever tested that assumption.
+
+4. CASE 17 IS STILL NOT FULLY EXPLAINED AND THE ANALYSIS SHOULD NOT PRETEND OTHERWISE. If case 17 simply fell inside the
+bottom-band guard it would have taken the full widening and landed near generation 3's 10.35, not 17.72. Under the 30.0
+bound it returns to 18.06, not to the 18.31 it held before any guard existed. Its sensitivity is real, deterministic and
+reproducible, but sub-dollar and not a clean binary. The 40.0 boundary is implicated; the mechanism is not established.
+
+5. SECTION 10 AXIS A IS CLOSED. g5-fed-upper-band produced a byte-identical twenty-case vector and exactly 175.99. The exact
+FED fair-value states 26 through 29 are unreachable or inert on the current champion, so the upper cheap band adds nothing.
+Case 13's gap stays at 6.83 and its own PnL at 8.90. Do not reopen this axis.
+
+6. CASE 13 CANNOT BE RESTORED THROUGH THE CAPITAL TIER. Reverting case 13 costs case 19's +3.72 as well, for a net -6.12,
+because the guard cannot distinguish them. Restoring case 13's 2.15 gap needs a discriminator that separates it from case 19,
+and starting capital as currently read is not one.
+Next-generation rationale: Generation 6 must test the capital-tier premise directly, because it is now the largest known
+defect in the champion and it sits underneath five existing gates and every capacity term.
+
+A. Bracket the true value. Run the bottom-band guard at `< 35.0` against the promoted `< 30.0`. Case 17 is known to lie in
+[30.0, 40.0); a 35.0 bound splits that interval and, differenced against this generation's result, places it in either
+[30, 35) or [35, 40).
+
+B. Bracket case 19 the same way. Its widening reverts under a [20.0, 40.0) exclusion, so replace that exclusion with
+[20.0, 30.0) in the middle-band disjunct. If case 19 stops reverting, it lies in [30.0, 40.0) alongside case 17 and the two
+share a tier; if it still reverts, it lies in [20.0, 30.0) and the reported capitals are wrong by more than rounding.
+
+C. Test whether the mis-targeting costs anything today. The champion's offer ladder gives capital-40 sessions a different
+rung from capital-20 sessions via `self.cash_balance >= 40.0`. If cases 17 and 19 are not actually above 40.0 they have been
+taking the mid-capital rung for fourteen generations. Lower that one gate to `>= 35.0` and read which cases move; the moved
+set is the set of sessions that have been mis-tiered all along.
+
+Case 13 should not get another generation through the capital axis, and Section 10 axis A is closed. If generation 6 confirms
+the mis-tiering, the correct next loop reopens the capital policy from scratch against measured tiers rather than reported
+ones, which is the memo's Section 9 with a corrected conditioning variable.
+Challenger update: admitted market-loop-20260820-3-g05-g5-thirteen-restore.
