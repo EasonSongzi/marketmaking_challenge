@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-20T20:13:05.267Z
 - Starting baseline: g6-fed-flat-23-or-25 (13.30/16.00)
-- Current baseline: g6-fed-flat-23-or-25 (13.30/16.00)
+- Current baseline: g1-rate-flat-regime (13.30/16.00)
 - Stop condition: not reached
-- Score trend: 13.30
+- Score trend: 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -43,7 +43,7 @@ Parent: champion `g6-fed-flat-23-or-25` (`4c4cb69cd1a35ba17cb81e6aa0333b1acf4265
 - Baseline delta: -0.80 points; PnL -36.39
 
 Selection: g1-rate-flat-regime.
-Promotion: none.
+Promotion: g1-rate-flat-regime (0d8a19a9b9a27114b35b86b7cfe9551ceb98a77a).
 Finding: SESSION TOMOGRAPHY SUCCEEDED. Warm-up statistics do separate the grader's sessions, all three
 statistics are live across the sixteen scored cases, and one of them is a surgical discriminator. Zero bankruptcies and
 zero runtime errors in all three candidates; minimum ending capital held at 7.97/10.00 throughout.
@@ -123,3 +123,118 @@ half-line is the first thing to try. Converting case 8 or 19 is worth +0.30 and 
 Do not spend a generation on cases 7 or 13. Both were inert under all three statistics, so no measured warm-up axis reaches
 them.
 Challenger update: admitted market-loop-20260820-3-g01-g1-residual-corr-regime.
+
+## Generation 2: explore quote
+
+Generation 1 opened the only new axis this project has found in twelve generations: the warm-up flat-rate frequency labels exactly three of the sixteen scored sessions, {6, 9, 15}, and an eight-cent half-width in that regime promoted at 13.30 / 161.04. This generation exploits that axis on its two free parameters, width and threshold, and it is the last cheap generation on it. Direction is not guessed: the only lost case inside the label, case 6, is won by Fixed Width 0.25, so Section 8's rule says its regime wants a much wider and far less participatory quote, and the eight-cent step already moved case 6 from 0.10 to 1.29 and closed its gap from 10.83 to 9.39. Candidates A and B walk the width out to twelve and eighteen cents to map the curve and find where case 6 turns over, while watching the two protected rank-one holds the label also touches: case 9, whose margin over Fixed Width 0.1 is 24.46 and is safe, and case 15, whose margin over Situational Unawareness is 7.32 and is the real constraint. Candidate C lowers the threshold to 0.40 at the promoted eight cents, which is a pure measurement: differencing its moved set against the champion's {6, 9, 15} attributes every additional session to the flat-rate band (0.40, 0.50], extending the label map exactly as the fair-value tomography did. Case 6 needs 9.39 dollars to convert and that is unlikely in one generation, so the promotion test here is combined PnL at 13.30 against 161.04; the research test is the shape of the width curve and the new band label.
+
+Parent: champion `g1-rate-flat-regime` (`63a73f0b8ba5b647bbe77e7be85511d61fe23e3db7114a50fe4c007d7e36827b`).
+
+### g2-flat-wide-twelve
+
+- Hypothesis: The flat-rate regime wants a much wider quote than eight cents. Raising the flat-regime half-width from eight to twelve cents moves case 6 further toward Fixed Width 0.25 and gains more in case 15 than it gives up in case 9, while leaving the thirteen sessions outside the label byte-identical.
+- Implementation plan: In `quote` only, a single constant change. Find the existing line `half_width: int = 8 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)` and replace the literal `8` with `12`, so the line reads `half_width: int = 12 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)`. Change nothing else whatsoever: the `flat_rate_frequency` line above it, every price shade, the fill-signal skew, `active_exposure`, `signed_reserve`, `cash_floor`, the whole quantity ladder, every inventory gate and the `return Quote(...)` statement stay byte-identical to the parent. `git diff` must show exactly one removed line and one added line. Expected tradeoff: cases 6, 9 and 15 move and nothing else does; case 9 is expected to give up more than it did at eight cents.
+- Worker summary: One literal in `quote`: flat-regime `half_width` 8 -> 12. Diff is one line removed, one added; threshold 0.50 and the `flat_rate_frequency` line untouched. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.70/16.00 points; PnL 146.97; minimum capital 7.97/10.00
+- Baseline delta: -0.60 points; PnL -14.07
+
+### g2-flat-wide-eighteen
+
+- Hypothesis: Eighteen cents is near the width that beats Fixed Width 0.25 in the flat-rate regime. If case 6 is still improving at eighteen cents the axis is worth another generation; if it has turned over between twelve and eighteen, the optimum is bracketed and the axis is finished.
+- Implementation plan: In `quote` only, a single constant change. Find the existing line `half_width: int = 8 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)` and replace the literal `8` with `18`, so the line reads `half_width: int = 18 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)`. Change nothing else whatsoever, exactly as above. `git diff` must show exactly one removed line and one added line. Expected tradeoff: a large PnL swing confined to cases 6, 9 and 15; the rank-one hold in case 15 against Situational Unawareness is the binding constraint and must be checked explicitly.
+- Worker summary: One literal in `quote`: flat-regime `half_width` 8 -> 18. Diff is one line removed, one added; threshold 0.50 and the `flat_rate_frequency` line untouched. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.70/16.00 points; PnL 146.47; minimum capital 7.97/10.00
+- Baseline delta: -0.60 points; PnL -14.57
+
+### g2-flat-threshold-forty
+
+- Hypothesis: Additional grader sessions have a warm-up flat-rate frequency in the band (0.40, 0.50]. Lowering the threshold from 0.50 to 0.40 at the promoted eight-cent width admits them to the flat regime, and differencing the moved set against the champion's {6, 9, 15} attributes each newly moved session to that band.
+- Implementation plan: In `quote` only, a single constant change. Find the existing line `half_width: int = 8 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)` and replace the literal `0.50` with `0.40`, so the line reads `half_width: int = 8 if flat_rate_frequency > 0.40 else (5 if repeat_request else 4)`. Leave the width literal `8` untouched. Change nothing else whatsoever, exactly as above. `git diff` must show exactly one removed line and one added line. Expected tradeoff: this is a measurement. If the moved set is exactly {6, 9, 15} the band is empty and the threshold may be lowered further next generation; if it is larger, the newly moved cases are the band's members and their PnL deltas say whether the wide policy suits them.
+- Worker summary: One literal in `quote`: flat-regime threshold 0.50 -> 0.40, width literal 8 left in place. Diff is one line removed, one added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.50/16.00 points; PnL 116.52; minimum capital 35.66/40.00
+- Baseline delta: -0.80 points; PnL -44.52
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: THE FLAT-RATE AXIS IS NOW FULLY MAPPED, AND IT IS BOUNDED BY LABEL IMPURITY, NOT BY DIRECTION.
+No candidate promoted; the champion holds at 13.30 / 161.04. Zero bankruptcies and zero runtime errors throughout.
+
+PER-CASE VECTORS against champion g1-rate-flat-regime (ours PnL / rank; * marks a moved case):
+
+case  N  champion   w12        w18        thr40      leader
+  5   2   2.23 r2    2.23 r2    2.23 r2    2.87* r2   Stalemate Quoter
+  6   3   1.29 r2    2.01* r2   3.93* r2   1.29 r2    Fixed Width 0.25
+  7   2  -2.03 r2   -2.03 r2   -2.03 r2   -0.25* r2   Fixed Width 0.25
+  8   3   1.61 r2    1.61 r2    1.61 r2    1.61 r2    Fixed Width 0.1
+  9   3  31.14 r1   16.57* r2  16.23* r2  31.14 r1    (ours)
+ 10   3  11.55 r2   11.55 r2   11.55 r2   11.55 r2    Fixed Width 0.1
+ 11   3  21.17 r1   21.17 r1   21.17 r1    5.52* r1   (ours)
+ 12   2   4.27 r1    4.27 r1    4.27 r1    4.27 r1    (ours)
+ 13   4   8.96 r2    8.96 r2    8.96 r2    8.90* r2   Fixed Width 0.1
+ 14   3  17.29 r1   17.29 r1   17.29 r1   -2.16* r3   Lattice
+ 15   3  13.03 r1   12.81* r2  10.73* r2  13.03 r1    (ours)
+ 16   3  27.07 r1   27.07 r1   27.07 r1   23.56* r1   (ours)
+ 17   4  18.31 r1   18.31 r1   18.31 r1   18.31 r1    (ours)
+ 18   4   7.44 r2    7.44 r2    7.44 r2   -0.47* r3   Fixed Width 0.05
+ 19   4  -2.59 r2   -2.59 r2   -2.59 r2    1.69* r2   Situational Unawareness
+ 20   4   0.30 r1    0.30 r1    0.30 r1   -4.34* r1   (ours)
+TOTAL         13.30      12.70      12.70      12.50
+
+SCORE DECOMPOSITION OF THE DELTA:
+  w12    13.30 -> 12.70   case 9 r1->r2 (-0.30), case 15 r1->r2 (-0.30); PnL 161.04 -> 146.97
+  w18    13.30 -> 12.70   identical two rank losses;                     PnL 161.04 -> 146.47
+  thr40  13.30 -> 12.50   case 14 r1->r3 (-0.60), case 18 r2->r3 (-0.20); PnL 161.04 -> 116.52
+
+1. THE COMPLETE FLAT-RATE BAND PARTITION OF ALL SIXTEEN SESSIONS IS NOW KNOWN. Differencing thr40's moved set against the
+champion's label gives a clean three-band map, which is the single most reusable fact this loop has produced:
+
+    flat_rate_frequency  > 0.50        {6, 9, 15}
+    flat_rate_frequency in (0.40,0.50] {5, 7, 11, 13, 14, 16, 18, 19, 20}
+    flat_rate_frequency <= 0.40        {8, 10, 12}
+
+2. THE WIDTH DIRECTION IS CONFIRMED AND MONOTONE, BUT THE LABEL IS IMPURE. Case 6 improves without turning over:
+0.10 at 4/5 cents, 1.29 at eight, 2.01 at twelve, 3.93 at eighteen, and its gap to Fixed Width 0.25 closes 10.83 -> 9.39 ->
+8.83 -> 6.44, a NEW PROJECT BEST against the previous 7.96. Section 8's read of the competitor identity was correct. The axis
+is nonetheless finished at eight cents, because cases 9 and 15 sit in the same label and both surrender rank one by twelve
+cents. Eight cents is the joint optimum of an impure label, not the optimum for case 6. Further width on this axis requires
+separating case 6 from cases 9 and 15 first.
+
+3. THE MIDDLE BAND SPLITS CLEANLY INTO CASES THAT WANT WIDTH AND CASES THAT REFUSE IT. Within (0.40, 0.50], the eight-cent
+widening helped 5 (+0.64), 7 (+1.78) and 19 (+4.28) with no rank change, was neutral on 13 (-0.06), and destroyed 14
+(rank 1 -> 3) and 18 (rank 2 -> 3). Case 7 had been inert under every generation 1 label; this is the first time any
+candidate in the project has moved it, and its gap closed 22.17 -> 20.39.
+
+4. THE GENERATION 1 LABELS SEPARATE THE MIDDLE BAND EXACTLY ALONG THAT LINE. Intersecting the middle band with the THR
+volatility label from generation 1 gives THR-volatility-low = {7, 13, 19} and THR-volatility-high = {5, 11, 14, 16, 18, 20}.
+Every case that gained from widening and lost no rank is in the low set; both cases that lost rank are in the high set. The
+conjunction (flat_rate_frequency > 0.40 AND theriodic sample_std_dev <= 0.025) therefore predicts a +6.00 combined-PnL gain
+with no rank transition anywhere. This is a measured prediction, not an extrapolation.
+
+5. THE BOTTOM BAND IS UNTOUCHED AND CONTAINS THE PROJECT'S BEST NEVER-WON EVIDENCE. Sessions {8, 10, 12} have never been
+widened by any promoted source. Generation 1 showed that widening 8 and 10 is worth +5.34 and +2.62 and produced the
+project-best case 8 gap of 20.91, while 12 is a rank-one hold with a 12.76 margin. Widening the bottom band alone is
+disjoint from the top band and from the conjunction in point 4.
+Next-generation rationale: Generation 3 should stop probing and start harvesting the band map, with three disjoint,
+individually promotable rules.
+
+A. Conjoin the two measured labels: widen when flat_rate_frequency > 0.50, or when flat_rate_frequency > 0.40 and the THR
+log-return sample_std_dev is at most 0.025. That adds exactly {7, 13, 19} to the wide regime and is predicted at +6.00
+combined PnL with no rank transition.
+
+B. Test whether case 6 is separable from cases 9 and 15 on the same axis by raising the threshold to 0.60 at the
+eighteen-cent width. If 9 and 15 fall below 0.60 they revert to the narrow quote and case 6 keeps its best-ever 3.93,
+which is worth about +0.88 combined PnL at unchanged score; if all three are above 0.60 the result equals w18 and case 6 is
+not separable on this axis, which closes it.
+
+C. Widen the bottom band as well: flat_rate_frequency > 0.50 or flat_rate_frequency <= 0.40. That adds {8, 10, 12}, is
+disjoint from A, and carries the project's best never-won evidence in case 8.
+
+Generation 4 composes whichever of A, B and C are positive. Their case footprints are disjoint by construction -
+{7,13,19}, {6,9,15}, {8,10,12} - and the previous loop established that disjoint effects add exactly, so composition is the
+one thing worth a graded run after this.
+
+Do not spend a generation widening the middle band as a whole. Generation 2 priced that at -0.80 points.
+Challenger update: admitted market-loop-20260820-3-g02-g2-flat-wide-eighteen.

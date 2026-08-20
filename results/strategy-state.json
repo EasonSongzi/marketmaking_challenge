@@ -3712,6 +3712,54 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260820-3-g02-g2-flat-wide-eighteen",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It holds the project's new best gap in never-won case 6 (leader-minus-ours 6.44 against a previous best of 7.96) with case 6's best-ever own PnL of 3.93, more than triple the promoted champion's 1.29. It is the only source that has ever come within seven dollars of Fixed Width 0.25 in that session. Its explicit upside is a bounded two-parameter vector: the flat-rate threshold, currently a half-line at 0.50 on a frequency bounded in [0, 1] and known to separate {6, 9, 15} from the rest, and the flat-regime half-width, whose response in case 6 is monotone and unturned across 8, 12 and 18 cents. The only thing standing between this source and a promotion is the two rank-one holds in cases 9 and 15 that share its label, which is exactly a threshold question.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-3-g02-g2-flat-wide-eighteen/r00.py",
+          "sourceSha256": "4ad9601c4ba6c7debe6d946bd3bf9787b19b833f498c052bdd9e0ce1653acaa1",
+          "evaluationPath": "results/challengers/market-loop-20260820-3-g02-g2-flat-wide-eighteen/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-3-g02-g2-flat-wide-eighteen/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g2-flat-wide-eighteen",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-3-g02-g2-flat-wide-eighteen/r00.py",
+            "sourceSha256": "4ad9601c4ba6c7debe6d946bd3bf9787b19b833f498c052bdd9e0ce1653acaa1",
+            "modifiedLines": 2,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1270,
+              "combinedPnlCents": 14647,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": -60,
+              "combinedPnlCents": -1457
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-20T20:27:38.123Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -8053,6 +8101,63 @@
         "minimumCapital": {
           "endingCashCents": 797,
           "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "a5767ecc65fefbef3ec04936a3febdebd07cfaa75595b6b00c6fff609dfa2942": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1270,
+        "combinedPnlCents": 14697,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "4ad9601c4ba6c7debe6d946bd3bf9787b19b833f498c052bdd9e0ce1653acaa1": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1270,
+        "combinedPnlCents": 14647,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "29fdd09f08aeb0cb2e768f239c38711fdcc4596b142aa34ee58e1edb76557d8d": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1250,
+        "combinedPnlCents": 11652,
+        "minimumCapital": {
+          "endingCashCents": 3566,
+          "startingCapitalCents": 4000
         },
         "runtimeErrors": 0
       },

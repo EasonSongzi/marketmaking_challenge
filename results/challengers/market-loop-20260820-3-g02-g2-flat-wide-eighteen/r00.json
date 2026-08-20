@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g2-flat-wide-eighteen",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-3-g02-g2-flat-wide-eighteen/r00.py",
+  "sourceSha256": "4ad9601c4ba6c7debe6d946bd3bf9787b19b833f498c052bdd9e0ce1653acaa1",
+  "modifiedLines": 2,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1270,
+    "combinedPnlCents": 14647,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -60,
+    "combinedPnlCents": -1457
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
