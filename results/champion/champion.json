@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "g1-fed-four-any-five-long",
+  "id": "g2-ajr-four-hold-position",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "363827c381e127c71b3b6440608ec29506eb57244f6b705a50267a37c95e1e40",
+  "sourceSha256": "04b1cfa3a0db2c78ab6fd7091d2062a567ccf6cc836ce295338b54c5dc797183",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260819-5:g01:g1-fed-four-any-five-long",
+  "experimentId": "market-loop-20260819-5:g02:g2-ajr-four-hold-position",
   "experiment": {
     "runId": "market-loop-20260819-5",
-    "generation": 1,
-    "candidateId": "g1-fed-four-any-five-long"
+    "generation": 2,
+    "candidateId": "g2-ajr-four-hold-position"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 15557,
+    "combinedPnlCents": 15652,
     "minimumCapital": {
       "endingCashCents": 767,
       "startingCapitalCents": 1000

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g2-thr-four-hold-position",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-5-g02-g2-thr-four-hold-position/r00.py",
+  "sourceSha256": "b48029ca77f3501cf78b6ce704108be453b9ff4ed3a1a226a5994a1ef4344dd5",
+  "modifiedLines": 4,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 15357,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -200
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
