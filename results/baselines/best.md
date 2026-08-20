@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g2-ajr-four-hold-position`
+- Current champion: `g3-thr-four-deep-cheap`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `04b1cfa3a0db2c78ab6fd7091d2062a567ccf6cc836ce295338b54c5dc797183`
-- Experiment: `market-loop-20260819-5`, generation 2, candidate `g2-ajr-four-hold-position`
+- Source SHA-256: `1958642d50227da01a99ffb6182b52a2477ad17ddc8c6376dfd1fd1327ce41ce`
+- Experiment: `market-loop-20260819-5`, generation 3, candidate `g3-thr-four-deep-cheap`
 - SCORED points: 13.30/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0

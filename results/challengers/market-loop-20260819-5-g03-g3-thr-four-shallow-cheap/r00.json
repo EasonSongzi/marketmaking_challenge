@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g3-thr-four-shallow-cheap",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260819-5-g03-g3-thr-four-shallow-cheap/r00.py",
+  "sourceSha256": "42cb6e3c70ed23df753ccddca48bcec4ea85cf53a03b819cf25c853a62474e53",
+  "modifiedLines": 5,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 15468,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": -184
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

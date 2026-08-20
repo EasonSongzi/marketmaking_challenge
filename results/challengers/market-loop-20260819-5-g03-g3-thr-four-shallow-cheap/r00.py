@@ -498,7 +498,7 @@ class MarketMaker:
             and not (
                 option.legs[0].underlying_id == THERIODIC_UNDERLYING_ID
                 and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
-                and fair_value_cents <= 14
+                and fair_value_cents >= 15
             )
         ):
             bid_quantity = 4

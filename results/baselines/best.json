@@ -1,20 +1,20 @@
 {
   "schemaVersion": 2,
-  "strategy": "g2-ajr-four-hold-position",
+  "strategy": "g3-thr-four-deep-cheap",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "04b1cfa3a0db2c78ab6fd7091d2062a567ccf6cc836ce295338b54c5dc797183",
-  "experimentId": "market-loop-20260819-5:g02:g2-ajr-four-hold-position",
+  "sourceSha256": "1958642d50227da01a99ffb6182b52a2477ad17ddc8c6376dfd1fd1327ce41ce",
+  "experimentId": "market-loop-20260819-5:g03:g3-thr-four-deep-cheap",
   "experiment": {
     "runId": "market-loop-20260819-5",
-    "generation": 2,
-    "candidateId": "g2-ajr-four-hold-position"
+    "generation": 3,
+    "candidateId": "g3-thr-four-deep-cheap"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 15652,
+    "combinedPnlCents": 15682,
     "minimumCapital": {
       "endingCashCents": 767,
       "startingCapitalCents": 1000

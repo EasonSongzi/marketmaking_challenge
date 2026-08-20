@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g2-ajr-four-hold-position",
+    "id": "g3-thr-four-deep-cheap",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "04b1cfa3a0db2c78ab6fd7091d2062a567ccf6cc836ce295338b54c5dc797183",
+    "sourceSha256": "1958642d50227da01a99ffb6182b52a2477ad17ddc8c6376dfd1fd1327ce41ce",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260819-5:g02:g2-ajr-four-hold-position",
+    "experimentId": "market-loop-20260819-5:g03:g3-thr-four-deep-cheap",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 15652,
+      "combinedPnlCents": 15682,
       "minimumCapital": {
         "endingCashCents": 767,
         "startingCapitalCents": 1000
@@ -3229,6 +3229,102 @@
             ]
           },
           "createdAt": "2026-08-20T04:43:23.965Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-5-g03-g3-thr-four-shallow-cheap",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "Preserved because it now holds the last unresolved opportunity on the bid-side inventory map in an unusually sharp form. Its evidence localizes a plus 0.30 gain on case 7 and a minus 2.14 loss on case 11 into a single contiguous band, THR contracts already held long whose fair value is fifteen cents or more, and nothing else in the twenty cases moves at all. Two moving cases in one band is the cleanest decomposition produced in this run. It also carries a genuinely bounded parameter with a defined sweep range: the reachable region is capped near twenty-eight cents by the bid_price <= 0.25 conjunct, so the fifteen-cent lower edge can be raised through the low twenties to test whether the case-7 gain and the case-11 loss occupy different sub-bands. That is a one-dimensional integer parameter on a known interval, which is exactly the shape a Tune generation consumes. It is not the winner and must not be promoted at 154.68.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-5-g03-g3-thr-four-shallow-cheap/r00.py",
+          "sourceSha256": "42cb6e3c70ed23df753ccddca48bcec4ea85cf53a03b819cf25c853a62474e53",
+          "evaluationPath": "results/challengers/market-loop-20260819-5-g03-g3-thr-four-shallow-cheap/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-5-g03-g3-thr-four-shallow-cheap/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g3-thr-four-shallow-cheap",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-5-g03-g3-thr-four-shallow-cheap/r00.py",
+            "sourceSha256": "42cb6e3c70ed23df753ccddca48bcec4ea85cf53a03b819cf25c853a62474e53",
+            "modifiedLines": 5,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15468,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -184
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-20T04:48:24.199Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-5-g03-champion-g2-ajr-four-hold-position",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g3-thr-four-deep-cheap",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-5-g03-champion-g2-ajr-four-hold-position/r00.py",
+          "sourceSha256": "04b1cfa3a0db2c78ab6fd7091d2062a567ccf6cc836ce295338b54c5dc797183",
+          "evaluationPath": "results/challengers/market-loop-20260819-5-g03-champion-g2-ajr-four-hold-position/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-5-g03-champion-g2-ajr-four-hold-position/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g2-ajr-four-hold-position",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-5-g03-champion-g2-ajr-four-hold-position/r00.py",
+            "sourceSha256": "04b1cfa3a0db2c78ab6fd7091d2062a567ccf6cc836ce295338b54c5dc797183",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15652,
+              "minimumCapital": {
+                "endingCashCents": 767,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-20T04:48:27.813Z"
         }
       ],
       "tuningHistory": []
@@ -6944,7 +7040,7 @@
     },
     "04b1cfa3a0db2c78ab6fd7091d2062a567ccf6cc836ce295338b54c5dc797183": {
       "valid": true,
-      "modifiedLines": 4,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -6957,7 +7053,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "b48029ca77f3501cf78b6ce704108be453b9ff4ed3a1a226a5994a1ef4344dd5": {
       "valid": true,
@@ -6989,6 +7087,61 @@
         "combinedPnlCents": 15470,
         "minimumCapital": {
           "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "1958642d50227da01a99ffb6182b52a2477ad17ddc8c6376dfd1fd1327ce41ce": {
+      "valid": true,
+      "modifiedLines": 5,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15682,
+        "minimumCapital": {
+          "endingCashCents": 767,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "42cb6e3c70ed23df753ccddca48bcec4ea85cf53a03b819cf25c853a62474e53": {
+      "valid": true,
+      "modifiedLines": 5,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15468,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "b1d690fd310bdbb5b121f72b36e02df7dc7996cb013a0f8bf73ff00cc6d669bf": {
+      "valid": true,
+      "modifiedLines": 5,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15652,
+        "minimumCapital": {
+          "endingCashCents": 767,
           "startingCapitalCents": 1000
         },
         "runtimeErrors": 0

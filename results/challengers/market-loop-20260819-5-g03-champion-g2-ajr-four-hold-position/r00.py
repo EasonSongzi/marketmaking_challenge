@@ -495,11 +495,6 @@ class MarketMaker:
                 option.legs[0].underlying_id == AJARAI_UNDERLYING_ID
                 and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
             )
-            and not (
-                option.legs[0].underlying_id == THERIODIC_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
-                and fair_value_cents <= 14
-            )
         ):
             bid_quantity = 4
         if (
