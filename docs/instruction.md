@@ -155,6 +155,32 @@ Freeze everything the prior memo froze, plus what this loop settled.
 
 ---
 
+## 5b. Challenger Pool (curated after this loop)
+
+Six active challengers remain. The pool was pruned after the run: three stacked
+demoted champions and three superseded sources were retired, and one archived
+candidate was admitted.
+
+| Challenger | PnL | Why it is kept |
+| --- | ---: | --- |
+| `...-4-g06-g6-fed-four-hold-any-position` | 155.44 | Fourth unit gated on `!= 0`. **Orthogonal to the champion**, which gates the fourth unit on `> 0` and adds the fifth-unit condition. Composing the two is untested. |
+| `...-4-g06-champion-g5-fed-four-hold-long-position` | 155.40 | Immediate predecessor, one conjunct behind. The single retained fallback. |
+| `...-4-g06-g6-any-four-hold-position` | 154.81 | Best case-14 state in the project (margin 3.30). Entire deficit is case 11. |
+| `...-4-g03-g3-cheap-four-company` | 151.59 | Best case-13 state in the project (gap 1.81). Costs 3.27 PnL. |
+| `...-3-g06-g6-single-leg-wide-cheap-four` | 147.51 | Only source using the `fair_value_cents <= 40` wide trigger instead of `bid_price <= 0.25`. Uncomposed. |
+| `...-3-g02-g2-lowcap-central-offer-six` | 143.74 | Only remaining offer-side variant; central-band gate on offer q6. |
+
+Retired this pass, with reasons recorded in the registry: the three demoted
+champions that are strict subsets of the current champion, `g1-short-company-leg-four`
+(dominated on all three axes by `g3-cheap-four-company`), `g5-short-cheap-bid-four`
+(scores 13.00, loses case 14), and `g3-lowcap-exposure-offer-three` (duplicates an
+idiom the champion already carries, on a refuted axis).
+
+**The highest-value composition available without any new idea** is the champion's
+fifth-unit already-long condition together with the `!= 0` fourth-unit predicate.
+
+---
+
 ## 6. Generation 1: Isolate Case 11
 
 Start from the challenger `market-loop-20260819-4-g06-g6-any-four-hold-position`
