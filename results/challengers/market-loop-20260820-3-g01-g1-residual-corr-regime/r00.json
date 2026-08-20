@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g1-residual-corr-regime",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-3-g01-g1-residual-corr-regime/r00.py",
+  "sourceSha256": "9d34b00f4f9b9988f5aa2bace32d9e7e9e6ec97ffc23836f83ce9b9f7a7e267b",
+  "modifiedLines": 3,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1250,
+    "combinedPnlCents": 12170,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -80,
+    "combinedPnlCents": -3639
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}

@@ -397,8 +397,7 @@ class MarketMaker:
         repeat_request = request_key in request_counts
         request_counts[request_key] = request_counts.get(request_key, 0) + 1
         fair_value_cents: int = round(self.price_option(option) * 100)
-        flat_rate_frequency: float = self.warm_up_statistics.rate_transition_frequencies["unchanged"]
-        half_width: int = 8 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)
+        half_width: int = 5 if repeat_request else 4
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
         if bid_price > 0.50:

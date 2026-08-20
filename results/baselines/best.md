@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g6-fed-flat-23-or-25`
+- Current champion: `g1-rate-flat-regime`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `4c4cb69cd1a35ba17cb81e6aa0333b1acf426535c0a0aad30a11bac067e12545`
-- Experiment: `market-loop-20260820`, generation 6, candidate `g6-fed-flat-23-or-25`
+- Source SHA-256: `63a73f0b8ba5b647bbe77e7be85511d61fe23e3db7114a50fe4c007d7e36827b`
+- Experiment: `market-loop-20260820-3`, generation 1, candidate `g1-rate-flat-regime`
 - SCORED points: 13.30/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0

@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "g6-fed-flat-23-or-25",
+  "id": "g1-rate-flat-regime",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "4c4cb69cd1a35ba17cb81e6aa0333b1acf426535c0a0aad30a11bac067e12545",
+  "sourceSha256": "63a73f0b8ba5b647bbe77e7be85511d61fe23e3db7114a50fe4c007d7e36827b",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260820:g06:g6-fed-flat-23-or-25",
+  "experimentId": "market-loop-20260820-3:g01:g1-rate-flat-regime",
   "experiment": {
-    "runId": "market-loop-20260820",
-    "generation": 6,
-    "candidateId": "g6-fed-flat-23-or-25"
+    "runId": "market-loop-20260820-3",
+    "generation": 1,
+    "candidateId": "g1-rate-flat-regime"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 15809,
+    "combinedPnlCents": 16104,
     "minimumCapital": {
       "endingCashCents": 797,
       "startingCapitalCents": 1000
