@@ -2781,7 +2781,7 @@
     },
     {
       "id": "market-loop-20260819-4-g02-champion-g6-single-leg-cheap-five",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g2-hold-five-short-rate",
@@ -2825,7 +2825,11 @@
           "createdAt": "2026-08-19T22:46:37.931Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Strict ancestor of the current champion at 154.75 against 155.53, two conjuncts behind. Diffing it against the champion shows only additions and no removals: the champion is this source plus the FED fourth-unit and FED fifth-unit already-long conditions. It carries no unique evidence, and the nearer demoted champion at 155.40 is retained as the fallback.",
+        "at": "2026-08-20T04:12:15.021Z"
+      }
     },
     {
       "id": "market-loop-20260819-4-g03-g3-cheap-four-company",
