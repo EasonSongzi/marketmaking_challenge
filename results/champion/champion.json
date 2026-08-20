@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "id": "g1-rate-flat-regime",
+  "id": "g3-band-low-vol",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "63a73f0b8ba5b647bbe77e7be85511d61fe23e3db7114a50fe4c007d7e36827b",
+  "sourceSha256": "4fef8f77ff641409d7f45e3cc9f6eec5ae49e4b5dbdf8526dea0316b34b74ca9",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260820-3:g01:g1-rate-flat-regime",
+  "experimentId": "market-loop-20260820-3:g03:g3-band-low-vol",
   "experiment": {
     "runId": "market-loop-20260820-3",
-    "generation": 1,
-    "candidateId": "g1-rate-flat-regime"
+    "generation": 3,
+    "candidateId": "g3-band-low-vol"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 16104,
+    "combinedPnlCents": 16704,
     "minimumCapital": {
-      "endingCashCents": 797,
+      "endingCashCents": 975,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0

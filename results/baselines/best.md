@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g1-rate-flat-regime`
+- Current champion: `g3-band-low-vol`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `63a73f0b8ba5b647bbe77e7be85511d61fe23e3db7114a50fe4c007d7e36827b`
-- Experiment: `market-loop-20260820-3`, generation 1, candidate `g1-rate-flat-regime`
+- Source SHA-256: `4fef8f77ff641409d7f45e3cc9f6eec5ae49e4b5dbdf8526dea0316b34b74ca9`
+- Experiment: `market-loop-20260820-3`, generation 3, candidate `g3-band-low-vol`
 - SCORED points: 13.30/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0

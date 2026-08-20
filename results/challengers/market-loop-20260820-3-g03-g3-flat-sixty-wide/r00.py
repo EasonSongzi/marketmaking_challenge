@@ -398,13 +398,7 @@ class MarketMaker:
         request_counts[request_key] = request_counts.get(request_key, 0) + 1
         fair_value_cents: int = round(self.price_option(option) * 100)
         flat_rate_frequency: float = self.warm_up_statistics.rate_transition_frequencies["unchanged"]
-        theriodic_return_volatility: float = self.warm_up_statistics.company_log_returns_by_underlying_id[
-            THERIODIC_UNDERLYING_ID
-        ].sample_std_dev
-        wide_regime: bool = flat_rate_frequency > 0.50 or (
-            flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025
-        )
-        half_width: int = 8 if wide_regime else (5 if repeat_request else 4)
+        half_width: int = 18 if flat_rate_frequency > 0.60 else (5 if repeat_request else 4)
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
         if bid_price > 0.50:

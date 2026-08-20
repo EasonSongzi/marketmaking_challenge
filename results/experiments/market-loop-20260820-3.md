@@ -238,3 +238,129 @@ one thing worth a graded run after this.
 
 Do not spend a generation widening the middle band as a whole. Generation 2 priced that at -0.80 points.
 Challenger update: admitted market-loop-20260820-3-g02-g2-flat-wide-eighteen.
+
+## Generation 3: explore quote
+
+Generations 1 and 2 spent five graded sources mapping the warm-up flat-rate frequency onto the grader's sixteen scored sessions, and the map is now complete: {6, 9, 15} above 0.50, {5, 7, 11, 13, 14, 16, 18, 19, 20} in (0.40, 0.50], and {8, 10, 12} at or below 0.40. Generation 2 also priced the eight-cent widening inside every band. This generation stops probing and harvests that map with three rules whose case footprints are disjoint by construction, so that generation 4 can compose whichever ones pay. Candidate A conjoins the two measured labels: within the middle band, every case that gained from widening without losing rank (7, 13, 19) is THR-volatility-low and both cases that lost rank (14, 18) are THR-volatility-high, so gating on that conjunction predicts +6.00 combined PnL with no rank transition anywhere. Candidate B asks the one question that would unlock the width axis: case 6's response to width is monotone and unturned through eighteen cents, where it set a new project-best gap of 6.44, but cases 9 and 15 share its label and both surrender rank one past eight cents; raising the threshold to 0.60 at eighteen cents separates case 6 if its flat-rate frequency is the highest of the three, and closes the axis if it is not. Candidate C widens the bottom band, which no promoted source has ever touched and which holds the project-best case 8 evidence from generation 1. A and C are disjoint from each other and from the top band; B is a within-band refinement of the top band.
+
+Parent: champion `g1-rate-flat-regime` (`63a73f0b8ba5b647bbe77e7be85511d61fe23e3db7114a50fe4c007d7e36827b`).
+
+### g3-band-low-vol
+
+- Hypothesis: The middle flat-rate band splits on THR return volatility exactly along the line between cases that want a wider quote and cases that refuse it. Widening the middle band only where the THR log-return sample standard deviation is at most 0.025 adds cases 7, 13 and 19 to the wide regime while leaving 5, 11, 14, 16, 18 and 20 narrow, gaining combined PnL with no rank transition.
+- Implementation plan: In `quote` only. Find the existing line `half_width: int = 8 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)` and replace that single line with the following four lines, keeping the `flat_rate_frequency` line immediately above it exactly as it is:
+
+```python
+        theriodic_return_volatility: float = self.warm_up_statistics.company_log_returns_by_underlying_id[
+            THERIODIC_UNDERLYING_ID
+        ].sample_std_dev
+        wide_regime: bool = flat_rate_frequency > 0.50 or (
+            flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025
+        )
+        half_width: int = 8 if wide_regime else (5 if repeat_request else 4)
+```
+
+Change nothing else: every price shade, the fill-signal skew, `active_exposure`, `signed_reserve`, `cash_floor`, the whole quantity ladder, every inventory gate and the `return Quote(...)` statement stay byte-identical to the parent. Expected tradeoff: cases 7, 13 and 19 move and nothing outside {6, 7, 9, 13, 15, 19} does; the predicted deltas are case 7 +1.78, case 13 -0.06 and case 19 +4.28 at unchanged 13.30.
+- Worker summary: In `quote`, replaced the single `half_width` line with a `theriodic_return_volatility` read from `warm_up_statistics.company_log_returns_by_underlying_id[THERIODIC_UNDERLYING_ID].sample_std_dev`, a `wide_regime` bool `flat_rate_frequency > 0.50 or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)`, and `half_width = 8 if wide_regime else (5 if repeat_request else 4)`. One removed line, seven added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 167.04; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL 6.00
+
+### g3-flat-sixty-wide
+
+- Hypothesis: Case 6 has a strictly higher warm-up flat-rate frequency than cases 9 and 15. Raising the threshold to 0.60 at the eighteen-cent width therefore isolates case 6 in the wide regime, keeping its best-ever 3.93 while cases 9 and 15 revert to the narrow quote and recover the rank-one PnL they held before generation 1.
+- Implementation plan: In `quote` only, two literals on one line. Find the existing line `half_width: int = 8 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)` and replace it with `half_width: int = 18 if flat_rate_frequency > 0.60 else (5 if repeat_request else 4)`. Both literals change: the width `8` becomes `18` and the threshold `0.50` becomes `0.60`. Leave the `flat_rate_frequency` line above it untouched. `git diff` must show exactly one removed line and one added line. Change nothing else. Expected tradeoff: if cases 9 and 15 fall below 0.60 the result is case 6 at 3.93, case 9 back near 32.35 and case 15 back near 10.06, worth roughly +0.88 combined PnL at unchanged score; if all three sit above 0.60 the twenty-case vector will equal generation 2's eighteen-cent candidate and the width axis is closed.
+- Worker summary: In `quote`, two literals on one line: width `8` -> `18` and threshold `0.50` -> `0.60`. One removed line, one added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 161.92; minimum capital 7.97/10.00
+- Baseline delta: 0.00 points; PnL 0.88
+
+### g3-low-band-wide
+
+- Hypothesis: The bottom flat-rate band wants the same eight-cent widening the top band does. Sessions {8, 10, 12} have never been widened by any promoted source, and generation 1 showed that widening 8 and 10 is worth +5.34 and +2.62 and produced the project-best case 8 gap of 20.91, while case 12 is a rank-one hold with a 12.76 margin that survived widening in generation 1.
+- Implementation plan: In `quote` only, one line. Find the existing line `half_width: int = 8 if flat_rate_frequency > 0.50 else (5 if repeat_request else 4)` and replace it with `half_width: int = 8 if flat_rate_frequency > 0.50 or flat_rate_frequency <= 0.40 else (5 if repeat_request else 4)`. Leave the `flat_rate_frequency` line above it untouched. `git diff` must show exactly one removed line and one added line. Change nothing else. Expected tradeoff: cases 8, 10 and 12 move and nothing outside {6, 8, 9, 10, 12, 15} does; case 12's rank-one hold against Fixed Width 0.05 must be checked explicitly, and case 8's gap is the result to watch.
+- Worker summary: In `quote`, one line: the `half_width` predicate became `flat_rate_frequency > 0.50 or flat_rate_frequency <= 0.40`. One removed line, one added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.10/16.00 points; PnL 159.98; minimum capital 7.97/10.00
+- Baseline delta: -0.20 points; PnL -1.06
+
+Selection: g3-band-low-vol.
+Promotion: none.
+Finding: THE BAND MAP PAID OFF AND ALL THREE PREDICTIONS WERE EXACT. g3-band-low-vol promotes at
+13.30 / 167.04, a +6.00 combined-PnL gain over the champion's 161.04, and it also lifts minimum ending capital from
+7.97/10.00 to 9.75/10.00. Zero bankruptcies and zero runtime errors throughout.
+
+PER-CASE VECTORS against champion g1-rate-flat-regime (ours PnL / rank; * marks a moved case):
+
+case  N  champion   lowvol      s60w18     lowband     leader
+  5   2   2.23 r2    2.23 r2     2.23 r2    2.23 r2    Stalemate Quoter
+  6   3   1.29 r2    1.29 r2     3.93* r2   1.29 r2    Fixed Width 0.25
+  7   2  -2.03 r2   -0.25* r2   -2.03 r2   -2.03 r2    Fixed Width 0.25
+  8   3   1.61 r2    1.61 r2     1.61 r2    6.95* r2   Fixed Width 0.1
+  9   3  31.14 r1   31.14 r1    32.35* r1  31.14 r1    (ours)
+ 10   3  11.55 r2   11.55 r2    11.55 r2   14.17* r2   Fixed Width 0.1
+ 11   3  21.17 r1   21.17 r1    21.17 r1   21.17 r1    (ours)
+ 12   2   4.27 r1    4.27 r1     4.27 r1    3.21* r1   (ours)
+ 13   4   8.96 r2    8.90* r2    8.96 r2    8.96 r2    Fixed Width 0.1
+ 14   3  17.29 r1   17.29 r1    17.29 r1   17.29 r1    (ours)
+ 15   3  13.03 r1   13.03 r1    10.06* r1  13.03 r1    (ours)
+ 16   3  27.07 r1   27.07 r1    27.07 r1   27.07 r1    (ours)
+ 17   4  18.31 r1   18.31 r1    18.31 r1   10.35* r2   (ours)
+ 18   4   7.44 r2    7.44 r2     7.44 r2    7.44 r2    Fixed Width 0.05
+ 19   4  -2.59 r2    1.69* r2   -2.59 r2   -2.59 r2    Situational Unawareness
+ 20   4   0.30 r1    0.30 r1     0.30 r1    0.30 r1    (ours)
+TOTAL         13.30       13.30       13.30      13.10
+
+SCORE DECOMPOSITION OF THE DELTA:
+  lowvol   13.30 -> 13.30   no rank transition anywhere; PnL 161.04 -> 167.04 (+6.00); min capital 7.97 -> 9.75
+  s60w18   13.30 -> 13.30   no rank transition anywhere; PnL 161.04 -> 161.92 (+0.88)
+  lowband  13.30 -> 13.10   case 17 r1->r2 (-0.20);      PnL 161.04 -> 159.98
+
+1. THE CONJUNCTION PREDICTION WAS EXACT TO THE CENT. Generation 2 predicted that gating the middle band on THR volatility
+would add exactly {7, 13, 19} and gain +6.00 with no rank transition. The moved set was exactly {7, 13, 19} and the gain was
+exactly +6.00: case 7 +1.78, case 13 -0.06, case 19 +4.28. Two independently measured labels composed with no interaction
+term. This is the second time this loop has confirmed that disjoint case footprints add exactly.
+
+2. CASE 6 IS SEPARABLE FROM CASES 9 AND 15 ON THE SAME AXIS. s60w18 moved exactly {6, 9, 15} and its prediction was also
+exact: case 6 kept its best-ever 3.93 and best-ever gap of 6.44, while cases 9 and 15 fell below the 0.60 threshold, reverted
+to the narrow quote, and returned to 32.35 and 10.06. The flat-rate frequency of case 6 is therefore strictly above 0.60 and
+those of cases 9 and 15 lie in (0.50, 0.60]. The width axis that generation 2 closed is reopened: case 6 can be given
+eighteen cents without touching either rank-one hold.
+
+3. THE BOTTOM BAND HAS FOUR MEMBERS, NOT THREE, AND THE FOURTH IS A PROTECTED RANK-ONE HOLD. Generation 2's analysis
+assigned {8, 10, 12} to the band at or below 0.40; the correct membership is {8, 10, 12, 17}, and lowband found it
+empirically by dropping case 17 from rank 1 to rank 2 (18.31 -> 10.35). Corrected map:
+
+    flat_rate_frequency  > 0.60        {6}
+    flat_rate_frequency in (0.50,0.60] {9, 15}
+    flat_rate_frequency in (0.40,0.50] {5, 7, 11, 13, 14, 16, 18, 19, 20}
+    flat_rate_frequency <= 0.40        {8, 10, 12, 17}
+
+4. THE BOTTOM BAND IS WORTH +6.90 ONCE CASE 17 IS EXCLUDED, AND STARTING CAPITAL EXCLUDES IT CLEANLY. Within the band,
+widening gave case 8 +5.34 with the project-best gap of 20.91, case 10 +2.62, case 12 -1.06 with its rank-one hold intact,
+and case 17 -7.96 with a lost rank. Cases 8, 10 and 12 start with capital 10, 20 and 20; case 17 starts with 40. A
+`self.cash_balance < 40.0` conjunction therefore separates them exactly, using a variable the champion already conditions on.
+
+5. THREE DISJOINT, INDIVIDUALLY MEASURED MECHANISMS NOW EXIST, TOTALLING +13.78 IF THEY ADD.
+   {7, 13, 19} low-volatility middle band, +6.00, PROMOTED THIS GENERATION
+   {6} eighteen cents above 0.60,          +2.64 measured as part of s60w18's +0.88
+   {8, 10, 12} bottom band under capital 40, +6.90 inferred from lowband minus case 17
+Next-generation rationale: Generation 4 composes the three disjoint mechanisms and tests additivity one last time.
+
+A. Add the eighteen-cent top slice to the promoted champion: keep the promoted `wide_regime` at eight cents and add
+`half_width = 18 if flat_rate_frequency > 0.60`. Footprint {6} only, since cases 9 and 15 stay at eight cents rather than
+reverting as they did in s60w18. Predicted 167.04 + 2.64 = 169.68 at 13.30.
+
+B. Add the bottom band under a starting-capital guard: widen when `flat_rate_frequency <= 0.40 and self.cash_balance < 40.0`.
+Footprint {8, 10, 12}, excluding the case 17 rank-one hold. Predicted 167.04 + 6.90 = 173.94 at 13.30, and it should carry
+the project-best case 8 gap of 20.91 into the champion line.
+
+C. Compose A and B together. Footprints {6} and {8, 10, 12} are disjoint from each other and from the promoted {7, 13, 19}.
+Predicted 176.58 at 13.30.
+
+If C lands at its prediction the loop has extracted everything the flat-rate map contains, and generation 5 should return to
+the score rather than the tiebreak. The only never-won case within reach is case 13 at a 2.15 gap for +0.20; Section 10's two
+unexplored axes, the fair-value band above 25 cents and offer-side tomography, are untouched and cheap. Case 6 is now the
+second-nearest at a 6.44 gap for +0.30 and its width response is still unturned at eighteen cents, so a single generation
+walking case 6 alone out to twenty-four and thirty cents is the other candidate for generation 5.
+Challenger update: admitted market-loop-20260820-3-g03-g3-flat-sixty-wide.

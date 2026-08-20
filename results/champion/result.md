@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T20:16:37.466Z
+- Date: 2026-08-20T20:30:48.398Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g1-rate-flat-regime
+- Label: g3-band-low-vol
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `63a73f0b8ba5b647bbe77e7be85511d61fe23e3db7114a50fe4c007d7e36827b`
+- Source SHA-256: `4fef8f77ff641409d7f45e3cc9f6eec5ae49e4b5dbdf8526dea0316b34b74ca9`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -180,8 +180,8 @@ Compiler Message
 
 Ranking:
 1. Fixed Width 0.25: $20.14
-2. Mola mola: $-2.03
-Mola mola bankrupt: False (cash balance: 7.97, starting capital: 10.0)
+2. Mola mola: $-0.25
+Mola mola bankrupt: False (cash balance: 9.75, starting capital: 10.0)
 Result: PASS (score=0.40)
 
 Hidden Test Case
@@ -273,11 +273,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.1: $11.11
-2. Mola mola: $8.96
-3. Lattice: $7.01
-4. Situational Unawareness: $2.83
-Mola mola bankrupt: False (cash balance: 28.96, starting capital: 20.0)
+1. Fixed Width 0.1: $15.73
+2. Mola mola: $8.9
+3. Lattice: $7.52
+4. Situational Unawareness: $1.45
+Mola mola bankrupt: False (cash balance: 28.9, starting capital: 20.0)
 Result: PASS (score=0.80)
 
 Hidden Test Case
@@ -372,11 +372,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Situational Unawareness: $22.08
-2. Mola mola: $-2.59
-3. Mongoose: $-13.96
-4. Fixed Width 0.05: $-24.2
-Mola mola bankrupt: False (cash balance: 37.41, starting capital: 40.0)
+1. Situational Unawareness: $22.22
+2. Mola mola: $1.69
+3. Mongoose: $-14.24
+4. Fixed Width 0.05: $-27.67
+Mola mola bankrupt: False (cash balance: 41.69, starting capital: 40.0)
 Result: PASS (score=0.80)
 
 Hidden Test Case

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g3-flat-sixty-wide",
+  "valid": true,
+  "eligible": true,
+  "sourcePath": "results/challengers/market-loop-20260820-3-g03-g3-flat-sixty-wide/r00.py",
+  "sourceSha256": "7f8268eef88d9243ba2a7ab428c684d5cdf758f0164cc5f5cc715c84e757b5b1",
+  "modifiedLines": 2,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 16192,
+    "minimumCapital": {
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 88
+  },
+  "reasons": []
+}
