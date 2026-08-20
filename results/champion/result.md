@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T04:59:36.652Z
+- Date: 2026-08-20T15:52:01.291Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g5-offer-six-hold-two-short
+- Label: g6-fed-flat-23-or-25
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962`
+- Source SHA-256: `4c4cb69cd1a35ba17cb81e6aa0333b1acf426535c0a0aad30a11bac067e12545`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -277,11 +277,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.1: $11.39
-2. Mola mola: $8.52
-3. Lattice: $6.97
-4. Situational Unawareness: $2.85
-Mola mola bankrupt: False (cash balance: 28.52, starting capital: 20.0)
+1. Fixed Width 0.1: $11.11
+2. Mola mola: $8.96
+3. Lattice: $7.01
+4. Situational Unawareness: $2.83
+Mola mola bankrupt: False (cash balance: 28.96, starting capital: 20.0)
 Result: PASS (score=0.80)
 
 Hidden Test Case
@@ -310,10 +310,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $9.66
+1. Mola mola: $10.06
 2. Situational Unawareness: $5.71
 3. Lattice: $1.68
-Mola mola bankrupt: False (cash balance: 29.66, starting capital: 20.0)
+Mola mola bankrupt: False (cash balance: 30.06, starting capital: 20.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case

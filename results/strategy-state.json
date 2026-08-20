@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g5-offer-six-hold-two-short",
+    "id": "g6-fed-flat-23-or-25",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962",
+    "sourceSha256": "4c4cb69cd1a35ba17cb81e6aa0333b1acf426535c0a0aad30a11bac067e12545",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260819-5:g05:g5-offer-six-hold-two-short",
+    "experimentId": "market-loop-20260820:g06:g6-fed-flat-23-or-25",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 15725,
+      "combinedPnlCents": 15809,
       "minimumCapital": {
         "endingCashCents": 797,
         "startingCapitalCents": 1000
@@ -3565,6 +3565,54 @@
             ]
           },
           "createdAt": "2026-08-20T15:33:27.049Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260820-g06-champion-g5-offer-six-hold-two-short",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g6-fed-flat-23-or-25",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-g06-champion-g5-offer-six-hold-two-short/r00.py",
+          "sourceSha256": "da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962",
+          "evaluationPath": "results/challengers/market-loop-20260820-g06-champion-g5-offer-six-hold-two-short/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-g06-champion-g5-offer-six-hold-two-short/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-offer-six-hold-two-short",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-g06-champion-g5-offer-six-hold-two-short/r00.py",
+            "sourceSha256": "da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15725,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-20T15:53:16.917Z"
         }
       ],
       "tuningHistory": []
@@ -7487,7 +7535,7 @@
     },
     "da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962": {
       "valid": true,
-      "modifiedLines": 1,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -7500,7 +7548,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "701970788c02a47b8bf94d4a2dcea3ee38748f0a726eefcc390adf2c2e560e91": {
       "valid": true,
@@ -7805,6 +7855,57 @@
       "reasons": [
         "Candidate did not strictly exceed the baseline"
       ]
+    },
+    "dd44e636f98b91497d161bd7c8b014ee866b72e0dabd403dd4c8991968033fab": {
+      "valid": true,
+      "modifiedLines": 4,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15765,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "b4bc7ef56477fde6a8df4361aba631700174347d4e625a673b4489aac9ed3b38": {
+      "valid": true,
+      "modifiedLines": 4,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15769,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "4c4cb69cd1a35ba17cb81e6aa0333b1acf426535c0a0aad30a11bac067e12545": {
+      "valid": true,
+      "modifiedLines": 4,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15809,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
     }
   }
 }

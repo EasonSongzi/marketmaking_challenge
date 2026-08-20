@@ -493,10 +493,6 @@ class MarketMaker:
                 and self.position.option_quantity_by_option_id.get(option_id, 0) != 0
             )
             and not (
-                option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
-                and fair_value_cents in (23, 25)
-            )
-            and not (
                 option.legs[0].underlying_id == AJARAI_UNDERLYING_ID
                 and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
             )
