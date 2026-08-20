@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260820-3
 
-- Status: active
+- Status: complete
 - Started: 2026-08-20T20:13:05.267Z
 - Starting baseline: g6-fed-flat-23-or-25 (13.30/16.00)
-- Current baseline: g5-low-band-under-thirty (13.30/16.00)
-- Stop condition: not reached
-- Score trend: 13.30 → 13.30 → 13.30 → 13.30 → 13.30
+- Current baseline: g6-offer-tier-thirtyfive (13.30/16.00)
+- Stop condition: generation limit reached
+- Score trend: 13.30 → 13.30 → 13.30 → 13.30 → 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -727,7 +727,7 @@ so that its capital bound becomes `>= 35.0`. Do NOT touch the second occurrence,
 - Baseline delta: 0.00 points; PnL 0.13
 
 Selection: g6-offer-tier-thirtyfive.
-Promotion: none.
+Promotion: g6-offer-tier-thirtyfive (07df6a94fae48b6471d73b767c304ba68dff072d).
 Finding: `self.cash_balance` IS A LIVE BALANCE THAT THE GRADER MUTATES, NOT THE STARTING CAPITAL. This is
 proved, not inferred, and it overturns the explicit claim in the research memo's Section 9 that the attribute "is assigned
 once in `__init__` and never mutated, so this is a fixed fraction of starting capital, not a live solvency measure".
