@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g4-thr-four-under-twenty",
+    "id": "g5-offer-six-hold-two-short",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c",
+    "sourceSha256": "da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260819-5:g04:g4-thr-four-under-twenty",
+    "experimentId": "market-loop-20260819-5:g05:g5-offer-six-hold-two-short",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 15712,
+      "combinedPnlCents": 15725,
       "minimumCapital": {
         "endingCashCents": 797,
         "startingCapitalCents": 1000
@@ -3373,6 +3373,102 @@
             ]
           },
           "createdAt": "2026-08-20T04:53:13.743Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-5-g05-g5-offer-four-hold-short",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "Preserved because it is the strongest available measurement of the newly confirmed offer-side mechanism and it carries an obvious bounded parameter. It produces the largest gains this run has seen from the offer side, case 9 plus 0.15, case 11 plus 0.24 and case 18 plus 0.19, roughly 0.58 gross, against a single offsetting cost of 1.39 on case 16 and nothing else moving anywhere. One cost case against three gain cases, with the mechanism sitting at the earliest escalation in the ladder, is the cleanest decomposition of the offer side available and the right hash-pinned parent for a conditioned fourth-offer-unit withdrawal. Its bounded parameter is the short threshold in the gate. The winner of this generation established that the same family of gate is free at a threshold of minus two on the sixth unit, while this candidate applies it at any short position on the fourth unit and pays for it. The threshold is a one-dimensional integer on a short known interval, and sweeping it upward is exactly the move that could keep the case-9, case-11 and case-18 gains while releasing case 16. It is not the winner and must not be promoted at 156.31.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-5-g05-g5-offer-four-hold-short/r00.py",
+          "sourceSha256": "cbb2366ba68c1cc3708afc4cadc0004c3e2e39836ec0ad8208e0e7670b93a62c",
+          "evaluationPath": "results/challengers/market-loop-20260819-5-g05-g5-offer-four-hold-short/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-5-g05-g5-offer-four-hold-short/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-offer-four-hold-short",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-5-g05-g5-offer-four-hold-short/r00.py",
+            "sourceSha256": "cbb2366ba68c1cc3708afc4cadc0004c3e2e39836ec0ad8208e0e7670b93a62c",
+            "modifiedLines": 1,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15631,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -81
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-20T13:40:02.898Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-5-g05-champion-g4-thr-four-under-twenty",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g5-offer-six-hold-two-short",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-5-g05-champion-g4-thr-four-under-twenty/r00.py",
+          "sourceSha256": "2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c",
+          "evaluationPath": "results/challengers/market-loop-20260819-5-g05-champion-g4-thr-four-under-twenty/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-5-g05-champion-g4-thr-four-under-twenty/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g4-thr-four-under-twenty",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-5-g05-champion-g4-thr-four-under-twenty/r00.py",
+            "sourceSha256": "2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15712,
+              "minimumCapital": {
+                "endingCashCents": 797,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-20T13:40:07.304Z"
         }
       ],
       "tuningHistory": []
@@ -7202,7 +7298,7 @@
     },
     "2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c": {
       "valid": true,
-      "modifiedLines": 2,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -7215,7 +7311,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "d5a5f218abde2005de527ac980814683642fd4920096d0d2765595c3da6055da": {
       "valid": true,
@@ -7252,6 +7350,61 @@
       "reasons": [
         "Candidate did not strictly exceed the baseline"
       ]
+    },
+    "b5f7052dc7e2ec2fe4e59cbd4c44c410c67f6e132a56d094e246053a1f39f451": {
+      "valid": true,
+      "modifiedLines": 1,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15676,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "cbb2366ba68c1cc3708afc4cadc0004c3e2e39836ec0ad8208e0e7670b93a62c": {
+      "valid": true,
+      "modifiedLines": 1,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15631,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962": {
+      "valid": true,
+      "modifiedLines": 1,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15725,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
     }
   }
 }

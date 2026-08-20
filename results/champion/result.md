@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T04:51:06.510Z
+- Date: 2026-08-20T04:59:36.652Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g4-thr-four-under-twenty
+- Label: g5-offer-six-hold-two-short
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c`
+- Source SHA-256: `da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -214,10 +214,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $32.3
+1. Mola mola: $32.35
 2. Fixed Width 0.1: $6.68
 3. Fixed Width 0.25: $1.0
-Mola mola bankrupt: False (cash balance: 42.3, starting capital: 10.0)
+Mola mola bankrupt: False (cash balance: 42.35, starting capital: 10.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -246,10 +246,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $21.09
+1. Mola mola: $21.17
 2. Fixed Width 0.1: $0.17
-3. Fixed Width 0.05: $-15.42
-Mola mola bankrupt: False (cash balance: 41.09, starting capital: 20.0)
+3. Fixed Width 0.05: $-15.49
+Mola mola bankrupt: False (cash balance: 41.17, starting capital: 20.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case

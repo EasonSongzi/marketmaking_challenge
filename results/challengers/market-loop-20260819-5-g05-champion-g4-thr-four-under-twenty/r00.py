@@ -471,7 +471,6 @@ class MarketMaker:
             and not repeat_request
             and 20.0 <= self.cash_balance < 40.0
             and active_exposure + 6 * (1.0 - offer_price) <= available_capacity
-            and self.position.option_quantity_by_option_id.get(option_id, 0) > -2
         ):
             offer_quantity = 6
         if bid_quantity == 3 and not repeat_request:

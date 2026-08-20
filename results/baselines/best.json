@@ -1,20 +1,20 @@
 {
   "schemaVersion": 2,
-  "strategy": "g4-thr-four-under-twenty",
+  "strategy": "g5-offer-six-hold-two-short",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c",
-  "experimentId": "market-loop-20260819-5:g04:g4-thr-four-under-twenty",
+  "sourceSha256": "da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962",
+  "experimentId": "market-loop-20260819-5:g05:g5-offer-six-hold-two-short",
   "experiment": {
     "runId": "market-loop-20260819-5",
-    "generation": 4,
-    "candidateId": "g4-thr-four-under-twenty"
+    "generation": 5,
+    "candidateId": "g5-offer-six-hold-two-short"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 15712,
+    "combinedPnlCents": 15725,
     "minimumCapital": {
       "endingCashCents": 797,
       "startingCapitalCents": 1000
