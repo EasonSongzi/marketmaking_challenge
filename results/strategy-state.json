@@ -2822,6 +2822,54 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-4-g03-g3-cheap-four-company",
+      "status": "active",
+      "method": "quote",
+      "origin": "explore",
+      "rationale": "It is the best case-13 state in the project that also protects every rank: the full 11.21 suppression, our own PnL at 9.40 for a gap of 1.81 against the previous best of 2.11, and a case-14 margin of 3.01 that exceeds the champion's own 2.92. Its only deficit is 3.27 of combined PnL, and generation 3's per-case decomposition localizes that deficit entirely to cases 20, 10, 18 and 12, which makes it a precisely diagnosable research parent rather than a diffuse regression. It is the reference source for the FED fourth-unit trade that generation 4 will try to make conditional, and it carries tuning upside in the cheap threshold at 0.25, which has never been swept inside the family-restricted fourth unit.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-4-g03-g3-cheap-four-company/r00.py",
+          "sourceSha256": "6260c81fe36a2c19e173b7e7fc63b8a2d8f7fcc40537446d9d8d0e1344e5e2de",
+          "evaluationPath": "results/challengers/market-loop-20260819-4-g03-g3-cheap-four-company/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-4-g03-g3-cheap-four-company/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g3-cheap-four-company",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260819-4-g03-g3-cheap-four-company/r00.py",
+            "sourceSha256": "6260c81fe36a2c19e173b7e7fc63b8a2d8f7fcc40537446d9d8d0e1344e5e2de",
+            "modifiedLines": 8,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15159,
+              "minimumCapital": {
+                "endingCashCents": 767,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": -327
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-20T03:52:41.782Z"
+        }
+      ],
+      "tuningHistory": []
     }
   ],
   "evaluations": {
@@ -6250,6 +6298,63 @@
         "runtimeErrors": 0
       },
       "reasons": []
+    },
+    "af8243a4c194865df4b6be2ae4975824908f9d6c398853381c900e234258741a": {
+      "valid": true,
+      "modifiedLines": 8,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15048,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "6260c81fe36a2c19e173b7e7fc63b8a2d8f7fcc40537446d9d8d0e1344e5e2de": {
+      "valid": true,
+      "modifiedLines": 8,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15159,
+        "minimumCapital": {
+          "endingCashCents": 767,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "b6ef3fbf41b2cd078a99b9acd8540a9bc9458af50a15c5866179942d4b4f180a": {
+      "valid": true,
+      "modifiedLines": 9,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 15060,
+        "minimumCapital": {
+          "endingCashCents": 797,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
     }
   }
 }
