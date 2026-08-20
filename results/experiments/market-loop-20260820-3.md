@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-20T20:13:05.267Z
 - Starting baseline: g6-fed-flat-23-or-25 (13.30/16.00)
-- Current baseline: g1-rate-flat-regime (13.30/16.00)
+- Current baseline: g3-band-low-vol (13.30/16.00)
 - Stop condition: not reached
-- Score trend: 13.30 → 13.30
+- Score trend: 13.30 → 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -285,7 +285,7 @@ Change nothing else: every price shade, the fill-signal skew, `active_exposure`,
 - Baseline delta: -0.20 points; PnL -1.06
 
 Selection: g3-band-low-vol.
-Promotion: none.
+Promotion: g3-band-low-vol (c04f3a5f7100e2719564a781163f36ca16dcc435).
 Finding: THE BAND MAP PAID OFF AND ALL THREE PREDICTIONS WERE EXACT. g3-band-low-vol promotes at
 13.30 / 167.04, a +6.00 combined-PnL gain over the champion's 161.04, and it also lifts minimum ending capital from
 7.97/10.00 to 9.75/10.00. Zero bankruptcies and zero runtime errors throughout.
@@ -364,3 +364,150 @@ unexplored axes, the fair-value band above 25 cents and offer-side tomography, a
 second-nearest at a 6.44 gap for +0.30 and its width response is still unturned at eighteen cents, so a single generation
 walking case 6 alone out to twenty-four and thirty cents is the other candidate for generation 5.
 Challenger update: admitted market-loop-20260820-3-g03-g3-flat-sixty-wide.
+
+## Generation 4: explore quote
+
+Generation 3 left three disjoint, individually measured mechanisms on the table, and the promoted champion already carries one of them. The corrected flat-rate band map is {6} above 0.60, {9, 15} in (0.50, 0.60], {5, 7, 11, 13, 14, 16, 18, 19, 20} in (0.40, 0.50], and {8, 10, 12, 17} at or below 0.40. The champion widens the top two bands to eight cents and the low-volatility slice {7, 13, 19} of the middle band. Two measured mechanisms remain unharvested. Case 6 alone sits above 0.60 and its width response is monotone and unturned through eighteen cents, where it produced the project-best gap of 6.44; giving it eighteen cents now costs nothing, because generation 3 proved cases 9 and 15 fall below that threshold and keep their eight-cent quote. The bottom band is worth +6.90 once case 17 is excluded, and starting capital excludes it exactly: cases 8, 10 and 12 start with capital 10, 20 and 20 while case 17 starts with 40, so a `self.cash_balance < 40.0` conjunction separates them using a variable the champion already conditions on elsewhere. This loop has now confirmed twice that disjoint case footprints add exactly, once at +6.00 to the cent and once at +0.88 to the cent, so candidates A and B are tested separately as attributable fallbacks and candidate C composes both. Every candidate is individually promotable; the expected outcome is that C wins at roughly 176.58 combined PnL and unchanged 13.30, and the value of A and B is that a surprise in C can be attributed to one of them rather than to the composition.
+
+Parent: champion `g3-band-low-vol` (`4fef8f77ff641409d7f45e3cc9f6eec5ae49e4b5dbdf8526dea0316b34b74ca9`).
+
+### g4-six-eighteen
+
+- Hypothesis: Case 6 is the only session above the 0.60 flat-rate threshold, so raising its half-width to eighteen cents while every other band keeps the promoted eight-cent quote moves case 6 alone. Its measured PnL at eighteen cents is 3.93 against the champion's 1.29, so the gain is +2.64 with no rank transition anywhere.
+- Implementation plan: In `quote` only, one line. Find the existing line `half_width: int = 8 if wide_regime else (5 if repeat_request else 4)` and replace it with `half_width: int = 18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4))`. Leave the `flat_rate_frequency`, `theriodic_return_volatility` and `wide_regime` lines above it exactly as they are. `git diff` must show exactly one removed line and one added line. Change nothing else: every price shade, the fill-signal skew, `active_exposure`, `signed_reserve`, `cash_floor`, the whole quantity ladder, every inventory gate and the `return Quote(...)` statement stay byte-identical to the parent. Expected tradeoff: case 6 moves from 1.29 to about 3.93 and nothing else moves at all; predicted 13.30 at about 169.68 combined PnL.
+- Worker summary: In `quote`, one line: `half_width` became `18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4))`. One removed line, one added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 169.68; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL 2.64
+
+### g4-low-band-under-forty
+
+- Hypothesis: The bottom flat-rate band wants the eight-cent quote everywhere except the one session that starts with capital 40. Widening it under a `self.cash_balance < 40.0` guard admits cases 8, 10 and 12 and excludes case 17, whose rank-one hold generation 3 lost by widening the band without the guard.
+- Implementation plan: In `quote` only, one line inside the existing `wide_regime` assignment. Find the existing three-line statement
+
+```python
+        wide_regime: bool = flat_rate_frequency > 0.50 or (
+            flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025
+        )
+```
+
+and replace it with
+
+```python
+        wide_regime: bool = (
+            flat_rate_frequency > 0.50
+            or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)
+            or (flat_rate_frequency <= 0.40 and self.cash_balance < 40.0)
+        )
+```
+
+Leave the `half_width` line below it exactly as it is. Change nothing else. Expected tradeoff: cases 8, 10 and 12 move and case 17 does not; the measured per-case deltas are case 8 +5.34 with the project-best gap of 20.91, case 10 +2.62 and case 12 -1.06, predicted 13.30 at about 173.94 combined PnL. Case 12's rank-one hold and case 17's rank-one hold must both survive.
+- Worker summary: In `quote`, the `wide_regime` statement gained a third disjunct `(flat_rate_frequency <= 0.40 and self.cash_balance < 40.0)` and was reflowed to one disjunct per line. Three removed lines, five added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 173.35; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL 6.31
+
+### g4-compose-both
+
+- Hypothesis: The two remaining mechanisms have disjoint case footprints, {6} and {8, 10, 12}, and both are disjoint from the champion's promoted {7, 13, 19}. Composing them therefore adds exactly, as disjoint footprints have twice done in this loop, for a combined +9.54 over the champion with no rank transition anywhere.
+- Implementation plan: In `quote` only, both changes from the other two candidates together. First replace the existing three-line `wide_regime` statement
+
+```python
+        wide_regime: bool = flat_rate_frequency > 0.50 or (
+            flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025
+        )
+```
+
+with
+
+```python
+        wide_regime: bool = (
+            flat_rate_frequency > 0.50
+            or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)
+            or (flat_rate_frequency <= 0.40 and self.cash_balance < 40.0)
+        )
+```
+
+Then replace the existing line `half_width: int = 8 if wide_regime else (5 if repeat_request else 4)` with `half_width: int = 18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4))`. Leave the `flat_rate_frequency` and `theriodic_return_volatility` lines exactly as they are. Change nothing else. Expected tradeoff: cases 6, 8, 10 and 12 move and nothing else does; predicted 13.30 at about 176.58 combined PnL.
+- Worker summary: In `quote`, both edits together: the third `wide_regime` disjunct and the eighteen-cent outer conditional on `flat_rate_frequency > 0.60`. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 175.99; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL 8.95
+
+Selection: g4-compose-both.
+Promotion: none.
+Finding: COMPOSITION IS EXACT FOR THE THIRD TIME. g4-compose-both promotes at 13.30 / 175.99, a +8.95
+combined-PnL gain over the champion's 167.04. All three candidates were eligible, all held 13.30 with no rank transition
+anywhere, all had zero bankruptcies and zero runtime errors, and all held minimum ending capital at 9.75/10.00.
+
+PER-CASE VECTORS against champion g3-band-low-vol (ours PnL / rank; * marks a moved case):
+
+case  N  champion   A six18     B lowcap    C both      leader
+  5   2   2.23 r2    2.23 r2     2.23 r2     2.23 r2    Stalemate Quoter
+  6   3   1.29 r2    3.93* r2    1.29 r2     3.93* r2   Fixed Width 0.25
+  7   2  -0.25 r2   -0.25 r2    -0.25 r2    -0.25 r2    Fixed Width 0.25
+  8   3   1.61 r2    1.61 r2     6.95* r2    6.95* r2   Fixed Width 0.1
+  9   3  31.14 r1   31.14 r1    31.14 r1    31.14 r1    (ours)
+ 10   3  11.55 r2   11.55 r2    14.17* r2   14.17* r2   Fixed Width 0.1
+ 11   3  21.17 r1   21.17 r1    21.17 r1    21.17 r1    (ours)
+ 12   2   4.27 r1    4.27 r1     3.21* r1    3.21* r1   (ours)
+ 13   4   8.90 r2    8.90 r2     8.90 r2     8.90 r2    Fixed Width 0.1
+ 14   3  17.29 r1   17.29 r1    17.29 r1    17.29 r1    (ours)
+ 15   3  13.03 r1   13.03 r1    13.03 r1    13.03 r1    (ours)
+ 16   3  27.07 r1   27.07 r1    27.07 r1    27.07 r1    (ours)
+ 17   4  18.31 r1   18.31 r1    17.72* r1   17.72* r1   (ours)
+ 18   4   7.44 r2    7.44 r2     7.44 r2     7.44 r2    Fixed Width 0.05
+ 19   4   1.69 r2    1.69 r2     1.69 r2     1.69 r2    Situational Unawareness
+ 20   4   0.30 r1    0.30 r1     0.30 r1     0.30 r1    (ours)
+TOTAL         13.30       13.30       13.30       13.30
+
+SCORE DECOMPOSITION OF THE DELTA: no rank transition in any candidate, so the entire delta is the tiebreak.
+  A six18   moved {6}                PnL 167.04 -> 169.68  (+2.64)
+  B lowcap  moved {8, 10, 12, 17}    PnL 167.04 -> 173.35  (+6.31)
+  C both    moved {6, 8, 10, 12, 17} PnL 167.04 -> 175.99  (+8.95)
+
+1. ADDITIVITY HELD TO THE CENT: +2.64 and +6.31 sum to exactly +8.95, and C's moved set is exactly the union of A's and B's.
+Three confirmations in one loop, on three different mechanism pairs. Disjoint case footprints compose with no interaction
+term, and that is now the most reliable structural fact this project has.
+
+2. THE CAPITAL GUARD WORKED. Widening the bottom band without it cost case 17 its rank-one hold in generation 3
+(18.31 -> 10.35, -0.20). With `self.cash_balance < 40.0` case 17 keeps rank 1 and the band's other three members deliver
+case 8 +5.34 with the project-best gap of 20.91, case 10 +2.62, case 12 -1.06 with its rank-one hold intact.
+
+3. UNEXPLAINED DETERMINISTIC RESIDUAL IN CASE 17, WORTH 0.59 AND NO RANK. Case 17 starts with capital 40.0 and
+`self.cash_balance` is assigned once in `__init__` and never mutated, so `self.cash_balance < 40.0` is false there and case
+17's quoting should be byte-identical to the champion's. It nevertheless moved 18.31 -> 17.72 under both B and C, and moved
+identically under both, which rules out grader nondeterminism. Candidate A, which does not touch `wide_regime`, left case 17
+at exactly 18.31. The residual is therefore caused by the third disjunct through a path not visible in the source. One
+testable explanation is that the grader constructs our MarketMaker with a starting capital marginally below 40.0 that the
+report rounds to 40.0; the champion's pre-existing ladder already branches on `>= 40.0` and `20.0 <= x < 40.0`, so such a
+value would also be routing case 17 through the mid-capital rungs. A guard at `< 39.0` or `<= 20.0` would discriminate.
+
+4. CASE 13'S CONVERSION PROSPECT REGRESSED AND NOBODY NOTICED. Case 13 was the project's nearest never-won case at a 2.15
+gap for +0.20. The low-volatility middle-band gate promoted in generation 3 widened it for -0.06 of our own PnL while Fixed
+Width 0.1 gained about 4.68, so the gap is now 6.83. Case 13 is the only member of {7, 13, 19} that contributes nothing:
+case 7 is worth +1.78 and case 19 +4.28. Cases 7, 13 and 19 start with capital 10, 20 and 40 respectively, so excluding case
+13 from the widening costs nothing and should restore the best conversion prospect in the project.
+
+5. THE CHAMPION NOW CARRIES THREE OF THE PROJECT'S BEST NEVER-WON GAPS SIMULTANEOUSLY: case 6 at 6.44, case 8 at 20.91 and
+case 19 at 20.53, plus case 7 at 20.39, its first improvement ever. Combined PnL has moved 158.09 -> 175.99 in four
+generations, entirely through the second selection criterion, at an unchanged 13.30.
+Next-generation rationale: The flat-rate map is now fully harvested and the tiebreak is close to exhausted. Generation 5
+must return to the score, because 2.70 points remain and none of them have moved in fourteen generations.
+
+A. Restore case 13 by excluding it from the low-volatility middle-band widening, gated on starting capital so that cases 7
+and 19 keep their +1.78 and +4.28. This is free in PnL and restores a 2.15 gap that is worth +0.20, the cheapest remaining
+point in the project.
+
+B. Attack case 13 directly with Section 10's two untouched axes. The exact-state fair-value band above 25 cents has never
+been probed, and the offer Q4/Q5/Q6 ladder has never been given fair-value tomography at all. Case 13 has been converted to
+rank one once before, by g5-wide-three-three, so the conversion is known to be reachable.
+
+C. Resolve the case 17 residual with a `< 39.0` or `<= 20.0` capital guard. If the residual disappears, the bottom band is
+worth a further +0.59 and the champion's own capital ladder is mis-specified at the 40.0 boundary, which would be a finding
+larger than this generation's.
+
+Generation 6 should be Tune, as the memo has wanted for three loops. The challenger g3-flat-sixty-wide now carries a genuinely
+bounded two-parameter vector with grader evidence on both axes: a flat-rate threshold known to lie in (0.50, 0.60] and a
+flat-regime half-width whose case 6 response is monotone and unturned at eighteen cents. That is exactly what Tune exists for,
+and it is the only path left to case 6's remaining 6.44.

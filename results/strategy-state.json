@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g3-band-low-vol",
+    "id": "g4-compose-both",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "4fef8f77ff641409d7f45e3cc9f6eec5ae49e4b5dbdf8526dea0316b34b74ca9",
+    "sourceSha256": "0a27bc38612081db5c0144c242ff8407a5ac4ce18a9bdaa885abb4c4fd0da054",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260820-3:g03:g3-band-low-vol",
+    "experimentId": "market-loop-20260820-3:g04:g4-compose-both",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 16704,
+      "combinedPnlCents": 17599,
       "minimumCapital": {
         "endingCashCents": 975,
         "startingCapitalCents": 1000
@@ -3715,7 +3715,7 @@
     },
     {
       "id": "market-loop-20260820-3-g02-g2-flat-wide-eighteen",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It holds the project's new best gap in never-won case 6 (leader-minus-ours 6.44 against a previous best of 7.96) with case 6's best-ever own PnL of 3.93, more than triple the promoted champion's 1.29. It is the only source that has ever come within seven dollars of Fixed Width 0.25 in that session. Its explicit upside is a bounded two-parameter vector: the flat-rate threshold, currently a half-line at 0.50 on a frequency bounded in [0, 1] and known to separate {6, 9, 15} from the rest, and the flat-regime half-width, whose response in case 6 is monotone and unturned across 8, 12 and 18 cents. The only thing standing between this source and a promotion is the two rank-one holds in cases 9 and 15 that share its label, which is exactly a threshold question.",
@@ -3759,7 +3759,11 @@
           "createdAt": "2026-08-20T20:27:38.123Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Strictly dominated by g3-flat-sixty-wide, which holds the same project-best case 6 gap of 6.44 at 13.30 / 161.92 instead of 12.70 / 146.47.",
+        "at": "2026-08-20T20:33:35.684Z"
+      }
     },
     {
       "id": "market-loop-20260820-3-g03-g3-flat-sixty-wide",
@@ -3851,6 +3855,54 @@
             ]
           },
           "createdAt": "2026-08-20T20:33:34.988Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260820-3-g04-champion-g3-band-low-vol",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g4-compose-both",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-3-g04-champion-g3-band-low-vol/r00.py",
+          "sourceSha256": "4fef8f77ff641409d7f45e3cc9f6eec5ae49e4b5dbdf8526dea0316b34b74ca9",
+          "evaluationPath": "results/challengers/market-loop-20260820-3-g04-champion-g3-band-low-vol/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-3-g04-champion-g3-band-low-vol/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g3-band-low-vol",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-3-g04-champion-g3-band-low-vol/r00.py",
+            "sourceSha256": "4fef8f77ff641409d7f45e3cc9f6eec5ae49e4b5dbdf8526dea0316b34b74ca9",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 16704,
+              "minimumCapital": {
+                "endingCashCents": 975,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-20T20:45:04.704Z"
         }
       ],
       "tuningHistory": []
@@ -8263,7 +8315,7 @@
     },
     "4fef8f77ff641409d7f45e3cc9f6eec5ae49e4b5dbdf8526dea0316b34b74ca9": {
       "valid": true,
-      "modifiedLines": 8,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -8276,7 +8328,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "7f8268eef88d9243ba2a7ab428c684d5cdf758f0164cc5f5cc715c84e757b5b1": {
       "valid": true,
@@ -8313,6 +8367,57 @@
       "reasons": [
         "Candidate did not strictly exceed the baseline"
       ]
+    },
+    "4c827cfac100edd4633ebb66c5ddc53938cd8aada816e882c52bdec68fdab204": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 16968,
+        "minimumCapital": {
+          "endingCashCents": 975,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "aa3a460ac75f63290e34d7f4fddb7b92891a5e81db86c4498e231be22312aadd": {
+      "valid": true,
+      "modifiedLines": 6,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 17335,
+        "minimumCapital": {
+          "endingCashCents": 975,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
+    },
+    "0a27bc38612081db5c0144c242ff8407a5ac4ce18a9bdaa885abb4c4fd0da054": {
+      "valid": true,
+      "modifiedLines": 8,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 17599,
+        "minimumCapital": {
+          "endingCashCents": 975,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
     }
   }
 }
