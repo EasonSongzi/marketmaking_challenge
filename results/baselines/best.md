@@ -1,10 +1,10 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g3-thr-four-deep-cheap`
+- Current champion: `g4-thr-four-under-twenty`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `1958642d50227da01a99ffb6182b52a2477ad17ddc8c6376dfd1fd1327ce41ce`
-- Experiment: `market-loop-20260819-5`, generation 3, candidate `g3-thr-four-deep-cheap`
+- Source SHA-256: `2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c`
+- Experiment: `market-loop-20260819-5`, generation 4, candidate `g4-thr-four-under-twenty`
 - SCORED points: 13.30/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0

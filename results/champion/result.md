@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T04:46:41.024Z
+- Date: 2026-08-20T04:51:06.510Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g3-thr-four-deep-cheap
+- Label: g4-thr-four-under-twenty
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `1958642d50227da01a99ffb6182b52a2477ad17ddc8c6376dfd1fd1327ce41ce`
+- Source SHA-256: `2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -184,8 +184,8 @@ Compiler Message
 
 Ranking:
 1. Fixed Width 0.25: $20.14
-2. Mola mola: $-2.33
-Mola mola bankrupt: False (cash balance: 7.67, starting capital: 10.0)
+2. Mola mola: $-2.03
+Mola mola bankrupt: False (cash balance: 7.97, starting capital: 10.0)
 Result: PASS (score=0.40)
 
 Hidden Test Case

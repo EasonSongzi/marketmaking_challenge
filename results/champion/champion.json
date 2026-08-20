@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "id": "g3-thr-four-deep-cheap",
+  "id": "g4-thr-four-under-twenty",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "1958642d50227da01a99ffb6182b52a2477ad17ddc8c6376dfd1fd1327ce41ce",
+  "sourceSha256": "2f805db51b028e7c70f0757d852adb02c42471e49f7b540fdaad42f68ca42b5c",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260819-5:g03:g3-thr-four-deep-cheap",
+  "experimentId": "market-loop-20260819-5:g04:g4-thr-four-under-twenty",
   "experiment": {
     "runId": "market-loop-20260819-5",
-    "generation": 3,
-    "candidateId": "g3-thr-four-deep-cheap"
+    "generation": 4,
+    "candidateId": "g4-thr-four-under-twenty"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 15682,
+    "combinedPnlCents": 15712,
     "minimumCapital": {
-      "endingCashCents": 767,
+      "endingCashCents": 797,
       "startingCapitalCents": 1000
     },
     "runtimeErrors": 0
