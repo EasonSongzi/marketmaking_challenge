@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
   "champion": {
-    "id": "g5-low-band-under-thirty",
+    "id": "g6-offer-tier-thirtyfive",
     "sourcePath": "Market_making_binary_option.py",
-    "sourceSha256": "7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb",
+    "sourceSha256": "1f8b84797749054ae3df2a62267a1ccf7ff276a7e05cf765cd334f8142541a4d",
     "resultArtifact": "results/champion/result.md",
-    "experimentId": "market-loop-20260820-3:g05:g5-low-band-under-thirty",
+    "experimentId": "market-loop-20260820-3:g06:g6-offer-tier-thirtyfive",
     "summary": {
       "passed": 20,
       "total": 20,
       "bankruptcies": 0,
       "scoredPointsHundredths": 1330,
-      "combinedPnlCents": 17633,
+      "combinedPnlCents": 17646,
       "minimumCapital": {
         "endingCashCents": 975,
         "startingCapitalCents": 1000
@@ -3999,6 +3999,54 @@
             ]
           },
           "createdAt": "2026-08-20T20:52:45.622Z"
+        }
+      ],
+      "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260820-3-g06-champion-g5-low-band-under-thirty",
+      "status": "active",
+      "method": "quote",
+      "origin": "demoted-champion",
+      "rationale": "Champion displaced by g6-offer-tier-thirtyfive",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-3-g06-champion-g5-low-band-under-thirty/r00.py",
+          "sourceSha256": "7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb",
+          "evaluationPath": "results/challengers/market-loop-20260820-3-g06-champion-g5-low-band-under-thirty/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-3-g06-champion-g5-low-band-under-thirty/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g5-low-band-under-thirty",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-3-g06-champion-g5-low-band-under-thirty/r00.py",
+            "sourceSha256": "7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb",
+            "modifiedLines": 0,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 17633,
+              "minimumCapital": {
+                "endingCashCents": 975,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 0
+            },
+            "reasons": [
+              "Demoted champion"
+            ]
+          },
+          "createdAt": "2026-08-20T23:08:14.013Z"
         }
       ],
       "tuningHistory": []
@@ -8538,7 +8586,7 @@
     },
     "7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb": {
       "valid": true,
-      "modifiedLines": 2,
+      "modifiedLines": 0,
       "summary": {
         "passed": 20,
         "total": 20,
@@ -8551,7 +8599,9 @@
         },
         "runtimeErrors": 0
       },
-      "reasons": []
+      "reasons": [
+        "Demoted champion"
+      ]
     },
     "312fbd6992ede5a271290f992ff6e63cef6b69c7ce07c6933c9714a550dc4206": {
       "valid": true,
@@ -8571,6 +8621,61 @@
       "reasons": [
         "Candidate did not strictly exceed the baseline"
       ]
+    },
+    "bfbc4561b5acc7c86798065f12be0a8b0f47cd632fdba676dffd282ed513cc70": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 17625,
+        "minimumCapital": {
+          "endingCashCents": 975,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "9cd2b1e793a3f8be1329a65d88a4c22f489a90358e96c67afffd30f8fad702bb": {
+      "valid": true,
+      "modifiedLines": 6,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 17393,
+        "minimumCapital": {
+          "endingCashCents": 975,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": [
+        "Candidate did not strictly exceed the baseline"
+      ]
+    },
+    "1f8b84797749054ae3df2a62267a1ccf7ff276a7e05cf765cd334f8142541a4d": {
+      "valid": true,
+      "modifiedLines": 2,
+      "summary": {
+        "passed": 20,
+        "total": 20,
+        "bankruptcies": 0,
+        "scoredPointsHundredths": 1330,
+        "combinedPnlCents": 17646,
+        "minimumCapital": {
+          "endingCashCents": 975,
+          "startingCapitalCents": 1000
+        },
+        "runtimeErrors": 0
+      },
+      "reasons": []
     }
   }
 }

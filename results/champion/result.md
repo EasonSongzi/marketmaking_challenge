@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T20:50:08.764Z
+- Date: 2026-08-20T23:06:31.954Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g5-low-band-under-thirty
+- Label: g6-offer-tier-thirtyfive
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb`
+- Source SHA-256: `1f8b84797749054ae3df2a62267a1ccf7ff276a7e05cf765cd334f8142541a4d`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -210,10 +210,10 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $31.14
-2. Fixed Width 0.1: $12.71
+1. Mola mola: $31.34
+2. Fixed Width 0.1: $12.51
 3. Fixed Width 0.25: $1.0
-Mola mola bankrupt: False (cash balance: 41.14, starting capital: 10.0)
+Mola mola bankrupt: False (cash balance: 41.34, starting capital: 10.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case
@@ -389,11 +389,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Mola mola: $0.3
-2. Lattice: $-10.86
+1. Mola mola: $0.23
+2. Lattice: $-12.26
 3. Mongoose: $-29.77
-4. Fixed Width 0.05: $-99.55
-Mola mola bankrupt: False (cash balance: 40.3, starting capital: 40.0)
+4. Fixed Width 0.05: $-98.23
+Mola mola bankrupt: False (cash balance: 40.23, starting capital: 40.0)
 Result: PASS (score=1.00)
 
 Hidden Test Case

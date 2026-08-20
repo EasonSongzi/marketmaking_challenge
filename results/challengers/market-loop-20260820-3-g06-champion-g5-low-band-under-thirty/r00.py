@@ -444,7 +444,7 @@ class MarketMaker:
         offer_quantity = 3 if 1.0 - offer_price <= 0.25 else 2
         if (
             offer_quantity == 2
-            and self.cash_balance >= 35.0
+            and self.cash_balance >= 40.0
             and active_exposure <= available_capacity / 2.0
             and active_exposure + 3 * (1.0 - offer_price) <= available_capacity
         ):

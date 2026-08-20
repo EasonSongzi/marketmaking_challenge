@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "g5-low-band-under-thirty",
+  "id": "g6-offer-tier-thirtyfive",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb",
+  "sourceSha256": "1f8b84797749054ae3df2a62267a1ccf7ff276a7e05cf765cd334f8142541a4d",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260820-3:g05:g5-low-band-under-thirty",
+  "experimentId": "market-loop-20260820-3:g06:g6-offer-tier-thirtyfive",
   "experiment": {
     "runId": "market-loop-20260820-3",
-    "generation": 5,
-    "candidateId": "g5-low-band-under-thirty"
+    "generation": 6,
+    "candidateId": "g6-offer-tier-thirtyfive"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 17633,
+    "combinedPnlCents": 17646,
     "minimumCapital": {
       "endingCashCents": 975,
       "startingCapitalCents": 1000

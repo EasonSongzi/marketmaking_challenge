@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g5-low-band-under-thirty",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-3-g06-champion-g5-low-band-under-thirty/r00.py",
+  "sourceSha256": "7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 17633,
+    "minimumCapital": {
+      "endingCashCents": 975,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}

@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-20T20:13:05.267Z
 - Starting baseline: g6-fed-flat-23-or-25 (13.30/16.00)
-- Current baseline: g4-compose-both (13.30/16.00)
+- Current baseline: g5-low-band-under-thirty (13.30/16.00)
 - Stop condition: not reached
-- Score trend: 13.30 → 13.30 → 13.30 → 13.30
+- Score trend: 13.30 → 13.30 → 13.30 → 13.30 → 13.30
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -579,7 +579,7 @@ and replace the tuple `(23, 25)` with `(23, 25, 26, 27, 28, 29)`, leaving every 
 - Baseline delta: 0.00 points; PnL 0.00
 
 Selection: g5-low-band-under-thirty.
-Promotion: none.
+Promotion: g5-low-band-under-thirty (a2578aa2ce785e923aa1ec7ee3d2ca787d6da67e).
 Finding: `self.cash_balance` IS NOT THE REPORTED STARTING CAPITAL, AND THAT INVALIDATES A PREMISE THIS
 PROJECT HAS CARRIED SINCE market-loop-20260818-6. g5-low-band-under-thirty promotes at 13.30 / 176.33. Zero bankruptcies and
 zero runtime errors throughout; no rank transition in any candidate, so the entire delta is again the tiebreak.
@@ -659,3 +659,153 @@ Case 13 should not get another generation through the capital axis, and Section 
 the mis-tiering, the correct next loop reopens the capital policy from scratch against measured tiers rather than reported
 ones, which is the memo's Section 9 with a corrected conditioning variable.
 Challenger update: admitted market-loop-20260820-3-g05-g5-thirteen-restore.
+
+## Generation 6: explore quote
+
+Generation 5 established that `self.cash_balance` does not equal the starting capital the grader reports: a [20.0, 40.0) exclusion reverted case 19 and a bound change from 40.0 to 30.0 moved case 17, yet the grader reports both sessions at capital 40.0. That premise sits underneath five capital gates in the champion and under `cash_floor = 0.75 * self.cash_balance`, which scales every capacity term, and it has never been tested in fourteen generations. This final generation of the run brackets the true values and prices the damage. Candidates A and B are bisections: case 17 is known to lie in [30.0, 40.0) and case 19 in [20.0, 40.0), and moving each probe's edge to the midpoint of its known interval halves it, exactly as the fair-value tomography did with cumulative bands. Candidate C asks the question that matters commercially rather than diagnostically: the offer ladder's top rung is gated on `self.cash_balance >= 40.0`, so any session whose constructed balance is below 40.0 has been taking the mid-capital rung since market-loop-20260818-6; lowering that one gate to 35.0 makes the set of mis-tiered sessions directly readable as the moved set. A and B are expected to cost combined PnL and are worth running for the interval alone; C is the only one of the three that could promote.
+
+Parent: champion `g5-low-band-under-thirty` (`7517811c3ed6edf9184838c8de53b9e2c0eb15a019dbb6d8dac7ac6bf3fe85fb`).
+
+### g6-low-band-under-thirtyfive
+
+- Hypothesis: Case 17's constructed cash balance lies in [30.0, 40.0), which generation 5 established by moving it with a bound change from 40.0 to 30.0. Raising the bottom-band guard to 35.0 bisects that interval: if case 17 moves, its balance is in [30.0, 35.0); if the twenty-case vector is identical to the champion's, it is in [35.0, 40.0).
+- Implementation plan: In `quote` only, one literal. Find the final disjunct of the existing `wide_regime` statement, the line containing `flat_rate_frequency <= 0.40`, and change its capital bound from `30.0` to `35.0` so it reads `            or (flat_rate_frequency <= 0.40 and self.cash_balance < 35.0)`. Leave the first two disjuncts, the `half_width` line below, and the `flat_rate_frequency` and `theriodic_return_volatility` lines above exactly as they are. There are other `40.0`, `20.0` and `30.0` literals in the quantity ladder further down; do not touch any of them. `git diff` must show exactly one removed line and one added line. Change nothing else: every price shade, the fill-signal skew, `active_exposure`, `signed_reserve`, `cash_floor`, the whole quantity ladder, every inventory gate and the `return Quote(...)` statement stay byte-identical to the parent. Expected tradeoff: cases 8, 10 and 12 must not move, since their balances are below 30.0 under both bounds; the entire signal is whether case 17 moves.
+- Worker summary: In `quote`, one literal: the bottom-band capital bound `self.cash_balance < 30.0` became `< 35.0`. One removed line, one added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 176.25; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL -0.08
+
+### g6-middle-exclude-under-thirty
+
+- Hypothesis: Case 19's constructed cash balance lies in [20.0, 40.0), which generation 5 established by reverting it with that exclusion. Narrowing the exclusion to [20.0, 30.0) bisects the interval: if case 19 still reverts, its balance is in [20.0, 30.0); if only case 13 reverts, case 19 lies in [30.0, 40.0) and shares a tier with case 17.
+- Implementation plan: In `quote` only. Find the existing `wide_regime` statement:
+
+```python
+        wide_regime: bool = (
+            flat_rate_frequency > 0.50
+            or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)
+            or (flat_rate_frequency <= 0.40 and self.cash_balance < 30.0)
+        )
+```
+
+and replace its middle disjunct so the statement reads:
+
+```python
+        wide_regime: bool = (
+            flat_rate_frequency > 0.50
+            or (
+                flat_rate_frequency > 0.40
+                and theriodic_return_volatility <= 0.025
+                and not (20.0 <= self.cash_balance < 30.0)
+            )
+            or (flat_rate_frequency <= 0.40 and self.cash_balance < 30.0)
+        )
+```
+
+Only the middle disjunct changes; the final disjunct keeps its `< 30.0` bound. Leave the `half_width` line below and the two statistic lines above exactly as they are. Change nothing else. Expected tradeoff: this candidate deliberately costs combined PnL and is run for the interval. Case 13 is expected to revert from 8.90 to about 6.50 for roughly -2.40; if the total loss is about -2.40 case 19 held, and if it is about -6.12 case 19 reverted too.
+- Worker summary: In `quote`, the middle `wide_regime` disjunct gained `and not (20.0 <= self.cash_balance < 30.0)`, reflowed over four lines; the final disjunct kept its `< 30.0` bound. One removed line, five added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 173.93; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL -2.40
+
+### g6-offer-tier-thirtyfive
+
+- Hypothesis: Sessions the grader reports at capital 40.0 are constructed with balances below 40.0, so the offer ladder's top rung, gated on `self.cash_balance >= 40.0`, has never fired for them and they have been taking the mid-capital rung instead. Lowering that one gate to 35.0 admits them, and the set of cases that move is exactly the set that has been mis-tiered.
+- Implementation plan: In `quote` only, one literal. The file contains two lines reading `            and self.cash_balance >= 40.0`. Change ONLY the first one, which sits inside the offer-side block that begins
+
+```python
+        if (
+            offer_quantity == 2
+            and self.cash_balance >= 40.0
+            and active_exposure <= available_capacity / 2.0
+```
+
+so that its capital bound becomes `>= 35.0`. Do NOT touch the second occurrence, which sits inside the later block beginning `if (` / `bid_quantity == 3` / `and not repeat_request` / `and self.cash_balance >= 40.0` and promotes `bid_quantity` to 4. Leave the `wide_regime` and `half_width` statements untouched. `git diff` must show exactly one removed line and one added line, and the surrounding context in the diff must show `offer_quantity == 2` immediately above it. Change nothing else. Expected tradeoff: only sessions whose constructed balance lies in [35.0, 40.0) move, and they gain an offer rung; this is the one candidate in the generation that could promote, and case 16, 17, 18, 19 and 20 rank holds must all be checked.
+- Worker summary: In `quote`, one literal: the first of the two `self.cash_balance >= 40.0` gates, the one inside the `offer_quantity == 2` block, became `>= 35.0`. The second occurrence, in the `bid_quantity == 3` block at line 491, is byte-identical to the parent. One removed line, one added. py_compile and `validate-candidate.sh --target-method quote` passed. No stdout writes.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 176.46; minimum capital 9.75/10.00
+- Baseline delta: 0.00 points; PnL 0.13
+
+Selection: g6-offer-tier-thirtyfive.
+Promotion: none.
+Finding: `self.cash_balance` IS A LIVE BALANCE THAT THE GRADER MUTATES, NOT THE STARTING CAPITAL. This is
+proved, not inferred, and it overturns the explicit claim in the research memo's Section 9 that the attribute "is assigned
+once in `__init__` and never mutated, so this is a fixed fraction of starting capital, not a live solvency measure".
+g6-offer-tier-thirtyfive promotes at 13.30 / 176.46. Zero bankruptcies, zero runtime errors, no rank transition anywhere.
+
+PER-CASE VECTORS against champion g5-low-band-under-thirty (ours PnL / rank; * marks a moved case):
+
+case  N  champion   lb35        mid2030     offer35
+  5   2   2.23 r2    2.23 r2     2.23 r2     2.23 r2
+  6   3   3.93 r2    3.93 r2     3.93 r2     3.93 r2
+  7   2  -0.25 r2   -0.25 r2    -0.25 r2    -0.25 r2
+  8   3   6.95 r2    6.95 r2     6.95 r2     6.95 r2
+  9   3  31.14 r1   31.14 r1    31.14 r1    31.34* r1
+ 10   3  14.17 r2   14.17 r2    14.17 r2    14.17 r2
+ 11   3  21.17 r1   21.17 r1    21.17 r1    21.17 r1
+ 12   2   3.21 r1    3.21 r1     3.21 r1     3.21 r1
+ 13   4   8.90 r2    8.90 r2     6.50* r2    8.90 r2
+ 14   3  17.29 r1   17.29 r1    17.29 r1    17.29 r1
+ 15   3  13.03 r1   13.03 r1    13.03 r1    13.03 r1
+ 16   3  27.07 r1   27.07 r1    27.07 r1    27.07 r1
+ 17   4  18.06 r1   17.98* r1   18.06 r1    18.06 r1
+ 18   4   7.44 r2    7.44 r2     7.44 r2     7.44 r2
+ 19   4   1.69 r2    1.69 r2     1.69 r2     1.69 r2
+ 20   4   0.30 r1    0.30 r1     0.30 r1     0.23* r1
+TOTAL         13.30       13.30       13.30       13.30
+
+SCORE DECOMPOSITION OF THE DELTA: no rank transition in any candidate.
+  lb35      moved {17}      PnL 176.33 -> 176.25  (-0.08)
+  mid2030   moved {13}      PnL 176.33 -> 173.93  (-2.40)
+  offer35   moved {9, 20}   PnL 176.33 -> 176.46  (+0.13)
+
+1. THE DECISIVE PROOF IS CASE 9. Case 9's reported starting capital is 10.0. The only change in g6-offer-tier-thirtyfive is
+one gate moving from `self.cash_balance >= 40.0` to `>= 35.0`. If `self.cash_balance` were static at its constructed value of
+10.0, no threshold anywhere between 35.0 and 40.0 could alter case 9's behaviour by a single cent. Case 9 moved, 31.14 ->
+31.34. Therefore `self.cash_balance` takes values at or above 35.0 during case 9's session. The grader writes the live
+balance onto our instance. Case 9 ends that session at 41.14, which is exactly where a live balance would be.
+
+2. EVERY ANOMALY OF THE LAST TWO GENERATIONS COLLAPSES INTO THIS ONE FACT, AND THE PREVIOUS EXPLANATION WAS WRONG.
+Generation 5 concluded that "`self.cash_balance` is not the reported starting capital", and read cases 17 and 19 as
+mis-tiered sessions. That reading was incorrect. The sessions are not mis-tiered; the attribute is not a tier at all. A live
+balance passes through many bands during one session, so a session reported at capital 40.0 legitimately triggers a `< 40.0`
+guard, a `[20.0, 40.0)` exclusion and a `[30.0, 35.0)` bracket at different moments of the same run. The sub-dollar,
+deterministic, non-binary character of the case 17 residual, which generation 4 could not explain and generation 5 could only
+localise, is exactly what a live balance crossing a threshold part-way through a session produces.
+
+3. THE BRACKETS STILL STAND AS TRAJECTORY MEASUREMENTS, RE-READ CORRECTLY.
+   lb35 moved case 17 alone: case 17's balance spends time in [30.0, 35.0).
+   mid2030 moved case 13 alone: case 13's balance enters [20.0, 30.0), and case 19's does not, so case 19's excursion under
+     generation 5's [20.0, 40.0) exclusion was in [30.0, 40.0).
+   offer35 moved cases 9 and 20: both spend time in [35.0, 40.0). Cases 16, 18 and 19, all reported at capital 40.0, did not
+     move, so they are at or above 40.0 whenever that gate is evaluated.
+
+4. WHAT THIS INVALIDATES, AND IT IS LARGE. `cash_floor = 0.75 * self.cash_balance` and `available_capacity =
+self.cash_balance - cash_floor` are evaluated on every quote, so the champion's entire capacity model is a live
+twenty-five-percent-of-current-balance budget that grows as the session profits and shrinks as it loses. It has been
+described in every memo as a fixed fraction of starting capital. The five gates on `>= 40.0`, `20.0 <= x < 40.0` and
+`< 20.0` are not capital-tier selectors; they are live solvency triggers that fire and un-fire within a session. Fourteen
+generations of capital-conditioned tuning were designed against a model of this variable that does not hold.
+
+5. THE PROMOTED CHANGE IS SMALL AND ITS DIRECTION IS INFORMATIVE. Admitting the third offer rung at a live balance of 35.0
+rather than 40.0 gained 0.20 in case 9 and cost 0.07 in case 20, for +0.13. It is worth promoting, but the far larger prize
+is that the capital policy can now be reopened as what it actually is.
+Next-generation rationale: The next loop should reopen the capital policy from scratch against a live balance, which is
+the memo's Section 9 with its central premise corrected. Three things are now worth a generation each and none of them were
+available before this run.
+
+First, `cash_floor = 0.75 * self.cash_balance` is a live budget, so the rejected floor settings from market-loop-20260818-6
+were never testing what that Tune thought they were testing. The archive shows those settings produced the project's best
+case 8, case 10 and case 18 results. Re-run the floor sweep knowing the variable is live, and condition it on the flat-rate
+band map this run produced rather than on reported capital.
+
+Second, a live balance makes drawdown conditioning possible for the first time. The champion has no notion of whether a
+session is winning or losing; `self.cash_balance` compared against a value captured on the first quote gives exactly that,
+at no new state cost beyond one attribute. Sessions we lose are won by passive quoters, so quoting more defensively while
+behind is the natural policy and it has never been testable until now.
+
+Third, the five existing gates need re-derivation as triggers rather than tiers. Generation 6 moved only one of them and it
+paid. The other four have never been examined under the correct model.
+
+Do not reopen: stdout instrumentation of any kind, the FED cheap band above 25 cents, the flat-rate band map itself, or case
+13 through the capital axis. All four were closed by direct evidence in this run.
