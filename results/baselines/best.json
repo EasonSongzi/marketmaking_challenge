@@ -1,20 +1,20 @@
 {
   "schemaVersion": 2,
-  "strategy": "g6-offer-tier-thirtyfive",
+  "strategy": "g1-return-corr-probe",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "1f8b84797749054ae3df2a62267a1ccf7ff276a7e05cf765cd334f8142541a4d",
-  "experimentId": "market-loop-20260820-3:g06:g6-offer-tier-thirtyfive",
+  "sourceSha256": "5e9b84a57796dd206a74d63494592c522d6e8362e98b38149eb6230334ccf1be",
+  "experimentId": "market-loop-20260820-4:g01:g1-return-corr-probe",
   "experiment": {
-    "runId": "market-loop-20260820-3",
-    "generation": 6,
-    "candidateId": "g6-offer-tier-thirtyfive"
+    "runId": "market-loop-20260820-4",
+    "generation": 1,
+    "candidateId": "g1-return-corr-probe"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 17646,
+    "combinedPnlCents": 17794,
     "minimumCapital": {
       "endingCashCents": 975,
       "startingCapitalCents": 1000

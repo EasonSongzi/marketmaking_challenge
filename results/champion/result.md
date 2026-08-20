@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T23:06:31.954Z
+- Date: 2026-08-20T23:32:54.837Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g6-offer-tier-thirtyfive
+- Label: g1-return-corr-probe
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `1f8b84797749054ae3df2a62267a1ccf7ff276a7e05cf765cd334f8142541a4d`
+- Source SHA-256: `5e9b84a57796dd206a74d63494592c522d6e8362e98b38149eb6230334ccf1be`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -372,11 +372,11 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Situational Unawareness: $22.22
-2. Mola mola: $1.69
-3. Mongoose: $-14.24
-4. Fixed Width 0.05: $-27.67
-Mola mola bankrupt: False (cash balance: 41.69, starting capital: 40.0)
+1. Situational Unawareness: $23.45
+2. Mola mola: $3.17
+3. Fixed Width 0.05: $-20.53
+4. Mongoose: $-23.65
+Mola mola bankrupt: False (cash balance: 43.17, starting capital: 40.0)
 Result: PASS (score=0.80)
 
 Hidden Test Case

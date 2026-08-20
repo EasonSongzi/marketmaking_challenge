@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-offer-tier-thirtyfive",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-4-g01-champion-g6-offer-tier-thirtyfive/r00.py",
+  "sourceSha256": "1f8b84797749054ae3df2a62267a1ccf7ff276a7e05cf765cd334f8142541a4d",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 17646,
+    "minimumCapital": {
+      "endingCashCents": 975,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}
