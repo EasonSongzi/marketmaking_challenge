@@ -2480,7 +2480,7 @@
     },
     {
       "id": "market-loop-20260819-3-g05-g5-short-cheap-bid-four",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It holds the best case-13 result ever produced in this project, driving Fixed Width 0.1 down to 11.21 and our own PnL up to 9.05, which closes the only reachable remaining gap to 2.16 against the winner's 2.69 and the champion's 3.72. That makes it the most informative parent in the pool for the one case that still has upside, even though it costs case 14 and therefore scores 13.00. It also reaches 145.82 combined PnL, above the promoted champion's 143.86, so it is not a weak source in any absolute sense. Its tuning upside is explicit and unswept: the steps_until_expiry <= 1 boundary is a discrete tenor threshold that has never been varied anywhere in the project, and because this generation proved that leg structure rather than tenor is what protects case 14, a sweep of the tenor threshold combined with the winner's single-leg conjunct is the natural way to find out whether the stronger case-13 effect can be recovered inside the safe contract class. The 0.25 cheap-bid threshold in the same rule is likewise untested, giving the lineage two independent discrete axes.",
@@ -2524,7 +2524,11 @@
           "createdAt": "2026-08-19T22:04:18.070Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Scores 13.00 rather than 13.30 because it loses case 14, with Lattice released to 17.34 against our 15.13. Its unique value was the strongest short-tenor case-13 state, ours 9.05 against Fixed Width 0.1 at 11.21, and that is superseded by g3-cheap-four-company at ours 9.40 against the same 11.21 with case 14 held at a 3.01 margin. Tenor on the fourth unit is now a closed axis.",
+        "at": "2026-08-20T04:12:37.813Z"
+      }
     },
     {
       "id": "market-loop-20260819-3-g05-champion-g3-lowcap-central-offer-three",
