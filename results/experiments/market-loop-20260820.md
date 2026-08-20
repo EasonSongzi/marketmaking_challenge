@@ -164,3 +164,41 @@ Selection: No candidate passed the promotion gate.
 Promotion: none.
 Finding: The FOK inventory-deepening transfer is completely inert in the fixed grader. All three candidates are valid, 20/20 passed, zero bankruptcies, zero runtime errors and reproduce the champion exactly at 13.30 points, 157.25 combined PnL and 7.97/10.00 minimum capital. The long-only, short-only and symmetric +0.01 gates each produce the same twenty-case vector as the parent, so neither direction contains observable accepted FOK flow at a price within the added cent, and there is no interaction to refine. No candidate is promoted or retained: the directional conditions move no economics, create no new routing state, have no supported bounded parameter and are duplicates at the evidence level.
 Next-generation rationale: docs/instruction.md gives one fallback when inventory-deepening is inert: revisit the previously positive but incompletely composed stricter edge on longer-dated small FOKs. Historical g3-long-edge-three required three cents beyond three days under the old uniform two-cent policy and added 0.47 combined PnL at equal score with zero bankruptcies. Generation 5 should transplant that signal onto the current quantity-tier champion without changing 0.034 for quantity >2 or the 0.50 cap. Explore three structural scopes at a fixed +0.01 increment: quantity <=2 and expiry >3, quantity ==1 and expiry >3, and quantity <=2 and expiry >5. Freeze quote and the inventory-reduction exception exactly.
+
+## Generation 5: explore respond_to_fok
+
+Generation 4's long-, short- and both-direction inventory-deepening gates were bit-identical to the champion across all twenty cases, so docs/instruction.md directs the only permitted fallback: stricter edge on longer-dated small FOKs. Historical g3-long-edge-three used a three-cent edge beyond three days under the older uniform two-cent policy and improved combined PnL by 0.47 at equal score with zero bankruptcies. The current champion already uses 0.034 for quantity >2, so the untested composition is specifically the small-order branch. Generation 5 preserves the current 0.034 large-order edge, 0.02 ordinary edge, quantity threshold, zero-edge inventory-reduction exception and 0.50 loss caps, then adds a fixed one-cent premium under three structurally distinct scopes: quantity <=2 and expiry >3, singleton quantity ==1 and expiry >3, or quantity <=2 and expiry >5. This tests whether the old positive signal is carried by all small orders, singletons, or only the longest tenors without reopening global FOK tuning. Freeze quote byte-for-byte and touch no other core method. Promotion requires 20/20, zero bankruptcies, zero runtime errors and strict improvement over 13.30/157.25.
+
+Parent: champion `g5-offer-six-hold-two-short` (`da596c4f660892854e9167e362ebbb88b740c3fab949d6e2b680c92403c1c962`).
+
+### g5-fok-small-long3
+
+- Hypothesis: The historical long-tenor benefit survives on the current architecture and is carried by the entire small-order branch, so adding one cent only when quantity <=2 and expiry >3 should filter parameter-sensitive FOKs while leaving the proven 0.034 large-order branch unchanged.
+- Implementation plan: Change only MarketMaker.respond_to_fok. Preserve the complete inventory-reduction exception and edge assignment exactly, then add edge += 0.01 only when fok_order.quantity <= 2 and option.steps_until_expiry > 3. Preserve all price comparisons and 0.50 loss caps. Add no helper/state/import; quote and all other methods byte-identical. Validate with --target-method respond_to_fok and compile. Do not run HackerRank or commit.
+- Worker summary: Added a one-cent edge only for quantity <=2 and expiry >3 after the champion's quantity-tier assignment. Preserved inventory reduction, 0.034 large edge, comparisons, caps and every other method. Validation and compilation passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 157.25; minimum capital 7.97/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+### g5-fok-single-long3
+
+- Hypothesis: The old positive signal is concentrated in singleton long-tenor FOKs rather than two-lots, so applying the one-cent premium only to quantity ==1 beyond three days should retain the benefit while preserving more quantity-two participation.
+- Implementation plan: Change only MarketMaker.respond_to_fok. Preserve the complete inventory-reduction exception and edge assignment exactly, then add edge += 0.01 only when fok_order.quantity == 1 and option.steps_until_expiry > 3. Preserve all price comparisons and 0.50 loss caps. Add no helper/state/import; quote and all other methods byte-identical. Validate with --target-method respond_to_fok and compile. Do not run HackerRank or commit.
+- Worker summary: Added a one-cent edge only for quantity ==1 and expiry >3 after the champion's quantity-tier assignment. Preserved inventory reduction, 0.034 large edge, comparisons, caps and every other method. Validation and compilation passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 157.25; minimum capital 7.97/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+### g5-fok-small-long5
+
+- Hypothesis: The long-tenor parameter-risk effect appears only in the far tail of the grader's expiry set, so requiring the extra cent for quantity <=2 only beyond five days should retain medium-tenor flow while filtering the most model-sensitive FOKs.
+- Implementation plan: Change only MarketMaker.respond_to_fok. Preserve the complete inventory-reduction exception and edge assignment exactly, then add edge += 0.01 only when fok_order.quantity <= 2 and option.steps_until_expiry > 5. Preserve all price comparisons and 0.50 loss caps. Add no helper/state/import; quote and all other methods byte-identical. Validate with --target-method respond_to_fok and compile. Do not run HackerRank or commit.
+- Worker summary: Added a one-cent edge only for quantity <=2 and expiry >5 after the champion's quantity-tier assignment. Preserved inventory reduction, 0.034 large edge, comparisons, caps and every other method. Validation and compilation passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 157.25; minimum capital 7.97/10.00
+- Baseline delta: 0.00 points; PnL 0.00
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: The permitted long-tenor small-FOK fallback is also completely inert on the current architecture. All three candidates are valid, 20/20 passed, zero bankruptcies, zero runtime errors and reproduce the champion exactly at 13.30 points, 157.25 combined PnL and 7.97/10.00 minimum capital. The all-small >3-day gate, singleton-only >3-day gate and all-small >5-day gate have identical twenty-case vectors. The historical +0.47 signal from the older uniform two-cent FOK policy is therefore absent after composition with the current 0.034 quantity tier and later inventory/quote architecture. No candidate is promoted or retained, and there is no positive bounded FOK parameter to Tune.
+Next-generation rationale: Generation 6 should use the memo's strongest-unresolved-composition fallback outside FOK. The first three generations proved that cumulative <=23 adds a protected case-15 benefit, <=24 adds nothing, and adding the 25-cent state alone activates case-13 routing. The cumulative candidates paid large case-10 and case-20 costs from lower fair-value states that are not needed for either identified effect. Run an exact-state factorial from the champion: withhold flat FED Q4 only at fair_value_cents ==23, only at ==25, and at either 23 or 25. This directly composes the two positive states while restoring every inert/costly lower state, and is the highest-upside unresolved structure for the final generation.
