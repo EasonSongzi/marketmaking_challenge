@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-fed-four-hold-any-position",
+  "valid": true,
+  "eligible": true,
+  "sourcePath": "results/challengers/market-loop-20260819-4-g06-g6-fed-four-hold-any-position/r00.py",
+  "sourceSha256": "0fafbe22985b81376a84e3db4ebec947b303980c527228e7182c3d07305e7c67",
+  "modifiedLines": 2,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 15544,
+    "minimumCapital": {
+      "endingCashCents": 767,
+      "startingCapitalCents": 1000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 4
+  },
+  "reasons": []
+}

@@ -3014,6 +3014,56 @@
         }
       ],
       "tuningHistory": []
+    },
+    {
+      "id": "market-loop-20260819-4-g06-g6-fed-four-hold-any-position",
+      "status": "active",
+      "method": "quote",
+      "origin": "curated",
+      "rationale": "It cleared the previous champion at 155.44 by widening the fourth-unit inventory predicate from a positive position to any non-zero position, and it lost the generation only to a winner whose mechanism is orthogonal to it: the champion conditions the fifth unit while this candidate conditions the fourth unit's predicate more widely, and the champion still carries the narrower > 0 form on its fourth unit. Composing the two, a fourth unit gated on != 0 together with the promoted fifth-unit already-long condition, is therefore untested and is the natural next increment on the only axis in the run that produced promotions. It also fixes the sign question the run left open, that concentration of either direction carries some cost but almost all of the effect is directional, which makes it the reference source for any later inventory-predicate tuning.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260819-4-g06-g6-fed-four-hold-any-position/r00.py",
+          "sourceSha256": "0fafbe22985b81376a84e3db4ebec947b303980c527228e7182c3d07305e7c67",
+          "evaluationPath": "results/challengers/market-loop-20260819-4-g06-g6-fed-four-hold-any-position/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260819-4-g06-g6-fed-four-hold-any-position/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g6-fed-four-hold-any-position",
+            "valid": true,
+            "eligible": true,
+            "sourcePath": "results/challengers/market-loop-20260819-4-g06-g6-fed-four-hold-any-position/r00.py",
+            "sourceSha256": "0fafbe22985b81376a84e3db4ebec947b303980c527228e7182c3d07305e7c67",
+            "modifiedLines": 2,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1330,
+              "combinedPnlCents": 15544,
+              "minimumCapital": {
+                "endingCashCents": 767,
+                "startingCapitalCents": 1000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": 0,
+              "combinedPnlCents": 4
+            },
+            "reasons": []
+          },
+          "createdAt": "2026-08-20T04:12:05.059Z"
+        }
+      ],
+      "tuningHistory": [],
+      "curation": {
+        "admittedFrom": "results/runs/market-loop-20260819-4/archive/g06/g6-fed-four-hold-any-position",
+        "at": "2026-08-20T04:12:05.065Z"
+      }
     }
   ],
   "evaluations": {
