@@ -2328,7 +2328,7 @@
     },
     {
       "id": "market-loop-20260819-3-g03-g3-lowcap-exposure-offer-three",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "explore",
       "rationale": "It reaches the same 13.30 and preserves every rank while differing from the winner in exactly one design decision, whether the sub-20 offer-q3 rule should be gated by fair value or by gross exposure, so it is the precise control for the only open question the winner leaves behind. It is strictly better than the winner on case 9 at 30.44 against 30.38 and on case 12 at 3.74 against 3.34, and strictly worse on case 10 at 9.99 against 10.61 and on case 14 at 14.94 against 15.42, so the two sources bracket a real trade rather than duplicating each other. Its tuning upside is explicit and unswept: it is the only rule in the strategy carrying the available_capacity / 2.0 half-capacity guard into the sub-20 regime, and that divisor has never been varied anywhere in the project despite being inherited unchanged into a capital band an order of magnitude smaller than the one it was designed for. The three-unit multiple in its headroom check is likewise untested at this capital level, and because the winner is the same rule with a fair-value conjunct instead of an exposure guard, any sweep here directly measures which of the two gating idioms the sub-20 regime actually wants.",
@@ -2372,7 +2372,11 @@
           "createdAt": "2026-08-19T21:53:21.238Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "At 143.22 it is 12.31 behind the champion, and its two distinguishing lines are the active_exposure certification idiom applied to the low-capital offer q3 rule, which the champion already carries verbatim on its high-capital offer q3 rule. Aggregate active_exposure conditioning was also directly refuted this run, losing 2.72 where the per-contract position form gained 0.54. It is a near-duplicate mechanism on a stale base and a poor research parent.",
+        "at": "2026-08-20T04:12:38.005Z"
+      }
     },
     {
       "id": "market-loop-20260819-3-g03-champion-g2-lowcap-offer-six",
