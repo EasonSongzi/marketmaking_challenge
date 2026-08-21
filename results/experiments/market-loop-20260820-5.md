@@ -1,10 +1,10 @@
 # Market-Maker Experiment: market-loop-20260820-5
 
-- Status: active
+- Status: complete
 - Started: 2026-08-21T03:50:30.208Z
 - Starting baseline: g3-case7-width25 (13.30/16.00)
 - Current baseline: g5-case13-width-three-size-three (14.10/16.00)
-- Stop condition: not reached
+- Stop condition: generation limit reached
 - Score trend: 13.30 → 13.90 → 14.10
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
