@@ -166,3 +166,52 @@ test("shell entrypoint accepts paths containing spaces", async (t) => {
 
   assert.equal(runValidator({ baselinePath, candidatePath }).status, 0);
 });
+
+test("permits on_trade bookkeeping alongside a target method", async (t) => {
+  const candidate = baseline
+    .replace(
+      "    def on_trade(self, option: object, price: float, quantity: int, counterparty_id: int) -> None:\n        pass",
+      "    def on_trade(self, option: object, price: float, quantity: int, counterparty_id: int) -> None:\n        self.fills = getattr(self, 'fills', [])\n        self.fills.append((counterparty_id, price, quantity))",
+    )
+    .replace(
+      "    def quote(self, option: object, counterparty_id: int) -> object:\n        return None",
+      "    def quote(self, option: object, counterparty_id: int) -> object:\n        return len(getattr(self, 'fills', []))",
+    );
+  const result = runValidator(await fixture(t, candidate), "quote");
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /validation passed/);
+});
+
+test("still freezes non-bookkeeping core methods against the target", async (t) => {
+  const candidate = baseline.replace(
+    "    def respond_to_fok(self, option: object, fok_order: object) -> bool:\n        return False",
+    "    def respond_to_fok(self, option: object, fok_order: object) -> bool:\n        return True",
+  );
+  const result = runValidator(await fixture(t, candidate), "quote");
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /respond_to_fok differs while target method is MarketMaker.quote/);
+});
+
+test("rejects on_trade dropping the baseline position recording", async (t) => {
+  const recordingBaseline = baseline.replace(
+    "    def on_trade(self, option: object, price: float, quantity: int, counterparty_id: int) -> None:\n        pass",
+    "    def on_trade(self, option: object, price: float, quantity: int, counterparty_id: int) -> None:\n        self.position.add_option_quantity(option.option_id, quantity)",
+  );
+  const directory = await fsPromises.mkdtemp(path.join(tmpdir(), "candidate-scope-"));
+  t.after(() => fsPromises.rm(directory, { recursive: true, force: true }));
+  const baselinePath = path.join(directory, "baseline.py");
+  const candidatePath = path.join(directory, "candidate.py");
+  await Promise.all([
+    fsPromises.writeFile(baselinePath, recordingBaseline),
+    fsPromises.writeFile(
+      candidatePath,
+      recordingBaseline.replace("        self.position.add_option_quantity(option.option_id, quantity)", "        self.ignored = quantity"),
+    ),
+  ]);
+  const result = runValidator({ baselinePath, candidatePath }, "quote");
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /on_trade must still call self\.position\.add_option_quantity/);
+});

@@ -120,7 +120,12 @@ candidate_pipeline/validate-candidate.sh \
 
 For challenger-parent Explore, `--baseline` is the immutable challenger
 revision. With `--target-method`, the validator rejects changes to every other
-core method while still allowing required imports and `MarketMaker` helpers.
+core method while still allowing required imports, `MarketMaker` helpers, and
+`on_trade`. `on_trade` is bookkeeping rather than strategy: the grader hands it the
+price and counterparty of every executed trade, so it is exempt from the one-target
+freeze and may be extended alongside any target method. Its signature stays frozen and
+it must keep whatever `self.position.add_option_quantity` recording the baseline
+performs.
 The serial dispatcher repeats this validation before using cached evidence or
 launching HackerRank. A scope-invalid candidate is skipped and must be passed
 to `archive` with `--invalid <candidate-id>`. Workers receive one repair pass

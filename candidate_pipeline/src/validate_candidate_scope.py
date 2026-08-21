@@ -23,6 +23,15 @@ CORE_METHODS: tuple[str, ...] = (
 )
 TARGET_METHODS: tuple[str, ...] = ("quote", "respond_to_fok", "warm_up")
 
+# on_trade is bookkeeping infrastructure rather than strategy: the grader hands it the
+# price and counterparty of every executed trade, and a candidate needs to record those
+# in the same generation that consumes them. It is therefore exempt from the one-target
+# freeze and may be extended alongside any target method, exactly like a MarketMaker
+# helper. Its signature stays frozen, and validate_position_recording below requires it
+# to keep whatever position recording the baseline already performs.
+BOOKKEEPING_METHODS: tuple[str, ...] = ("on_trade",)
+POSITION_UPDATE_CALL: str = "self.position.add_option_quantity"
+
 
 class ValidationError(Exception):
     """Raised when a candidate changes code outside the permitted scope."""
@@ -141,11 +150,30 @@ def validate_core_methods(
         if decorators(baseline_method) != decorators(candidate_method):
             fail(f"MarketMaker.{method_name} decorators differ from baseline")
         if target_method is not None and method_name != target_method:
+            if method_name in BOOKKEEPING_METHODS:
+                continue
             if node_dump(baseline_method) != node_dump(candidate_method):
                 fail(
                     f"MarketMaker.{method_name} differs while target method is "
                     f"MarketMaker.{target_method}"
                 )
+
+
+def calls_position_update(method: MethodNode) -> bool:
+    return any(
+        isinstance(node, ast.Call) and ast.unparse(node.func) == POSITION_UPDATE_CALL
+        for node in ast.walk(method)
+    )
+
+
+def validate_position_recording(baseline: ast.ClassDef, candidate: ast.ClassDef) -> None:
+    """A candidate may extend on_trade but must keep the baseline's position recording."""
+    baseline_method = find_core_method(baseline, "on_trade", "baseline")
+    if not calls_position_update(baseline_method):
+        return
+    candidate_method = find_core_method(candidate, "on_trade", "candidate")
+    if not calls_position_update(candidate_method):
+        fail(f"MarketMaker.on_trade must still call {POSITION_UPDATE_CALL}")
 
 
 def validate(
@@ -157,6 +185,7 @@ def validate(
     candidate_class = find_market_maker(candidate_module, "candidate")
     validate_top_level(baseline_module, candidate_module)
     validate_core_methods(baseline_class, candidate_class, target_method)
+    validate_position_recording(baseline_class, candidate_class)
 
 
 def parse_args(arguments: list[str]) -> argparse.Namespace:

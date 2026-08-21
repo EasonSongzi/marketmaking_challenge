@@ -117,8 +117,8 @@ candidate_pipeline/loop.sh prepare --run-id <run-id> --plan <absolute-plan-path>
 Read the prepared worktree and result-directory paths from
 `results/runs/<run-id>/state.json`, then spawn three `market-maker-candidate`
 agents in one block. Workers may change only the single target core method plus
-`MarketMaker` helpers and required imports. Each must validate against the selected
-parent and compile:
+`MarketMaker` helpers, required imports, and `on_trade`. Each must validate against
+the selected parent and compile:
 
 ```bash
 candidate_pipeline/validate-candidate.sh \
@@ -126,6 +126,13 @@ candidate_pipeline/validate-candidate.sh \
   --candidate /absolute/worktree/Market_making_binary_option.py \
   --target-method <method>
 ```
+
+`on_trade` is bookkeeping, not strategy, and is exempt from the one-target freeze so
+an accumulator and the code consuming it land in the same generation. The grader hands
+it the price and counterparty of every executed trade; the champion currently discards
+both. Its signature stays frozen and it must keep calling
+`self.position.add_option_quantity`, which the validator enforces. `on_step_advance`,
+`__init__`, `name`, `price_option` and `price_option_from_parameters` remain frozen.
 
 For a challenger-parent Explore, `--baseline` is the immutable challenger revision.
 Grant each worker one repair pass after a failed validation or local check. A
