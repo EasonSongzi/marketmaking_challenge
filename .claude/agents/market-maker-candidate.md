@@ -35,17 +35,34 @@ You may modify, inside `<worktree>/Market_making_binary_option.py`:
 
 - the single target core method named in your prompt;
 - `MarketMaker` helper methods;
-- imports that your change requires.
+- imports that your change requires;
+- `on_trade` and `on_step_advance`, **only if your plan asks you to record something**;
+- appended `__init__` state, **only to hold what those recordings need**.
 
-Every other core method (`__init__`, `on_step_advance`, `on_trade`, `name`,
-`price_option`, `price_option_from_parameters`, and the two core methods you were
-not assigned) must stay byte-identical to the parent. Public signatures are fixed.
-Never touch the framework classes above `MarketMaker`; the autograder ignores
-changes to them.
+`name`, `price_option_from_parameters`, and the three target methods you were not
+assigned (from `price_option`, `quote`, `respond_to_fok`, `warm_up`) must stay
+byte-identical to the parent. Public signatures are fixed, including on the two hooks.
+Never touch the framework classes above `MarketMaker`; the autograder ignores changes
+to them.
 
-Implement the assigned hypothesis and nothing else. A candidate that also changes
-an unrelated constant destroys the generation's causal attribution, which is the
-entire point of the experiment.
+The two hooks return `None`, which is why they are exempt from the one-target freeze:
+an accumulator and the code consuming it can land in the same generation. Each must
+keep the side effect the parent already performs — `on_trade` its
+`self.position.add_option_quantity` call, `on_step_advance` its assignment of
+`self.underlying_state` and `self.active_option_state`. Dropping either is the one
+mistake here that the grader would report as a strategy result rather than an error.
+
+`__init__` may only be **appended** to: leave the parent's body untouched as a prefix,
+and add only `self._name = <constant, literal container, or empty list()/dict()/set()/
+tuple()>`. Anything computed belongs in the target method. Use this instead of
+`getattr(self, "_field", None)` lazy initialisation, which is defensive and silently
+survives a typo.
+
+Implement the assigned hypothesis and nothing else. These exemptions are permission
+your plan grants, not an invitation: if the plan does not ask for a recording, do not
+add one. A candidate that also changes an unrelated constant, or accumulates telemetry
+nobody asked for, destroys the generation's causal attribution, which is the entire
+point of the experiment.
 
 ## Code style
 
@@ -69,9 +86,9 @@ python3 -m py_compile <worktree>/Market_making_binary_option.py
 git -C <worktree> diff --stat
 ```
 
-The scope validator is authoritative: it rejects changes to every other core method
-while allowing required imports and `MarketMaker` helpers. If it fails, fix your
-diff rather than arguing with it.
+The scope validator is authoritative: it rejects changes to every frozen core method
+while allowing required imports, `MarketMaker` helpers, the two bookkeeping hooks, and
+appended `__init__` state. If it fails, fix your diff rather than arguing with it.
 
 Those three commands are the whole verification budget. **Do not write test files,
 throwaway scripts, harnesses, or simulation drivers — anywhere, including inside
