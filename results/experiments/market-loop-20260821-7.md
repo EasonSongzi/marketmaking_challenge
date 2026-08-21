@@ -1,11 +1,11 @@
 # Market-Maker Experiment: market-loop-20260821-7
 
-- Status: active
+- Status: complete
 - Started: 2026-08-21T21:31:36.024Z
 - Starting baseline: g6-lowband-size-eight (14.70/16.00)
-- Current baseline: g6-lowband-size-eight (14.70/16.00)
-- Stop condition: not reached
-- Score trend: 14.70
+- Current baseline: g3-case7-risk-gate (15.10/16.00)
+- Stop condition: target score reached
+- Score trend: 14.70 → 15.10
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -135,6 +135,6 @@ Parent: challenger `market-loop-20260821-7-g01-g1-captured-edge r00` (`51b90ae79
 - Objective outcome: target 0.00; gap 3.76; collateral loss 0.00; expected not met
 
 Selection: g3-case7-risk-gate.
-Promotion: none.
+Promotion: g3-case7-risk-gate (2f70656f14bc81d70ca42c38eb95a6456ca76743).
 Finding: The case-7 allocation composes exactly and produces the first strict champion improvement since the 14.70 plateau. g3-case7-risk-gate passed all 20 cases with zero bankruptcies, scored 15.10, and earned 273.01 combined PnL. Its only behavioral change from the 14.50 captured-edge parent is case 7: PnL rises from 6.63 to 17.37, the 12.64 gap becomes a 2.32 held margin, and score rises from 0.40 to 1.00. Every other scored case has exactly the parent's PnL, rank, gap or held margin, including the three thinnest held cases 14, 10 and 15, proving the session predicate is the exact singleton claimed by the ledger and the zero collateral budget was met. Against the global 14.70 champion the source gains 0.40 overall because it carries the parent's 0.20 case-13 loss and adds the 0.60 case-7 win. The controls resolve the mechanism. Capacity-only reproduces generation 2 at case 7: PnL 10.97, gap 4.14, score 0.40. Tightening mid-priced body edge while retaining the parent wing edge changes that only to PnL 11.10 and gap 3.76, still 0.40. The full rule's remaining 6.27 PnL and rank crossing therefore comes from lowering the wing edge requirement to the one-cent floor, not from body tightening; it needs the released capacity rule for its explicit solvency bound, but the score-bearing selection change is wing edge. Both controls are behaviorally identical to the parent outside case 7 and pass 20/20 with zero bankruptcies, so this is an allocation result rather than a global state interaction. g3-case7-risk-gate is the unique promotion winner and should be promoted as a complete source.
 Next-generation rationale: Promotion reaches 15.10, which exceeds the loop's 15.00 stopping threshold. Do not spend another generation: archive and promote g3-case7-risk-gate, confirm the promoted full-source hash and champion record, then finish the run. The remaining losses are case 6 at 0.70, case 13 at 0.80, case 18 at 0.80, and case 19 at 0.80, but the skill's terminal condition takes precedence once the champion is at least 15.00.
