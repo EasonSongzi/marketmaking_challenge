@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "1a8cb8bb1cb962a2e3b440855c82ee5894e8f778be0410623e68c2b33df6c70f",
+  "variants": [
+    {
+      "id": "cutoff-zero-depth-one",
+      "granularity": "coarse",
+      "parameters": {
+        "expiry_cutoff": 0,
+        "narrowing_amount": 1
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-5/g03/tune-03/.tuning/market-loop-20260821-5/g03/variants/cutoff-zero-depth-one/Market_making_binary_option.py",
+      "sourceSha256": "68a7c97b702bae596abceb413c3586a4f34f398d109bbdcbd69b037651cd091d",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cutoff-five-depth-four",
+      "granularity": "coarse",
+      "parameters": {
+        "expiry_cutoff": 5,
+        "narrowing_amount": 4
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-5/g03/tune-03/.tuning/market-loop-20260821-5/g03/variants/cutoff-five-depth-four/Market_making_binary_option.py",
+      "sourceSha256": "8e004fdc12424a772a1523df804680ad1e1c8cbeaad55baf50d74377ed96fcd5",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cutoff-zero-depth-three",
+      "granularity": "medium",
+      "parameters": {
+        "expiry_cutoff": 0,
+        "narrowing_amount": 3
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-5/g03/tune-03/.tuning/market-loop-20260821-5/g03/variants/cutoff-zero-depth-three/Market_making_binary_option.py",
+      "sourceSha256": "7437db78d1744edf89e10d8fb0e7cd929f7aca24577649f15f6bfdb9e1846c60",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cutoff-four-depth-one",
+      "granularity": "medium",
+      "parameters": {
+        "expiry_cutoff": 4,
+        "narrowing_amount": 1
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-5/g03/tune-03/.tuning/market-loop-20260821-5/g03/variants/cutoff-four-depth-one/Market_making_binary_option.py",
+      "sourceSha256": "00d3729c8f25f7472d28f01883b57b6e2e5779d963a75bba4d4438bca6fc9a82",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cutoff-three-depth-three",
+      "granularity": "medium",
+      "parameters": {
+        "expiry_cutoff": 3,
+        "narrowing_amount": 3
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-5/g03/tune-03/.tuning/market-loop-20260821-5/g03/variants/cutoff-three-depth-three/Market_making_binary_option.py",
+      "sourceSha256": "bbc3d02d52e1bab43670a9f0587dd01fea3951f7df73dd58d45d175dca6a4828",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cutoff-one-depth-two",
+      "granularity": "fine",
+      "parameters": {
+        "expiry_cutoff": 1,
+        "narrowing_amount": 2
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-5/g03/tune-03/.tuning/market-loop-20260821-5/g03/variants/cutoff-one-depth-two/Market_making_binary_option.py",
+      "sourceSha256": "89d103c8072d97fdecc9a5f85ddd1e21d764261a22be3116ac91d4d8939f9747",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cutoff-two-depth-one",
+      "granularity": "fine",
+      "parameters": {
+        "expiry_cutoff": 2,
+        "narrowing_amount": 1
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-5/g03/tune-03/.tuning/market-loop-20260821-5/g03/variants/cutoff-two-depth-one/Market_making_binary_option.py",
+      "sourceSha256": "57b2a274ab6596ca2ef6da39c81bff982b2227cfdafa43f531ef51a268594dca",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "cutoff-two-depth-three",
+      "granularity": "fine",
+      "parameters": {
+        "expiry_cutoff": 2,
+        "narrowing_amount": 3
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-5/g03/tune-03/.tuning/market-loop-20260821-5/g03/variants/cutoff-two-depth-three/Market_making_binary_option.py",
+      "sourceSha256": "2d3457f91428dad071101783e56bf35637a60793c4c98ed60d1a1f3e1bb4962a",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}

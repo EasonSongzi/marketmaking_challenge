@@ -95,3 +95,95 @@ Promotion: none.
 Finding: All three option/side allocation arms preserved all twenty outcomes and the parent's 14.70 score. The expiry arm was decisively best on the declared target: limiting the label's two-cent tightening to options with at most two steps remaining kept case 18 PnL at 15.58 while the endogenous Fixed Width 0.05 leader fell from 24.43 to 18.36, reducing the target gap from 8.85 to 2.78 with zero collateral loss. The moneyness arm reduced the gap only to 7.79, while offer-only tightening was negative at a 20.83 gap. Case 20 remained rank 1 in every arm, although the expiry arm's held margin narrowed to 2.17. This reopens the prior quote-width closure narrowly: depth allocation by expiry, not the two-cent depth itself, changes the leader response and nearly closes case 18.
 Next-generation rationale: Preserve g2-label-expiry-depth as the active target-gap lineage. Its expiry cutoff is now an explicit parameter with measured upside, so the next generation should tune the cutoff and, if separately bindable, the label tightening depth without adapting after results; the zero-collateral objective remains case 18 because the champion still scores 14.70.
 Challenger update: derived market-loop-20260821-5-g02-g2-label-expiry-depth.
+
+## Generation 3: tune quote
+
+Generation 2 found the first large remaining case-18 response: restricting the fed_low_mean_regime two-cent tightening to options with at most two steps remaining reduced the case-18 gap from 8.85 to 2.78 while holding all sixteen scored ranks and spending zero collateral. The result identifies two literal parameters with explicit upside but does not locate their joint optimum: the expiry cutoff at 2 decides which contracts receive the depth, and the narrowing amount at 2 decides how much depth those selected contracts receive. Both should be tuned jointly because changing the cutoff changes the flow mix on which a given narrowing amount acts. The parent scores 14.70, case 18 remains rank 2 of 4 and is worth exactly 0.20 if its remaining 2.78 gap closes. The parent's three thinnest held margins are case 13 at 1.35, case 10 at 1.90, and case 20 at 2.17; the first two are outside the exclusive {18,20} session label, while case 20 is the binding collateral check. The batch therefore keeps a zero collateral budget and varies only AST-bound quote constants on the complete challenger revision.
+
+Objective: exploit; targets 18; expected +0.20; collateral budget 0.00.
+
+### cutoff-zero-depth-one
+
+- Hypothesis: coarse parameter tuning for market-loop-20260821-5-g02-g2-label-expiry-depth
+- Implementation plan: {"expiry_cutoff":0,"narrowing_amount":1}
+- Worker summary: Designed eight unique, precommitted joint vectors spanning coarse, medium, and fine granularities over expiry_cutoff [0,5] and narrowing_amount [1,4], excluding the parent vector (2,2). The materializer changed only the two AST-bound quote constants; all variants compiled, passed scope validation, and passed lead diff review before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 256.95; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 11.13
+- Objective outcome: target 0.00; gap 28.83; collateral loss 0.00; expected not met
+
+### cutoff-five-depth-four
+
+- Hypothesis: coarse parameter tuning for market-loop-20260821-5-g02-g2-label-expiry-depth
+- Implementation plan: {"expiry_cutoff":5,"narrowing_amount":4}
+- Worker summary: Designed eight unique, precommitted joint vectors spanning coarse, medium, and fine granularities over expiry_cutoff [0,5] and narrowing_amount [1,4], excluding the parent vector (2,2). The materializer changed only the two AST-bound quote constants; all variants compiled, passed scope validation, and passed lead diff review before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.10/16.00 points; PnL 230.63; minimum capital 14.85/20.00
+- Baseline delta: -0.60 points; PnL -15.19
+- Objective outcome: target 0.00; gap 19.76; collateral loss 0.60; expected not met
+
+### cutoff-zero-depth-three
+
+- Hypothesis: medium parameter tuning for market-loop-20260821-5-g02-g2-label-expiry-depth
+- Implementation plan: {"expiry_cutoff":0,"narrowing_amount":3}
+- Worker summary: Designed eight unique, precommitted joint vectors spanning coarse, medium, and fine granularities over expiry_cutoff [0,5] and narrowing_amount [1,4], excluding the parent vector (2,2). The materializer changed only the two AST-bound quote constants; all variants compiled, passed scope validation, and passed lead diff review before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.10/16.00 points; PnL 239.37; minimum capital 34.66/40.00
+- Baseline delta: -0.60 points; PnL -6.45
+- Objective outcome: target 0.00; gap 9.58; collateral loss 0.60; expected not met
+
+### cutoff-four-depth-one
+
+- Hypothesis: medium parameter tuning for market-loop-20260821-5-g02-g2-label-expiry-depth
+- Implementation plan: {"expiry_cutoff":4,"narrowing_amount":1}
+- Worker summary: Designed eight unique, precommitted joint vectors spanning coarse, medium, and fine granularities over expiry_cutoff [0,5] and narrowing_amount [1,4], excluding the parent vector (2,2). The materializer changed only the two AST-bound quote constants; all variants compiled, passed scope validation, and passed lead diff review before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 264.30; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 18.48
+- Objective outcome: target 0.00; gap 12.91; collateral loss 0.00; expected not met
+
+### cutoff-three-depth-three
+
+- Hypothesis: medium parameter tuning for market-loop-20260821-5-g02-g2-label-expiry-depth
+- Implementation plan: {"expiry_cutoff":3,"narrowing_amount":3}
+- Worker summary: Designed eight unique, precommitted joint vectors spanning coarse, medium, and fine granularities over expiry_cutoff [0,5] and narrowing_amount [1,4], excluding the parent vector (2,2). The materializer changed only the two AST-bound quote constants; all variants compiled, passed scope validation, and passed lead diff review before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.10/16.00 points; PnL 236.29; minimum capital 34.53/40.00
+- Baseline delta: -0.60 points; PnL -9.53
+- Objective outcome: target 0.00; gap 15.52; collateral loss 0.60; expected not met
+
+### cutoff-one-depth-two
+
+- Hypothesis: fine parameter tuning for market-loop-20260821-5-g02-g2-label-expiry-depth
+- Implementation plan: {"expiry_cutoff":1,"narrowing_amount":2}
+- Worker summary: Designed eight unique, precommitted joint vectors spanning coarse, medium, and fine granularities over expiry_cutoff [0,5] and narrowing_amount [1,4], excluding the parent vector (2,2). The materializer changed only the two AST-bound quote constants; all variants compiled, passed scope validation, and passed lead diff review before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 267.24; minimum capital 39.30/40.00
+- Baseline delta: 0.00 points; PnL 21.42
+- Objective outcome: target 0.00; gap 1.74; collateral loss 0.00; expected not met
+
+### cutoff-two-depth-one
+
+- Hypothesis: fine parameter tuning for market-loop-20260821-5-g02-g2-label-expiry-depth
+- Implementation plan: {"expiry_cutoff":2,"narrowing_amount":1}
+- Worker summary: Designed eight unique, precommitted joint vectors spanning coarse, medium, and fine granularities over expiry_cutoff [0,5] and narrowing_amount [1,4], excluding the parent vector (2,2). The materializer changed only the two AST-bound quote constants; all variants compiled, passed scope validation, and passed lead diff review before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 254.66; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 8.84
+- Objective outcome: target 0.00; gap 13.65; collateral loss 0.00; expected not met
+
+### cutoff-two-depth-three
+
+- Hypothesis: fine parameter tuning for market-loop-20260821-5-g02-g2-label-expiry-depth
+- Implementation plan: {"expiry_cutoff":2,"narrowing_amount":3}
+- Worker summary: Designed eight unique, precommitted joint vectors spanning coarse, medium, and fine granularities over expiry_cutoff [0,5] and narrowing_amount [1,4], excluding the parent vector (2,2). The materializer changed only the two AST-bound quote constants; all variants compiled, passed scope validation, and passed lead diff review before serial evaluation.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.10/16.00 points; PnL 239.58; minimum capital 17.43/20.00
+- Baseline delta: -0.60 points; PnL -6.24
+- Objective outcome: target 0.00; gap 12.36; collateral loss 0.60; expected not met
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: The fine vector expiry_cutoff=1 and narrowing_amount=2 is the only batch member that improves the parent's declared objective while preserving all sixteen scored ranks: case 18 PnL rose from 15.58 to 17.74, the endogenous leader fell from 18.36 to 19.48 only slightly, and the gap narrowed from 2.78 to 1.74. Case 20 remained rank 1 with a 5.49 margin, and the other fourteen scored cases retained their ranks. Moving the narrowing amount to 3 or 4 was structurally unsafe: because the bound literal is shared by the label and counterparty-markout arms, all three depth-above-two vectors lost case 12 and fell to 14.10. One-cent depth preserved the score but widened the case-18 gap to 13.65 or worse. The expiry cutoff has a local optimum at 1 within the tested integer neighborhood: cutoff 0 widened the target gap to 28.83 and cutoff 2 is the 2.78 parent, so the updated revision exhausts this discrete cutoff on the safe two-cent depth.
+Next-generation rationale: The expiry/depth parameter surface is now closed around its safe optimum: cutoff 0, 1, 2, 4 and 5 were measured at one- or two-cent depth, while all deeper shared-branch settings either missed the target or lost case 12. Continue structurally from the revised cutoff-1 challenger only if a quote rule can isolate the label's narrowing amount from the counterparty-markout amount or can discriminate the remaining case-18 flow without touching case 20; otherwise explore a distinct target method or mechanism.
+Challenger update: updated market-loop-20260821-5-g02-g2-label-expiry-depth to cutoff-one-depth-two.
