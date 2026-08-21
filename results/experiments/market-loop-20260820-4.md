@@ -253,3 +253,64 @@ SCORE DECOMPOSITION: BROAD 13.30 -> 11.90 from case 11 r1->r3 (-0.60), protected
 
 LABELS: AJRvol>0.025 within the high-THR middle band = {5,11,14,16,18,20}; RAWcorr>0.50 is identical; FEDmean<=2.0 = {18,20}; hence FEDmean>2.0 = {5,11,14,16}. The protected case-14 failure is genuine, not bankruptcy truncation.
 Next-generation rationale: G5 must continue tomography only inside {5,11,14,16}: conjoin the high-THR middle slice with FED mean > 2.0, then probe FED warm-up minimum, FED warm-up maximum, and relative AJR-versus-THR return volatility. Preserve the champion's case-7 and case-19 branches. A case-5-only 45-cent rule would add the measured +5.71 without the three rank losses and should promote even before any final width extension.
+
+## Generation 5: explore quote
+
+G4 proved FED warm-up mean > 2.0 restricts the high-THR middle band to {5,11,14,16}; the complementary mean<=2.0 branch is exactly {18,20}. Continue tomography only inside {5,11,14,16} using FED minimum, FED maximum, and relative AJR-versus-THR return volatility. Each source adds a 45-cent diagnostic branch to the champion while preserving the exact promoted case-7 and case-19 branches. The goal is a case-5-only label; broad evidence predicts such a source adds +5.71 PnL without sacrificing protected ranks.
+
+Parent: champion `g2-fed-max-probe` (`6ea3c0dfee02dbb4c4092cd29bc53d63e4a6d31bff21bb876552b723bc853133`).
+
+### g5-case5-fed-min-probe
+
+- Hypothesis: FED warm-up minimum <= 2.0 divides the known {5,11,14,16} complement and may isolate case 5.
+- Implementation plan: Change quote only. Read FED raw-value mean and minimum into annotated fed_history_mean and fed_history_minimum locals beside existing FED maximum. Extend existing probe_regime with an OR branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility > 0.025, fed_history_mean > 2.0, and fed_history_minimum <= 2.0. Preserve the two existing low-volatility branches, 45-cent diagnostic width, exact fallback, and every other rule. No stdout. Expected new footprint: subset of exactly {5,11,14,16}.
+- Worker summary: In MarketMaker.quote, read FED warm-up mean and minimum and added a 45-cent diagnostic branch inside the high-THR, FED-mean>2 complement where FED minimum<=2. Preserved all champion branches and fallback logic. Worker and lead scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: b6edefb967a14a4dfcf7bd68ef467bd2f2504b434b6ecb8ad13d1c75e0701cae.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.70/16.00 points; PnL 158.34; minimum capital 17.74/20.00
+- Baseline delta: -0.60 points; PnL -22.65
+
+### g5-case5-fed-max-probe
+
+- Hypothesis: FED warm-up maximum >= 3.0 divides the known {5,11,14,16} complement and may isolate case 5.
+- Implementation plan: Change quote only. Read FED raw-value mean into annotated fed_history_mean and reuse existing fed_history_maximum. Extend existing probe_regime with an OR branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility > 0.025, fed_history_mean > 2.0, and fed_history_maximum >= 3.0. Preserve the two existing low-volatility branches, 45-cent diagnostic width, exact fallback, and every other rule. No stdout. Expected new footprint: subset of exactly {5,11,14,16}.
+- Worker summary: In MarketMaker.quote, read FED warm-up mean, reused FED maximum, and added a 45-cent diagnostic branch inside the high-THR, FED-mean>2 complement where FED maximum>=3. Preserved all champion branches and fallback logic. Worker and lead scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: a77a9108a42dff4f31b252d47ac97d60f7e7c217496a182c2721926067ef71ef.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.10/16.00 points; PnL 142.43; minimum capital 17.74/20.00
+- Baseline delta: -1.20 points; PnL -38.56
+
+### g5-case5-relative-vol-probe
+
+- Hypothesis: AJR warm-up return volatility at least as large as THR warm-up return volatility divides the known {5,11,14,16} complement and may isolate case 5.
+- Implementation plan: Change quote only. Read FED raw-value mean and AJR log-return sample_std_dev into annotated fed_history_mean and ajarai_return_volatility locals. Extend existing probe_regime with an OR branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility > 0.025, fed_history_mean > 2.0, and ajarai_return_volatility >= theriodic_return_volatility. Preserve the two existing low-volatility branches, 45-cent diagnostic width, exact fallback, and every other rule. No stdout. Expected new footprint: subset of exactly {5,11,14,16}.
+- Worker summary: In MarketMaker.quote, read FED warm-up mean and AJR return volatility and added a 45-cent diagnostic branch inside the high-THR, FED-mean>2 complement where AJR volatility>=THR volatility. Preserved all champion branches and fallback logic. Worker and lead scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: 5b667bab49c13002bdb7df1d51371c88088aa2cfc601695d69f7d027f783c08e.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.10/16.00 points; PnL 145.53; minimum capital 17.74/20.00
+- Baseline delta: -1.20 points; PnL -35.46
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: G5 REDUCED CASE-5 ISOLATION TO THE TWO-SESSION SET {5,11}. All candidates passed 20/20 with zero bankruptcies and zero runtime errors, but none passed the promotion gate. Inside the G4 complement {5,11,14,16}, FED maximum>=3 selects all four, FED minimum<=2 selects {14,16}, and relative AJR>=THR volatility selects {5,11,14}. Thus FED minimum>2 is an exact {5,11} gate; case 5 and protected case 11 remain indistinguishable at the tested thresholds.
+
+PER-CASE VECTORS (ours PnL / rank / N / leader / leader PnL / per-case score; * marks movement from parent):
+case  parent                            FEDmax                            FEDmin                            RELvol
+ 5    2.23/r2/N2/Stalemate/37.00/.40   7.94*/r2/N2/Stalemate/36.00/.40   2.23/r2/N2/Stalemate/37.00/.40   7.94*/r2/N2/Stalemate/36.00/.40
+ 6    3.93/r2/N3/FW0.25/10.37/.70      3.93/r2/N3/FW0.25/10.37/.70      3.93/r2/N3/FW0.25/10.37/.70      3.93/r2/N3/FW0.25/10.37/.70
+ 7    2.80/r2/N2/FW0.25/23.11/.40      2.80/r2/N2/FW0.25/23.11/.40      2.80/r2/N2/FW0.25/23.11/.40      2.80/r2/N2/FW0.25/23.11/.40
+ 8    6.95/r2/N3/FW0.10/27.86/.70      6.95/r2/N3/FW0.10/27.86/.70      6.95/r2/N3/FW0.10/27.86/.70      6.95/r2/N3/FW0.10/27.86/.70
+ 9   31.34/r1/N3/ours/31.34/1.00      31.34/r1/N3/ours/31.34/1.00      31.34/r1/N3/ours/31.34/1.00      31.34/r1/N3/ours/31.34/1.00
+10   14.17/r2/N3/FW0.10/35.17/.70     14.17/r2/N3/FW0.10/35.17/.70     14.17/r2/N3/FW0.10/35.17/.70     14.17/r2/N3/FW0.10/35.17/.70
+11   21.17/r1/N3/ours/21.17/1.00      -0.45*/r3/N3/FW0.05/6.94/.40     21.17/r1/N3/ours/21.17/1.00      -0.45*/r3/N3/FW0.05/6.94/.40
+12    3.21/r1/N2/ours/3.21/1.00        3.21/r1/N2/ours/3.21/1.00        3.21/r1/N2/ours/3.21/1.00        3.21/r1/N2/ours/3.21/1.00
+13    8.90/r2/N4/FW0.10/15.73/.80      8.90/r2/N4/FW0.10/15.73/.80      8.90/r2/N4/FW0.10/15.73/.80      8.90/r2/N4/FW0.10/15.73/.80
+14   17.29/r1/N3/ours/17.29/1.00      -2.26*/r3/N3/FW0.05/22.16/.40    -2.26*/r3/N3/FW0.05/22.16/.40    -2.26*/r3/N3/FW0.05/22.16/.40
+15   13.03/r1/N3/ours/13.03/1.00      13.03/r1/N3/ours/13.03/1.00      13.03/r1/N3/ours/13.03/1.00      13.03/r1/N3/ours/13.03/1.00
+16   27.07/r1/N3/ours/27.07/1.00      23.97*/r1/N3/ours/23.97/1.00     23.97*/r1/N3/ours/23.97/1.00     27.07/r1/N3/ours/27.07/1.00
+17   18.06/r1/N4/ours/18.06/1.00      18.06/r1/N4/ours/18.06/1.00      18.06/r1/N4/ours/18.06/1.00      18.06/r1/N4/ours/18.06/1.00
+18    7.44/r2/N4/FW0.05/39.01/.80      7.44/r2/N4/FW0.05/39.01/.80      7.44/r2/N4/FW0.05/39.01/.80      7.44/r2/N4/FW0.05/39.01/.80
+19    3.17/r2/N4/Situational/23.45/.80  3.17/r2/N4/Situational/23.45/.80  3.17/r2/N4/Situational/23.45/.80  3.17/r2/N4/Situational/23.45/.80
+20    0.23/r1/N4/ours/0.23/1.00        0.23/r1/N4/ours/0.23/1.00        0.23/r1/N4/ours/0.23/1.00        0.23/r1/N4/ours/0.23/1.00
+
+SCORE DECOMPOSITION: FEDmax 13.30->12.10 from case 11 r1->r3 (-0.60) and case 14 r1->r3 (-0.60); PnL 180.99->142.43 (-38.56). FEDmin 13.30->12.70 from case 14 r1->r3 (-0.60); PnL 180.99->158.34 (-22.65). RELvol 13.30->12.10 from the same case-11 and case-14 losses; PnL 180.99->145.53 (-35.46). Case 5 again gains +5.71 and Stalemate falls 37.00->36.00 whenever selected, but no rank flips.
+
+FINGERPRINTS within {5,11,14,16}: case5=(FEDmax true,FEDmin false,RELvol true); case11 is identical; case14=(true,true,true); case16=(true,true,false). The exact {5,11} gate is high-THR middle band AND FEDmean>2 AND FEDmin>2.
+Next-generation rationale: G6 is the final generation. Split only {5,11} with finer session-constant thresholds: FED mean>=3.0, FED minimum>=3.0, and raw company-return correlation>=0.75. Every branch must also require the exact {5,11} gate (middle high-THR, FED mean>2, FED minimum>2) and preserve all promoted branches. If any statistic selects case 5 without case 11, the isolated 45-cent rule should promote on the measured +5.71 PnL even if the N=2 rank does not flip.
