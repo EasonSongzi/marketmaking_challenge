@@ -230,3 +230,46 @@ Selection: No candidate passed the promotion gate.
 Promotion: none.
 Finding: Every structural arm preserved all twenty outcomes and the 14.70 score, but none improved the cutoff-1 parent on case 18. Decoupling the label and using three cents widened the target gap from 1.74 to 12.65, proving that two cents is the label's own local depth optimum rather than merely a limit imposed by the shared global markout branch. Bid-only depth widened the gap to 16.29, so the successful near-expiry response requires the offer side as well; combined with generation 2's 20.83 offer-only result, symmetric treatment is established. Restricting depth to company-linked options widened the gap modestly to 2.66, showing that the FED-only portion is small but beneficial and the all-option scope should remain. Case 20 held rank 1 in every arm, although the three-cent label margin compressed to 2.07. The parent revision remains the best safe source at a 1.74 target gap.
 Next-generation rationale: Preserve the cutoff-1, symmetric two-cent, all-option label rule. The remaining structural surface inside that rule is option granularity finer than the broad company/FED split, particularly contract moneyness or comparison-versus-single-leg selection within the one-step book; do not repeat depth, side, expiry cutoff, or broad company-only filters.
+
+## Generation 5: explore quote
+
+The active parent remains the repository's strongest safe case-18 source: 17.74 PnL against a 19.48 leader, a 1.74 gap, all twenty tests passing, and all sixteen scored ranks held. Generations 3 and 4 closed the local numeric and broad structural neighborhood: cutoff 1 is the integer optimum around 0 and 2; two-cent label depth beats one and three; symmetric depth beats either broad side alone; and all option families beat company-only. The remaining unmeasured surface is selection within the one-step book, finer than the broad family and side filters already graded. These candidates test three distinct mechanisms without altering the established label, cutoff or two-cent amount: probability uncertainty through central moneyness, contract topology through single-leg versus comparison options, and maximum-loss-aware side selection conditional on fair value. The parent's three thinnest held margins are case 13 at 1.35, case 10 at 1.90, and case 14 at 5.21; they are outside the exclusive {18,20} label and must remain unchanged. Case 20's 5.49 margin is the in-label collateral guard. Case 18 remains rank 2 of 4 and is worth exactly 0.20, so the collateral budget is zero.
+
+Objective: exploit; targets 18; expected +0.20; collateral budget 0.00.
+
+Parent: challenger `market-loop-20260821-5-g02-g2-label-expiry-depth r01` (`89d103c8072d97fdecc9a5f85ddd1e21d764261a22be3116ac91d4d8939f9747`).
+
+### g5-label-central-one-step
+
+- Hypothesis: The remaining target response is concentrated near 0.50, where one-step binary probabilities are most sensitive and the live volatility theo carries the most useful information. Withdrawing the label's two-cent depth from wings should retain contested central fills while improving edge on options already close to their payout bounds.
+- Implementation plan: In `quote`, extend `label_depth_applies` so it requires the existing fed_low_mean_regime, `option.steps_until_expiry <= 1`, and `25 <= fair_value_cents <= 75`. Preserve the positive-counterparty-markout arm and shared two-cent narrowing exactly. Do not change side construction, wing widening, fill signals, sizes, or any other method.
+- Worker summary: Restricted the existing one-step label tightening to fair values from 25 through 75 cents, preserving the counterparty-markout arm and all downstream logic. Validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 275.26; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 29.44
+- Objective outcome: target 0.00; gap 5.12; collateral loss 0.00; expected not met
+
+### g5-label-single-leg-one-step
+
+- Hypothesis: One-step comparison options combine two live volatility estimates and remain more model-sensitive than single-leg contracts. The near-closing case-18 response may come from simpler single-leg FED/AJR/THR contracts, so withdrawing label depth from comparison options should improve edge without losing the useful book.
+- Implementation plan: In `quote`, extend `label_depth_applies` so it requires the existing fed_low_mean_regime, `option.steps_until_expiry <= 1`, and `len(option.legs) == 1`. Keep the counterparty-markout branch and two-cent narrowing otherwise identical to the parent. Touch no downstream quote logic or other method.
+- Worker summary: Restricted the existing one-step label tightening to single-leg contracts, leaving comparisons untightened while preserving all other behavior. Validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 266.54; minimum capital 38.78/40.00
+- Baseline delta: 0.00 points; PnL 20.72
+- Objective outcome: target 0.00; gap 2.47; collateral loss 0.00; expected not met
+
+### g5-label-cheap-side-one-step
+
+- Hypothesis: Broad bid-only and offer-only tightening were both negative because the economically cheap side flips with fair value. Tightening the bid when fair value is at most 0.50 and the offer when it is above 0.50 concentrates competitiveness on the side whose maximum loss per contract is smaller, preserving more capacity while still contesting both directions across complementary options.
+- Implementation plan: In `quote`, preserve positive counterparty markout as symmetric two-cent tightening. Construct annotated bid/offer half widths from the untightened base. Markout-positive flow sets both to `max(half_width - 2, 1)`. When the existing `label_depth_applies` is true, set only bid width to that value when `fair_value_cents <= 50`, otherwise set only offer width to it. The conditions must not stack beyond two cents. Use the side widths only in the existing price construction; preserve all downstream wing, fill and size logic. Confirm strict bid/offer ordering on the new label path without adding a generic clamp that changes unrelated behavior.
+- Worker summary: Kept positive markout symmetrically two cents tight but allocated one-step label depth to the bid at fair values through 50 and to the offer above 50, using typed side-width locals and non-additive conditions. Validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 254.72; minimum capital 34.30/40.00
+- Baseline delta: 0.00 points; PnL 8.90
+- Objective outcome: target 0.00; gap 19.18; collateral loss 0.00; expected not met
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three candidates passed 20/20 and held the 14.70 score, but each widened case 18's gap from the parent's 1.74. Central-only one-step depth produced a 5.12 gap, so wing contracts are beneficial even though the broad all-expiry moneyness arm was also negative. Single-leg-only depth produced a 2.47 gap, proving comparison options contribute a smaller but still positive part of the response. Fair-value-aware cheap-side allocation widened the gap to 19.18, closing the remaining conditional side hypothesis and confirming the need for symmetric depth within each selected option. Case 20 remained rank 1 throughout; central-only widened its margin to 15.39, but telemetry and held-margin improvements cannot replace the worse target objective. The unchanged parent remains the best safe source.
+Next-generation rationale: Option and side selection are now closed around the full one-step book. For the sixth and final generation, preserve the cutoff-1 symmetric two-cent all-option price rule and test only quantity allocation inside that already-contested label. The prior size closure predates the cutoff-1 discovery, so it may be reopened narrowly under this condition; do not revisit price depth, expiry, moneyness, topology, broad side, FOK selection, or markout accumulation.
