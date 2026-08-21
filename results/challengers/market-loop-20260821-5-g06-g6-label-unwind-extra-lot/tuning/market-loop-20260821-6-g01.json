@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "bc7c9e616940ec822735220327747e6810a5943380ddb7d3a9945e2a33421a59",
+  "variants": [
+    {
+      "id": "increment-2-thresh-0-0",
+      "granularity": "coarse",
+      "parameters": {
+        "unwind_lot_increment": 2,
+        "unwind_long_threshold": 0,
+        "unwind_short_threshold": 0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-6/g01/tune-01/.tuning/market-loop-20260821-6/g01/variants/increment-2-thresh-0-0/Market_making_binary_option.py",
+      "sourceSha256": "73d00d282732e1f8108edbe72917fbea909bef4bc10c9ebd0c81ed2fa1291580",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "increment-4-thresh-0-0",
+      "granularity": "coarse",
+      "parameters": {
+        "unwind_lot_increment": 4,
+        "unwind_long_threshold": 0,
+        "unwind_short_threshold": 0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-6/g01/tune-01/.tuning/market-loop-20260821-6/g01/variants/increment-4-thresh-0-0/Market_making_binary_option.py",
+      "sourceSha256": "9b7d73a4a330ec453fc34e34e6eadd1817f00d3c57638073c005b659466bcdc5",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "increment-1-thresh-3-neg3",
+      "granularity": "coarse",
+      "parameters": {
+        "unwind_lot_increment": 1,
+        "unwind_long_threshold": 3,
+        "unwind_short_threshold": -3
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-6/g01/tune-01/.tuning/market-loop-20260821-6/g01/variants/increment-1-thresh-3-neg3/Market_making_binary_option.py",
+      "sourceSha256": "18bde2ea8fc26471b6ac5dd9fb98cf414bc3b4e9837c1e9b522ff7cc54e249c0",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "increment-3-thresh-0-0",
+      "granularity": "medium",
+      "parameters": {
+        "unwind_lot_increment": 3,
+        "unwind_long_threshold": 0,
+        "unwind_short_threshold": 0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-6/g01/tune-01/.tuning/market-loop-20260821-6/g01/variants/increment-3-thresh-0-0/Market_making_binary_option.py",
+      "sourceSha256": "6ec2254e56936d0833b427260e759ea17f87d35cb4153dcd3a0474e1580a936f",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "increment-2-thresh-1-neg1",
+      "granularity": "medium",
+      "parameters": {
+        "unwind_lot_increment": 2,
+        "unwind_long_threshold": 1,
+        "unwind_short_threshold": -1
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-6/g01/tune-01/.tuning/market-loop-20260821-6/g01/variants/increment-2-thresh-1-neg1/Market_making_binary_option.py",
+      "sourceSha256": "3f76ffaf5bd11a050c4bde13c7abf361026c8efad333dc84f0ce5c570ece29d4",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "increment-3-thresh-2-neg2",
+      "granularity": "medium",
+      "parameters": {
+        "unwind_lot_increment": 3,
+        "unwind_long_threshold": 2,
+        "unwind_short_threshold": -2
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-6/g01/tune-01/.tuning/market-loop-20260821-6/g01/variants/increment-3-thresh-2-neg2/Market_making_binary_option.py",
+      "sourceSha256": "f47fe718e5bd883882db959237da8337bfd8cce6b520d49e62b509b520032476",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "increment-1-thresh-1-neg1",
+      "granularity": "fine",
+      "parameters": {
+        "unwind_lot_increment": 1,
+        "unwind_long_threshold": 1,
+        "unwind_short_threshold": -1
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-6/g01/tune-01/.tuning/market-loop-20260821-6/g01/variants/increment-1-thresh-1-neg1/Market_making_binary_option.py",
+      "sourceSha256": "797ddf033e01977623149e1c57582683a31f6134da19b75ce635c4edb0e9b33f",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "increment-2-thresh-3-neg3",
+      "granularity": "fine",
+      "parameters": {
+        "unwind_lot_increment": 2,
+        "unwind_long_threshold": 3,
+        "unwind_short_threshold": -3
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-6/g01/tune-01/.tuning/market-loop-20260821-6/g01/variants/increment-2-thresh-3-neg3/Market_making_binary_option.py",
+      "sourceSha256": "68c273586b7c3d26460710e2db59f6d05374481ce9a432303ff42029b6ea1050",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}
