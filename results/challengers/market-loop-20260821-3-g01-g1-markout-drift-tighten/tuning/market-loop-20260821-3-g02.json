@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "parentSourceSha256": "380163085cd30f643649394c60945ba67b3710ce8cbb69f0aac119a7bd01bb3c",
+  "variants": [
+    {
+      "id": "thresh-05-fine",
+      "granularity": "fine",
+      "parameters": {
+        "narrowing_amount": 2,
+        "markout_threshold": 0.5
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-3/g02/tune-02/.tuning/market-loop-20260821-3/g02/variants/thresh-05-fine/Market_making_binary_option.py",
+      "sourceSha256": "8704600cff6497c54a906e5bfaaf530ebbe066688bf01d6a7a38e378cd6d6b7c",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "thresh-20-medium",
+      "granularity": "medium",
+      "parameters": {
+        "narrowing_amount": 2,
+        "markout_threshold": 2.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-3/g02/tune-02/.tuning/market-loop-20260821-3/g02/variants/thresh-20-medium/Market_making_binary_option.py",
+      "sourceSha256": "bbd3a4f20d3e74d6cc65066a265f2cfe096edf06d55ada18511dea6a06749d3c",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "thresh-50-coarse",
+      "granularity": "coarse",
+      "parameters": {
+        "narrowing_amount": 2,
+        "markout_threshold": 5.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-3/g02/tune-02/.tuning/market-loop-20260821-3/g02/variants/thresh-50-coarse/Market_making_binary_option.py",
+      "sourceSha256": "dbecd6b12d0dccd5fd71c66ef3ba5a3e48ca9681503a423358f30638826f38c8",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "amount-1-fine",
+      "granularity": "fine",
+      "parameters": {
+        "narrowing_amount": 1,
+        "markout_threshold": 0.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-3/g02/tune-02/.tuning/market-loop-20260821-3/g02/variants/amount-1-fine/Market_making_binary_option.py",
+      "sourceSha256": "73d686caeb252781f02815b0c070d95dc0a9eb80b101d7d5fcc7d6873b78e558",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "amount-4-medium",
+      "granularity": "medium",
+      "parameters": {
+        "narrowing_amount": 4,
+        "markout_threshold": 0.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-3/g02/tune-02/.tuning/market-loop-20260821-3/g02/variants/amount-4-medium/Market_making_binary_option.py",
+      "sourceSha256": "faba4cf68725e811a260d63c947082b085e68392c63c9efd46f63311d497922d",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "amount-8-coarse",
+      "granularity": "coarse",
+      "parameters": {
+        "narrowing_amount": 8,
+        "markout_threshold": 0.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-3/g02/tune-02/.tuning/market-loop-20260821-3/g02/variants/amount-8-coarse/Market_making_binary_option.py",
+      "sourceSha256": "93681716016dd0ba3b859c728e7ee42ac09625588dccf39ad92f1214cea0006d",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "joint-amt4-thresh15-medium",
+      "granularity": "medium",
+      "parameters": {
+        "narrowing_amount": 4,
+        "markout_threshold": 1.5
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-3/g02/tune-02/.tuning/market-loop-20260821-3/g02/variants/joint-amt4-thresh15-medium/Market_making_binary_option.py",
+      "sourceSha256": "cefd608f62571efe22be517167e9c093735245aeb49392a70dd8dc54dba38cd0",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    },
+    {
+      "id": "joint-amt6-thresh30-coarse",
+      "granularity": "coarse",
+      "parameters": {
+        "narrowing_amount": 6,
+        "markout_threshold": 3.0
+      },
+      "sourcePath": "/private/tmp/akuna-market-maker/market-loop-20260821-3/g02/tune-02/.tuning/market-loop-20260821-3/g02/variants/joint-amt6-thresh30-coarse/Market_making_binary_option.py",
+      "sourceSha256": "f51f6a51b589066576f35fe74c2054005b077e79c49281bbce0682a6dce43a95",
+      "checks": {
+        "compile": true,
+        "scope": true
+      }
+    }
+  ]
+}
