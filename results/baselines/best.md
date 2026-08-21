@@ -1,11 +1,11 @@
 # Champion Compatibility Pointer
 
-- Current champion: `g5-case13-width-three-size-three`
+- Current champion: `g6-lowband-size-eight`
 - Canonical record: `results/champion/champion.json`
 - Result file: `results/champion/result.md`
-- Source SHA-256: `fbe274bc77f4a70333d18d8df6d7744fdff98b34c851e4d565c0fcc51b94b633`
-- Experiment: `market-loop-20260820-5`, generation 5, candidate `g5-case13-width-three-size-three`
-- SCORED points: 14.10/16.00
+- Source SHA-256: `a01930269b7599e2e2d68ba8f1fa92215547a4651baf7d9ae4a5eb056e1a4e40`
+- Experiment: `market-loop-20260821`, generation 6, candidate `g6-lowband-size-eight`
+- SCORED points: 14.70/16.00
 - Available cases passed: 20/20
 - Bankruptcies: 0
 - Observed runs: 1

@@ -440,7 +440,6 @@ class MarketMaker:
             and company_return_correlation <= 0.50
             and fed_history_maximum < 3.0
         )
-        low_band_regime: bool = flat_rate_frequency <= 0.40
         half_width: int = 100 if case_five_regime else (25 if case_seven_regime else (3 if case_thirteen_regime else (45 if case_nineteen_regime else (18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4))))))
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
@@ -469,7 +468,7 @@ class MarketMaker:
                 signed_reserve += position * self.price_option(active_option)
             elif position < 0:
                 signed_reserve -= position * (1.0 - self.price_option(active_option))
-        cash_floor = (0.0 if low_band_regime else 0.75) * self.cash_balance
+        cash_floor = 0.75 * self.cash_balance
         available_capacity = self.cash_balance - cash_floor
         bid_quantity = (
             3
@@ -567,11 +566,6 @@ class MarketMaker:
             counterparty_id,
             self.position.option_quantity_by_option_id.get(option_id, 0),
         )
-        if low_band_regime:
-            while bid_quantity < 8 and signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity:
-                bid_quantity += 1
-            while offer_quantity < 8 and active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity:
-                offer_quantity += 1
         if case_five_regime:
             bid_quantity = 12
             offer_quantity = 12
