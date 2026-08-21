@@ -314,3 +314,63 @@ SCORE DECOMPOSITION: FEDmax 13.30->12.10 from case 11 r1->r3 (-0.60) and case 14
 
 FINGERPRINTS within {5,11,14,16}: case5=(FEDmax true,FEDmin false,RELvol true); case11 is identical; case14=(true,true,true); case16=(true,true,false). The exact {5,11} gate is high-THR middle band AND FEDmean>2 AND FEDmin>2.
 Next-generation rationale: G6 is the final generation. Split only {5,11} with finer session-constant thresholds: FED mean>=3.0, FED minimum>=3.0, and raw company-return correlation>=0.75. Every branch must also require the exact {5,11} gate (middle high-THR, FED mean>2, FED minimum>2) and preserve all promoted branches. If any statistic selects case 5 without case 11, the isolated 45-cent rule should promote on the measured +5.71 PnL even if the N=2 rank does not flip.
+
+## Generation 6: explore quote
+
+G5 derived an exact {5,11} gate: volatility-high middle band, FED mean > 2.0, and FED minimum > 2.0. Case 5 and protected case 11 still share all coarse fingerprints. In the final generation, apply three finer session-constant thresholds only inside {5,11}: FED mean >= 3.0, FED minimum >= 3.0, and raw company-return correlation >= 0.75. Preserve the champion's case-7 and case-19 branches. Any case-5-only 45-cent branch is predicted to add +5.71 PnL without a rank loss and therefore promote; the larger objective remains the +0.60 N=2 rank flip.
+
+Parent: champion `g2-fed-max-probe` (`6ea3c0dfee02dbb4c4092cd29bc53d63e4a6d31bff21bb876552b723bc853133`).
+
+### g6-case5-mean-three
+
+- Hypothesis: FED warm-up mean >= 3.0 separates case 5 from case 11 inside their exact shared coarse gate.
+- Implementation plan: Change quote only. Read FED raw-value mean and minimum into annotated fed_history_mean/fed_history_minimum locals beside existing maximum. Extend probe_regime with an OR branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility > 0.025, fed_history_mean > 2.0, fed_history_minimum > 2.0, and fed_history_mean >= 3.0. Preserve both existing low-volatility branches, 45-cent width, exact fallback, and every other rule. No stdout. Expected new footprint: subset of exactly {5,11}.
+- Worker summary: In MarketMaker.quote, read FED warm-up mean/minimum and added a 45-cent branch inside the exact {5,11} coarse gate with FED mean>=3. Preserved all champion branches and fallback logic. Worker and lead scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: 1f7a5bafb56d4d0613248caa6ef580d000477bf30c827c88b36f77a676e5ecf7.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.70/16.00 points; PnL 159.37; minimum capital 19.55/20.00
+- Baseline delta: -0.60 points; PnL -21.62
+
+### g6-case5-min-three
+
+- Hypothesis: FED warm-up minimum >= 3.0 separates case 5 from case 11 inside their exact shared coarse gate.
+- Implementation plan: Change quote only. Read FED raw-value mean and minimum into annotated fed_history_mean/fed_history_minimum locals beside existing maximum. Extend probe_regime with an OR branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility > 0.025, fed_history_mean > 2.0, fed_history_minimum > 2.0, and fed_history_minimum >= 3.0. Preserve both existing low-volatility branches, 45-cent width, exact fallback, and every other rule. No stdout. Expected new footprint: subset of exactly {5,11}.
+- Worker summary: In MarketMaker.quote, read FED warm-up mean/minimum and added a 45-cent branch inside the exact {5,11} coarse gate with FED minimum>=3. Preserved all champion branches and fallback logic. Worker and lead scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: 5bf21a429b09ecd7750aac63d5dc031889b4de93ee7a15b85bff7ffadca78108.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.70/16.00 points; PnL 159.37; minimum capital 19.55/20.00
+- Baseline delta: -0.60 points; PnL -21.62
+
+### g6-case5-corr-seventyfive
+
+- Hypothesis: Raw AJR/THR company log-return correlation >= 0.75 separates case 5 from case 11 inside their exact shared coarse gate.
+- Implementation plan: Change quote only. Read FED raw-value mean and minimum into annotated fed_history_mean/fed_history_minimum locals beside existing maximum and reuse company_return_correlation. Extend probe_regime with an OR branch requiring 0.40 < flat_rate_frequency <= 0.50, theriodic_return_volatility > 0.025, fed_history_mean > 2.0, fed_history_minimum > 2.0, and company_return_correlation >= 0.75. Preserve both existing low-volatility branches, 45-cent width, exact fallback, and every other rule. No stdout. Expected new footprint: subset of exactly {5,11}.
+- Worker summary: In MarketMaker.quote, read FED warm-up mean/minimum and added a 45-cent branch inside the exact {5,11} coarse gate with raw company-return correlation>=0.75. Preserved all champion branches and fallback logic. Worker and lead scope validation, temporary-cache py_compile, diff review, and cleanliness checks passed. Source SHA-256: 0d0fe72d09c9496fe174a20b26396dd9e74d76a5e2a1500f53067f04374dc6d9.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 12.70/16.00 points; PnL 159.37; minimum capital 19.55/20.00
+- Baseline delta: -0.60 points; PnL -21.62
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: THE FINAL GENERATION COMPLETED THE CASE-5 TOMOGRAPHY: ALL THREE TESTED FINE THRESHOLDS SELECT CASE 11 ALONE, SO THEIR COMPLEMENTS ISOLATE CASE 5. All candidates passed 20/20 with zero bankruptcies and zero runtime errors. Within the exact coarse gate {5,11}, FED mean>=3.0, FED minimum>=3.0, and raw company-return correlation>=0.75 each move case 11 and do not move case 5. Every candidate therefore has the same outcome: 12.70 points and 159.37 combined PnL. No source promotes.
+
+PER-CASE VECTOR, IDENTICAL FOR MEAN3/MIN3/CORR75 (ours PnL / rank / N / leader / leader PnL / per-case score; * marks movement from parent):
+ 5   2.23/r2/N2/Stalemate Quoter/37.00/.40
+ 6   3.93/r2/N3/Fixed Width 0.25/10.37/.70
+ 7   2.80/r2/N2/Fixed Width 0.25/23.11/.40
+ 8   6.95/r2/N3/Fixed Width 0.1/27.86/.70
+ 9  31.34/r1/N3/Mola mola/31.34/1.00
+10  14.17/r2/N3/Fixed Width 0.1/35.17/.70
+11  -0.45*/r3/N3/Fixed Width 0.05/6.94/.40
+12   3.21/r1/N2/Mola mola/3.21/1.00
+13   8.90/r2/N4/Fixed Width 0.1/15.73/.80
+14  17.29/r1/N3/Mola mola/17.29/1.00
+15  13.03/r1/N3/Mola mola/13.03/1.00
+16  27.07/r1/N3/Mola mola/27.07/1.00
+17  18.06/r1/N4/Mola mola/18.06/1.00
+18   7.44/r2/N4/Fixed Width 0.05/39.01/.80
+19   3.17/r2/N4/Situational Unawareness/23.45/.80
+20   0.23/r1/N4/Mola mola/0.23/1.00
+
+SCORE DECOMPOSITION: each source moves only case 11 from r1 to r3 in N=3, costing 0.60; score 13.30->12.70. Case 11 PnL falls 21.17->-0.45 (-21.62), exactly matching combined PnL 180.99->159.37. Case 5 remains 2.23 against Stalemate 37.00. No bankruptcy truncation or competitor change occurs outside case 11.
+
+FINAL LABEL: the coarse gate high-THR middle band AND FEDmean>2 AND FEDminimum>2 is {5,11}. Inside it, each of FEDmean>=3, FEDminimum>=3, and RAWcorr>=0.75 is {11}. Therefore any exact complement, especially RAWcorr<0.75, is {5} alone. A next run should begin by grading the surgical case-5 branch: 0.40<flat_rate_frequency<=0.50 AND THRvol>0.025 AND FEDmean>2 AND FEDminimum>2 AND company_return_correlation<0.75, at a 45-cent half-width while preserving the existing case-7/case-19 branches. Broad G4 evidence predicts +5.71 own PnL and Stalemate 37.00->36.00 with no protected-session movement, for about 186.70 combined PnL at 13.30 before any width extension.
+Next-generation rationale: Start the next loop with the exact case-5-only complement RAWcorr<0.75 inside the measured coarse gate and a 45-cent half-width. If the predicted +5.71 composes, promote it, then walk isolated case 5 beyond 45 toward Stalemate territory. Do not re-measure the session maps or reopen static case-7 widths 25-55.
