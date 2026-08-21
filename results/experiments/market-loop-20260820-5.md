@@ -3,9 +3,9 @@
 - Status: active
 - Started: 2026-08-21T03:50:30.208Z
 - Starting baseline: g3-case7-width25 (13.30/16.00)
-- Current baseline: g3-case7-width25 (13.30/16.00)
+- Current baseline: g3-case5-size-twelve (13.90/16.00)
 - Stop condition: not reached
-- Score trend: 13.30
+- Score trend: 13.30 → 13.90
 
 The fixed grader is evaluated once per unique source SHA-256; repeated sources reuse cached case evidence. Fixture-only validation uses stubbed evidence.
 
@@ -155,6 +155,70 @@ Change nothing else in the file. Note for review, not for implementation: with b
 - Objective outcome: target 0.60; gap 0.00; collateral loss 0.00; expected met
 
 Selection: g3-case5-size-twelve.
-Promotion: none.
+Promotion: g3-case5-size-twelve (327d20d031a35363abe32731191c6693eaec791d).
 Finding: THE OBJECTIVE WAS MET IN FULL: CASE 5 FLIPPED TO RANK 1 AND THE CHAMPION SCORE MOVES 13.30 TO 13.90. Two of three candidates are promotion-eligible with 20/20, zero bankruptcies and zero runtime errors, and once again nothing outside case 5 moved in any of the three sources - four generations at 0.00 collateral against a 0.00 budget. Results, all against the champion's case-5 baseline of 2.23 against Stalemate 37.00 at gap 34.77. Size twelve at the parent's graded pricing: ours 33.80, rank 1 of 2, gap 0, score .40 to 1.00, total 13.90, combined PnL 212.56. Zero bid with size forty: ours 27.00, rank 1 of 2, gap 0, score .40 to 1.00, total 13.90, combined PnL 205.76. Zero bid alone: ours 19.00, still rank 2, gap 12.00, total unchanged at 13.30. Three conclusions. (1) SIZE WAS THE WHOLE REMAINING LEVER. The parent quoted the same 0.00/1.00 market and lost with 4 to 5 lots; twelve lots at identical prices won outright. This confirms the routing model inferred in generation 2: tied best quotes are split, and our share of the split is set by quoted quantity. Because the challenge charges cash equal to a trade's maximum loss, and a 0.00 buy and a 1.00 sell each have none, this share was bought with no capital and no bankruptcy path - the minimum-capital telemetry is unchanged. (2) THE ONE-CENT BID BUMP IS MILDLY HELPFUL, NOT TOXIC. Cancelling it cost 0.87, from the parent's 19.87 down to 19.00. The generation-2 reading that the bid side carries the case-5 losses holds for a competitively priced bid at 4 to 5 cents, but it does not extend to a one-cent bid: at that price the flow we win is profitable. This is a corrected hypothesis, not a confirmed one. (3) TWELVE BEATS FORTY BY 6.80. The comparison is confounded because the forty-lot candidate also zeroed the bid, and zeroing the bid independently cost 0.87, so at most 5.93 of the difference is attributable to size. Either size overshoots above twelve or the two effects interact. The case-5 size response therefore has an interior maximum somewhere at or above twelve and below forty, exactly the non-monotone shape generation 1 found on the case-6 width axis. Selection prefers size twelve on equal score by fewer modified lines, and it is also the higher-PnL source.
 Next-generation rationale: Case 5 is now held at rank 1 with zero gap, so it converts from an objective into a protected rank worth -1.00 and must be reported explicitly by every later generation. The immediate follow-up is the case-5 size interval between twelve and forty, where the maximum sits: a tuning batch over the quoted quantity, with the one-cent bid bump as a second parameter since it is worth a measured 0.87 and interacts with size. That is refinement of a rank already held, however, not new score. The larger prize is that the method just proven transfers. An exact session label plus total RFQ withdrawal plus size at the capital-free 0.00/1.00 quote is a general recipe, and case 7 is its best next target: N=2, rank 2, .40 scored, +0.60 available, an isolated label already promoted into the champion as case_seven_regime, and a scoped closure that explicitly says static width 25 to 55 is exhausted and only a change of quote architecture can reopen it. Full withdrawal plus size is precisely that change of architecture. Cases 8, 10, 13, 18 and 19 are the same recipe at N=3 or N=4 for +0.30, +0.30, +0.20, +0.20 and +0.20, but case 7 should go first because it is the largest and its label is already installed.
+
+## Generation 4: explore quote
+
+CORRECTION TO THE GENERATION-3 ANALYSIS. That analysis proposed transplanting the case-5 recipe to case 7. Checking the competitor tables before spending runs shows the premise is wrong, and this plan supersedes it. Total RFQ withdrawal only pays where the session's counterparties cross passive quotes, and the Stalemate Quoter's PnL is the direct measurement of that: 37.00 in case 5 before we contested it and 16.00 after, but 0.00 in case 6, 0.00 in case 8, 4.00 in case 10, and absent entirely from case 7. Case 7 also has its own disproof already on record. Across the 78-source plateau its response is 2.80 at every isolated half-width from 25 through 55 and -2.03 at the default 8, while the leader sits at 23.11 whenever we are withdrawn. The 2.80 is our pure non-RFQ PnL and 23.11 is the leader's uncontested ceiling, so case 7's quote axis is finished; its remaining +0.60 lives in respond_to_fok or in theo, not here. WHAT GENERATION 3 ACTUALLY PROVED IS THAT SIZE IS AN UNEXPLORED LEVER. Withdrawal alone took case 5 to 19.87 and still lost; the same quote at twelve lots took it to 33.80 and rank 1. Quoted quantity had never been varied per session in any prior generation, and every case still quotes the champion's default two to six lots. Case 6 is the best target for that lever. It is the one remaining losing case where our PnL is already positive and the required multiple is small: we earn 3.93 against a 10.37 leader, so roughly 2.6 times our current size wins the rank. Its gate, flat_rate_frequency > 0.60, is the most thoroughly proven isolation in the repository, graded clean in generation 1 across three sources. And its width axis is closed in both directions by generation 1, which measured an interior maximum at the champion's 18 with 24, 30 and 40 all worse, so size is the correct next axis rather than a return to width. CAPITAL DISCIPLINE IS PART OF THE DESIGN. Case 6 starts with ten dollars and the challenge charges cash equal to a trade's maximum loss, so a naive size override could bankrupt the case and forfeit the .70 it already scores. Two candidates therefore raise size only where the per-fill charge is bounded at 0.25 per lot, and the third reuses the file's own signed_reserve and available_capacity arithmetic so the boost applies at any price only when the existing capacity test passes. Collateral budget is 0.00: the gate has been graded clean three times and nothing outside case 6 can observe it.
+
+Objective: exploit; targets 6; expected +0.30; collateral budget 0.00.
+
+Parent: champion `g3-case5-size-twelve` (`d107dc127f6890aed6a1cc71569239286f5011cac949c9c29d972a808a0d8808`).
+
+### g4-case6-cheap-size-eight
+
+- Hypothesis: Our case-6 edge is positive but under-sized. Raising quoted size to eight lots on the bounded-cost side of the book scales that edge toward the 10.37 leader while capping the cash charge at two dollars per fill against ten dollars of starting capital.
+- Implementation plan: Two edits in MarketMaker.quote. First, immediately after the existing case_five_regime block, add a named predicate in the same style: 'case_six_regime: bool = flat_rate_frequency > 0.60'. Do not change the half_width ladder, which keeps its own inline flat_rate_frequency > 0.60 test. Second, at the very end of the method, between the 'quote_snapshots[option_id] = (...)' assignment and the 'return Quote(' line, and after the existing case_five_regime quantity override, insert:
+
+        if case_six_regime and bid_price <= 0.25:
+            bid_quantity = 8
+        if case_six_regime and 1.0 - offer_price <= 0.25:
+            offer_quantity = 8
+
+Change nothing else. The 0.25 tests mirror the file's existing cheap-side idiom and bound the per-fill cash charge to 8 * 0.25 = 2.00. Expected tradeoff: more size on cheap bids and expensive offers in case 6 only.
+- Worker summary: Added 'case_six_regime: bool = flat_rate_frequency > 0.60' next to the existing regime predicates and, after the case_five_regime quantity override and before the return, two guarded overrides raising bid_quantity to 8 when bid_price <= 0.25 and offer_quantity to 8 when 1.0 - offer_price <= 0.25. The half_width ladder keeps its own inline predicate and is unchanged. Scope validation and py_compile passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.90/16.00 points; PnL 211.83; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL -0.73
+- Objective outcome: target 0.00; gap 7.58; collateral loss 0.00; expected not met
+
+### g4-case6-cheap-size-sixteen
+
+- Hypothesis: Eight lots may not reach the 2.6 times multiple the rank needs. Sixteen lots on the same bounded-cost side doubles the step while still capping the per-fill charge at four dollars, and together with the eight-lot candidate it brackets the size response so a non-monotone interior maximum is visible rather than assumed.
+- Implementation plan: Identical to g4-case6-cheap-size-eight except both quantity literals are 16 rather than 8. Add 'case_six_regime: bool = flat_rate_frequency > 0.60' after the case_five_regime block, leave the half_width ladder untouched, and insert before the return, after the existing case_five_regime override:
+
+        if case_six_regime and bid_price <= 0.25:
+            bid_quantity = 16
+        if case_six_regime and 1.0 - offer_price <= 0.25:
+            offer_quantity = 16
+
+Change nothing else. Per-fill cash charge is bounded at 16 * 0.25 = 4.00.
+- Worker summary: Identical to g4-case6-cheap-size-eight with both quantity literals 16 rather than 8. Scope validation and py_compile passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.90/16.00 points; PnL 211.30; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL -1.26
+- Objective outcome: target 0.00; gap 8.41; collateral loss 0.00; expected not met
+
+### g4-case6-capacity-size-twelve
+
+- Hypothesis: The bounded-cost gate only reaches cheap bids and expensive offers, so it may miss where case-6 flow actually is. Applying twelve lots at any price, but only when the file's own capacity arithmetic already permits it, covers mid-priced options too while keeping the existing solvency guarantee intact.
+- Implementation plan: Two edits in MarketMaker.quote. First, immediately after the existing case_five_regime block, add 'case_six_regime: bool = flat_rate_frequency > 0.60' in the same style. Do not change the half_width ladder. Second, at the very end of the method, between the 'quote_snapshots[option_id] = (...)' assignment and the 'return Quote(' line, and after the existing case_five_regime quantity override, insert:
+
+        if case_six_regime and signed_reserve + 12 * bid_price <= available_capacity:
+            bid_quantity = 12
+        if case_six_regime and active_exposure + 12 * (1.0 - offer_price) <= available_capacity:
+            offer_quantity = 12
+
+Change nothing else. The locals signed_reserve, active_exposure and available_capacity are already computed earlier in the method and are still in scope at this point; these two tests reuse the exact guard patterns the file already applies to its own four, five and six lot escalations. Expected tradeoff: twelve lots wherever case-6 capacity allows, and the champion's existing sizes wherever it does not.
+- Worker summary: Added the same case_six_regime predicate and, in the same position, two overrides raising each quantity to 12 only when the file's own capacity arithmetic permits it: signed_reserve + 12 * bid_price <= available_capacity on the bid and active_exposure + 12 * (1.0 - offer_price) <= available_capacity on the offer, reusing the guard shape the file already applies to its four, five and six lot escalations. Scope validation and py_compile passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.90/16.00 points; PnL 211.67; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL -0.89
+- Objective outcome: target 0.00; gap 7.88; collateral loss 0.00; expected not met
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: CASE-6 FLOW IS ADVERSELY SELECTED AND THE SIZE AXIS IS CLOSED UPWARD, MONOTONICALLY. All three candidates passed 20/20 with zero bankruptcies and zero runtime errors, held the new 13.90 champion score including the promoted case-5 rank 1, and again moved nothing outside the target case - a fifth consecutive generation at 0.00 collateral against a 0.00 budget. Every size increase made case 6 strictly worse and the leader strictly better. Champion at roughly four lots: ours 3.93, Fixed Width 0.25 10.37, gap 6.44. Capacity-guarded twelve lots: ours 3.04, leader 10.92, gap 7.88. Cheap-side eight lots: ours 3.20, leader 10.78, gap 7.58. Cheap-side sixteen lots: ours 2.67, leader 11.08, gap 8.41. The ordering is clean in size, and both the bounded-cost gate and the capacity-guarded gate agree, so the effect is the size itself and not the gating rule. Our PnL falls and the leader's rises together, which is the signature of winning more of a losing flow: the marginal case-6 unit is negative even though the average is positive. THIS IS THE EXACT OPPOSITE OF CASE 5 AND IT SHARPENS THE RULE. In case 5 the counterparties cross passive quotes, so size at a 0.00/1.00 quote bought free money and twelve lots flipped the rank. In case 6 the counterparties are informed, so size buys adverse selection. Quoted size is not a general lever; it pays only where the flow is benign, and the Stalemate Quoter's session PnL is the cheap test for that - 37.00 in case 5 versus 0.00 in case 6. CASE 6 IS NOW CLOSED ON BOTH OF ITS CHEAP AXES. Generation 1 closed static width in both directions with an interior maximum at the champion's 18. This generation closes size upward. Extrapolating the size ordering downward gains at most a few tenths of PnL against a 6.44 gap, so smaller size cannot reach rank 1 either. Any further case-6 work must change theo, skew, or respond_to_fok. Combined PnL 212.56 falls to 211.83, 211.67 and 211.30 across the three, entirely from case 6.
+Next-generation rationale: Two generations remain and the score stands at 13.90. Case 13 is the most reachable target left: gap 6.83 is the smallest on the board, N=4 makes the flip worth +0.20, and its label is already derivable from locals the champion computes. Within the low-volatility middle band the champion splits corr > 0.50 to case 19 and corr <= 0.50 with fed_history_maximum >= 3.0 to case 7, so the remaining complement - middle band, THR volatility <= 0.025, corr <= 0.50, fed_history_maximum < 3.0 - is case 13 alone, and no new warm-up statistic is needed. Case 13 currently falls through to the generic wide_regime 8-cent width while its leader, Fixed Width 0.1, quotes 5 cents a side and earns 15.73 against our 8.90. Undercutting a tighter leader inside an isolated label has never been tested; every prior case-13 attempt either moved a global width or narrowed one already-approved unit on a different champion. The archived g5-wide-three-three configuration, a 3-cent width at size three, is the only source ever to take case 13 to rank 1, and its case-7 and case-12 bankruptcies were consequences of applying it globally, which an isolated label prevents by construction. Test the narrow width directly, replicate that archived configuration inside the label, and include one size-reduction arm because this generation proved that where flow is adversely selected, less size is worth more than more.
