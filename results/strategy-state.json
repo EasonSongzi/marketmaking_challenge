@@ -4005,7 +4005,7 @@
     },
     {
       "id": "market-loop-20260820-3-g06-champion-g5-low-band-under-thirty",
-      "status": "active",
+      "status": "retired",
       "method": "quote",
       "origin": "demoted-champion",
       "rationale": "Champion displaced by g6-offer-tier-thirtyfive",
@@ -4049,7 +4049,11 @@
           "createdAt": "2026-08-20T23:08:14.013Z"
         }
       ],
-      "tuningHistory": []
+      "tuningHistory": [],
+      "retirement": {
+        "reason": "Direct champion ancestor fully absorbed by g6-offer-tier-thirtyfive, then by the current case-19 and case-7 composition; same 13.30 score, lower 176.33 PnL, and no independent unswept mechanism remains.",
+        "at": "2026-08-21T01:56:16.036Z"
+      }
     },
     {
       "id": "market-loop-20260820-4-g01-champion-g6-offer-tier-thirtyfive",
