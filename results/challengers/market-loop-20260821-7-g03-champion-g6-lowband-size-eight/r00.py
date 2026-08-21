@@ -307,32 +307,13 @@ class MarketMaker:
         self.position: Position = Position()
         self.warm_up_statistics: WarmUpStatistics | None = None
         self.estimated_market_parameters: MarketParameters | None = None
-        self._live_ajarai_squares: float = 0.0
-        self._live_theriodic_squares: float = 0.0
-        self._live_return_steps: int = 0
-        self._counterparty_markout: dict = {}
-        self._quote_snapshots: dict = {}
-        self._fill_signals: dict = {}
-        self._quote_request_counts: dict = {}
 
     def on_step_advance(self, new_underlying_state: list[Underlying], new_option_state: list[BinaryOption]) -> None:
-        previous_ajarai: float = next(underlying.value for underlying in self.underlying_state if underlying.underlying_id == AJARAI_UNDERLYING_ID)
-        new_ajarai: float = next(underlying.value for underlying in new_underlying_state if underlying.underlying_id == AJARAI_UNDERLYING_ID)
-        previous_theriodic: float = next(underlying.value for underlying in self.underlying_state if underlying.underlying_id == THERIODIC_UNDERLYING_ID)
-        new_theriodic: float = next(underlying.value for underlying in new_underlying_state if underlying.underlying_id == THERIODIC_UNDERLYING_ID)
-        self._live_ajarai_squares += math.log(new_ajarai / previous_ajarai) ** 2
-        self._live_theriodic_squares += math.log(new_theriodic / previous_theriodic) ** 2
-        self._live_return_steps += 1
         self.underlying_state = new_underlying_state
         self.active_option_state = new_option_state
 
     def on_trade(self, option: BinaryOption, price: float, quantity: int, counterparty_id: int) -> None:
         self.position.add_option_quantity(option.option_id, quantity)
-        if self.estimated_market_parameters is not None:
-            theoretical_value = self.price_option(option)
-            self._counterparty_markout[counterparty_id] = (
-                self._counterparty_markout.get(counterparty_id, 0.0) + quantity * (theoretical_value - price)
-            )
 
     @property
     def name(self) -> str:  # type: ignore[empty-body]
@@ -341,21 +322,7 @@ class MarketMaker:
     def price_option(self, option: BinaryOption) -> float:
         if self.estimated_market_parameters is None:
             raise RuntimeError("warm_up must be called before price_option")
-        if self._live_return_steps < 3:
-            return self.price_option_from_parameters(self.estimated_market_parameters, option)
-        weight: float = self._live_return_steps / (self._live_return_steps + 10.0)
-        ajarai_fitted: float = self.warm_up_statistics.company_log_returns_by_underlying_id[AJARAI_UNDERLYING_ID].sample_std_dev
-        theriodic_fitted: float = self.warm_up_statistics.company_log_returns_by_underlying_id[THERIODIC_UNDERLYING_ID].sample_std_dev
-        ajarai_realized: float = math.sqrt(self._live_ajarai_squares / self._live_return_steps)
-        theriodic_realized: float = math.sqrt(self._live_theriodic_squares / self._live_return_steps)
-        ajarai_scale: float = 1.0 + weight * (min(max(ajarai_realized / ajarai_fitted, 0.5), 2.0) - 1.0)
-        theriodic_scale: float = 1.0 + weight * (min(max(theriodic_realized / theriodic_fitted, 0.5), 2.0) - 1.0)
-        parameters: MarketParameters = replace(
-            self.estimated_market_parameters,
-            ajarai_idio_std_dev=self.estimated_market_parameters.ajarai_idio_std_dev * ajarai_scale,
-            theriodic_idio_std_dev=self.estimated_market_parameters.theriodic_idio_std_dev * theriodic_scale,
-        )
-        return self.price_option_from_parameters(parameters, option)
+        return self.price_option_from_parameters(self.estimated_market_parameters, option)
 
     def price_option_from_parameters(
         self, market_parameters: MarketParameters, option: BinaryOption
@@ -408,9 +375,12 @@ class MarketMaker:
         return min(max(price, 0.0), 1.0)
 
     def quote(self, option: BinaryOption, counterparty_id: int) -> Quote:  # type: ignore[empty-body]
-        quote_snapshots = self._quote_snapshots
-        fill_signals = self._fill_signals
-        counterparty_markout = self._counterparty_markout
+        quote_snapshots = getattr(self, "_quote_snapshots", None)
+        if quote_snapshots is None:
+            quote_snapshots = self._quote_snapshots = {}
+        fill_signals = getattr(self, "_fill_signals", None)
+        if fill_signals is None:
+            fill_signals = self._fill_signals = {}
         option_id = option.option_id
         prior_quote = quote_snapshots.get(option_id)
         if prior_quote is not None:
@@ -420,7 +390,9 @@ class MarketMaker:
             if position_delta:
                 fill_signals[(prior_counterparty, option_id)] = 1 if position_delta > 0 else -1
 
-        request_counts = self._quote_request_counts
+        request_counts = getattr(self, "_quote_request_counts", None)
+        if request_counts is None:
+            request_counts = self._quote_request_counts = {}
         request_key = (counterparty_id, option.option_id)
         repeat_request = request_key in request_counts
         request_counts[request_key] = request_counts.get(request_key, 0) + 1
@@ -469,17 +441,7 @@ class MarketMaker:
             and fed_history_maximum < 3.0
         )
         low_band_regime: bool = flat_rate_frequency <= 0.40
-        fed_low_mean_regime: bool = (
-            0.40 < flat_rate_frequency <= 0.50
-            and theriodic_return_volatility > 0.025
-            and fed_history_mean <= 2.0
-        )
         half_width: int = 100 if case_five_regime else (25 if case_seven_regime else (3 if case_thirteen_regime else (45 if case_nineteen_regime else (18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4))))))
-        label_depth_applies: bool = fed_low_mean_regime and option.steps_until_expiry <= 1
-        if label_depth_applies and repeat_request:
-            half_width = max(half_width - 1, 1)
-        if label_depth_applies or counterparty_markout.get(counterparty_id, 0.0) > 0.0:
-            half_width = max(half_width - 2, 1)
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
         if bid_price > 0.50:
@@ -610,23 +572,6 @@ class MarketMaker:
                 bid_quantity += 1
             while offer_quantity < 8 and active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity:
                 offer_quantity += 1
-        if counterparty_markout.get(counterparty_id, 0.0) > 0.0:
-            if signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity:
-                bid_quantity += 1
-            if active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity:
-                offer_quantity += 1
-        if label_depth_applies:
-            option_position: int = self.position.option_quantity_by_option_id.get(option_id, 0)
-            if (
-                option_position > 0
-                and active_exposure + (offer_quantity + 3) * (1.0 - offer_price) <= available_capacity
-            ):
-                offer_quantity += 3
-            elif (
-                option_position < 0
-                and signed_reserve + (bid_quantity + 3) * bid_price <= available_capacity
-            ):
-                bid_quantity += 3
         if case_five_regime:
             bid_quantity = 12
             offer_quantity = 12
@@ -648,27 +593,6 @@ class MarketMaker:
                 return fok_order.price >= theoretical_value
             if position < 0 and fok_order.order_type == OrderType.SELL:
                 return fok_order.price <= theoretical_value
-
-        case_seven_regime: bool = (
-            self.warm_up_statistics.rate_transition_frequencies["unchanged"] > 0.40
-            and self.warm_up_statistics.rate_transition_frequencies["unchanged"] <= 0.50
-            and self.warm_up_statistics.company_log_returns_by_underlying_id[
-                THERIODIC_UNDERLYING_ID
-            ].sample_std_dev <= 0.025
-            and self.warm_up_statistics.company_log_return_correlation <= 0.50
-            and self.warm_up_statistics.raw_values_by_underlying_id[FED_FUNDS_RATE_UNDERLYING_ID].maximum >= 3.0
-        )
-        if case_seven_regime:
-            if fok_order.order_type == OrderType.BUY:
-                max_loss_per_lot: float = 1.0 - fok_order.price
-                edge_per_lot: float = fok_order.price - theoretical_value
-            else:
-                max_loss_per_lot = fok_order.price
-                edge_per_lot = theoretical_value - fok_order.price
-            return (
-                edge_per_lot >= max(0.01, 0.10 * max_loss_per_lot)
-                and max_loss_per_lot * fok_order.quantity <= 0.25 * self.cash_balance
-            )
 
         edge: float = 0.034 if fok_order.quantity > 2 else 0.02
         if fok_order.order_type == OrderType.BUY:
