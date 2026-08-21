@@ -21,7 +21,12 @@ CORE_METHODS: tuple[str, ...] = (
     "respond_to_fok",
     "warm_up",
 )
-TARGET_METHODS: tuple[str, ...] = ("quote", "respond_to_fok", "warm_up")
+# price_option is the live theo and a target method in its own right. It is not
+# bookkeeping: it returns a price that quote, respond_to_fok and the signed_reserve
+# capacity arithmetic all consume, so changing it alongside another target would fuse
+# two levers into one result. It is separate from price_option_from_parameters, which
+# stays frozen because the THEO case scores that method directly.
+TARGET_METHODS: tuple[str, ...] = ("price_option", "quote", "respond_to_fok", "warm_up")
 
 # on_trade and on_step_advance are bookkeeping infrastructure rather than strategy. Both
 # return None, so neither can change behaviour on its own: a recording only matters once

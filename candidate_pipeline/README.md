@@ -69,8 +69,8 @@ The plan schema is:
 }
 ```
 
-Explore `method` must be `quote`, `respond_to_fok`, or `warm_up`. Candidate IDs must be
-unique lowercase slugs. `parent.type` is either `champion` as above or
+Explore `method` must be `price_option`, `quote`, `respond_to_fok`, or `warm_up`.
+Candidate IDs must be unique lowercase slugs. `parent.type` is either `champion` as above or
 `challenger`; a challenger parent also requires `challengerId` and must pin the
 SHA-256 of that challenger's current active revision:
 
@@ -134,6 +134,21 @@ may be extended alongside any target method. Their signatures stay frozen, and e
 must keep the side effect the baseline performs: `on_trade` its
 `self.position.add_option_quantity` recording, and `on_step_advance` its assignment of
 `self.underlying_state` and `self.active_option_state` from its parameters.
+
+`price_option` is a target method, never bookkeeping. It is the live theo, and it is
+the only way to make theo depend on state: `warm_up` runs once and can only produce a
+session constant. It is separate from `price_option_from_parameters`, which stays
+frozen because the THEO case scores that method directly, so a `price_option`
+generation cannot put case 1 at risk.
+
+It is a global change with three consumers, and a plan must name which one the
+hypothesis targets: the quoted fair value, the `respond_to_fok` acceptance threshold,
+and the `signed_reserve` capacity arithmetic. The third is the trap — a theo shift
+also moves the size limits, so a gain cannot be attributed to better prices without
+disentangling it. `signed_reserve` accumulates only over options with a non-zero
+position, so a `price_option` change is reserve-neutral on a flat book and couples
+only once inventory exists. Prefer first generations where that coupling is provably
+small. Budget collateral as for any global lever.
 
 `__init__` is neither a target nor bookkeeping, and may only be **appended** to. The
 baseline body must survive as an exact prefix, and every appended statement must assign

@@ -12,7 +12,7 @@ const SCOPE_VALIDATOR = path.resolve(path.dirname(fileURLToPath(import.meta.url)
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const CHALLENGER_ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,84}$/;
 const SKIPPED_STATUSES = new Set(["evaluated", "invalid"]);
-const TARGET_METHODS = new Set(["quote", "respond_to_fok", "warm_up"]);
+const TARGET_METHODS = new Set(["price_option", "quote", "respond_to_fok", "warm_up"]);
 
 export class GenerationInputError extends Error {}
 

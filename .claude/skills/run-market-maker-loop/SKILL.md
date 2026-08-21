@@ -80,7 +80,7 @@ ignored `results/runs/<run-id>/inputs/` directory.
 ### Explore
 
 Write a schema-version-3 plan with `mode: "explore"`, one generation-level `method`
-(`quote`, `respond_to_fok`, or `warm_up`), a rationale, exactly three structurally
+(`price_option`, `quote`, `respond_to_fok`, or `warm_up`), a rationale, exactly three structurally
 distinct candidates, one hash-pinned `parent`, and one machine-checkable
 `objective`. Use `{"type":"champion","sourceSha256":"..."}` for the current champion
 or `{"type":"challenger","challengerId":"...","sourceSha256":"..."}` for the current
@@ -142,7 +142,16 @@ and each appended statement must assign a `self._` attribute to a constant, a li
 container, or an empty container factory call. Use it so the hooks and the target
 method share state without a `getattr` lazy initialiser in each, which the one-target
 freeze would forbid them from keeping in agreement. Anything computed belongs in the
-target method. `name`, `price_option` and `price_option_from_parameters` remain frozen.
+target method. `name` and `price_option_from_parameters` remain frozen.
+
+`price_option` is a target of its own, never bookkeeping. It is the live theo and the
+only way to make theo state-dependent, since `warm_up` runs once and yields a session
+constant. `price_option_from_parameters` stays frozen and the THEO case scores that
+method directly, so a `price_option` generation cannot risk case 1. It is global with
+three consumers, and the plan must name which one it targets: the quoted fair value,
+the `respond_to_fok` threshold, and the `signed_reserve` capacity arithmetic. The
+third fuses pricing with sizing. `signed_reserve` sums only over non-zero positions,
+so the coupling is absent on a flat book and appears only with inventory.
 
 For a challenger-parent Explore, `--baseline` is the immutable challenger revision.
 Grant each worker one repair pass after a failed validation or local check. A

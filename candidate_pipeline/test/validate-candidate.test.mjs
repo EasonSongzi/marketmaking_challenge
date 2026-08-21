@@ -315,3 +315,27 @@ test("rejects __init__ appending public attributes, computed values, or statemen
   assert.equal(statement.status, 1);
   assert.match(statement.stderr, /may only append private state assignments; found Expr/);
 });
+
+test("accepts price_option as a target and still freezes it against another target", async (t) => {
+  const livePricing = baseline.replace(
+    "    def price_option(self, option: object) -> float:\n        return 0.5",
+    "    def price_option(self, option: object) -> float:\n        return 0.5 + self._skew",
+  );
+  const accepted = runValidator(await fixture(t, livePricing), "price_option");
+  assert.equal(accepted.status, 0, accepted.stderr);
+
+  const rejected = runValidator(await fixture(t, livePricing), "quote");
+  assert.equal(rejected.status, 1);
+  assert.match(rejected.stderr, /price_option differs while target method is MarketMaker\.quote/);
+});
+
+test("keeps price_option_from_parameters frozen while price_option is the target", async (t) => {
+  const candidate = baseline.replace(
+    "    def price_option_from_parameters(self, market_parameters: object, option: object) -> float:\n        return 0.5",
+    "    def price_option_from_parameters(self, market_parameters: object, option: object) -> float:\n        return 0.6",
+  );
+  const result = runValidator(await fixture(t, candidate), "price_option");
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /price_option_from_parameters differs while target method is MarketMaker\.price_option/);
+});
