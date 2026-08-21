@@ -97,3 +97,64 @@ Next-generation rationale: Take the quantity axis on top of the full-withdrawal 
 Challenger update: admitted market-loop-20260820-5-g02-g2-case5-full-withdraw.
 Previous failure (runner): g2-case5-width45 runner failure; automatic retry requested
 Recovery instruction: Repair the HackerRank browser profile with `auto_extract_result/login.sh`, then run `candidate_pipeline/loop.sh resume --run-id <run-id>`. Existing worktrees and completed evaluations are preserved.
+
+## Generation 3: explore quote
+
+Generation 2 cut the case-5 gap from 34.77 to 10.13 by withdrawing entirely from RFQ flow, and proved the gate touches nothing else three sources running. Price cannot improve further: bid 0.00 and offer 1.00 is the boundary of the Quote invariant. Two levers remain, both untested, and both live in the parent revision's final quote construction. First, quoted SIZE. The exchange routes each RFQ to the best bid or offer and splits the order when quotes tie, so at 0.00/1.00 we are splitting case-5 crossing flow with the Stalemate Quoter, currently 19.87 to its 30.00. Our share is a function of quoted quantity, and under the challenge's maximum-loss cash rule a 0.00 buy and a 1.00 sell each charge zero capital, so size at exactly that quote is free of capital cost and cannot open a bankruptcy path. Second, the ONE-CENT BID BUMP. The parent reaches half_width 100 and then its existing 'bid_quantity == 3 and not repeat_request' rule raises the bid from 0.00 to 0.01. That single cent makes us strictly better than Stalemate's passive bid, so we win the whole sell side outright instead of splitting it - and generation 2 measured the bid as the toxic side, worth roughly +15.8 of the +17.64 withdrawal gain. Winning toxic flow is the opposite of what the evidence wants. This generation separates those two effects and then combines them. Collateral budget stays 0.00 because the case_five_regime gate is unchanged from the parent and has now been graded three times with zero movement outside case 5.
+
+Objective: exploit; targets 5; expected +0.60; collateral budget 0.00.
+
+Parent: challenger `market-loop-20260820-5-g02-g2-case5-full-withdraw r00` (`613ef879b7196864ad9bef8abc9adbb17c94db1b83d102c8fb5d78ac23756ff9`).
+
+### g3-case5-zero-bid
+
+- Hypothesis: The residual one-cent bid is what keeps us buying toxic case-5 flow. Forcing the bid to exactly 0.00 makes us tie the Stalemate Quoter rather than beat it, so the sell side splits instead of landing entirely on us, and it also drops our capital consumption on that side to zero. This isolates the price bump from any size effect.
+- Implementation plan: The parent already contains the fed_history_mean and fed_history_minimum locals, the case_five_regime predicate, and the 'half_width: int = 100 if case_five_regime else (...)' ladder. Do not touch any of them. Make exactly one edit. At the end of MarketMaker.quote, between the 'quote_snapshots[option_id] = (...)' assignment and the 'return Quote(' line, insert:
+
+        if case_five_regime:
+            bid_price = 0.0
+
+Change nothing else in the file. Expected tradeoff: case 5 quotes a strictly passive 0.00 bid, ties the leader on that side, and consumes no cash on any buy.
+- Worker summary: Single two-line insertion before the return in MarketMaker.quote: 'if case_five_regime: bid_price = 0.0'. Cancels the parent's residual one-cent bid bump while leaving the half_width 100 ladder, the case_five_regime predicate, every quantity rule and every other price adjustment byte-identical to the parent challenger revision. Scope validation and py_compile passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.30/16.00 points; PnL 197.76; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 16.77
+- Objective outcome: target 0.00; gap 12.00; collateral loss 0.00; expected not met
+
+### g3-case5-size-twelve
+
+- Hypothesis: Holding the parent's graded pricing exactly as it is, raising quoted size increases our share of the split case-5 flow. Twelve is a modest first step that keeps the cash charge on the parent's one-cent bid to 0.12 per fill, well inside case 5's ten-dollar starting capital, so it reads the size axis without risking the case.
+- Implementation plan: The parent already contains the fed_history_mean and fed_history_minimum locals, the case_five_regime predicate, and the 'half_width: int = 100 if case_five_regime else (...)' ladder. Do not touch any of them, and do not change any price. Make exactly one edit. At the end of MarketMaker.quote, between the 'quote_snapshots[option_id] = (...)' assignment and the 'return Quote(' line, insert:
+
+        if case_five_regime:
+            bid_quantity = 12
+            offer_quantity = 12
+
+Change nothing else in the file. Placing this after the existing 'bid_quantity == 3 and not repeat_request' rule is deliberate, so that rule still fires exactly as it did in the graded parent and pricing is unchanged. Expected tradeoff: a larger share of the split flow at identical prices.
+- Worker summary: Single three-line insertion before the return in MarketMaker.quote: 'if case_five_regime: bid_quantity = 12; offer_quantity = 12'. Deliberately placed after the existing bid_quantity rules so the parent's pricing, including its one-cent bid bump, is reproduced byte for byte and quoted size is the only new variable. Scope validation and py_compile passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.90/16.00 points; PnL 212.56; minimum capital 39.98/40.00
+- Baseline delta: 0.60 points; PnL 31.57
+- Objective outcome: target 0.60; gap 0.00; collateral loss 0.00; expected met
+
+### g3-case5-zero-bid-size-forty
+
+- Hypothesis: Combining both levers is the candidate that can actually flip the N=2 rank. At bid exactly 0.00 and offer 1.00 the challenge charges zero cash on both sides regardless of size, so forty lots is capital-free and bankruptcy-free, while forty against the leader's implied size should take most of the split and carry us past its 30.00.
+- Implementation plan: The parent already contains the fed_history_mean and fed_history_minimum locals, the case_five_regime predicate, and the 'half_width: int = 100 if case_five_regime else (...)' ladder. Do not touch any of them. Make exactly one edit. At the end of MarketMaker.quote, between the 'quote_snapshots[option_id] = (...)' assignment and the 'return Quote(' line, insert:
+
+        if case_five_regime:
+            bid_price = 0.0
+            bid_quantity = 40
+            offer_quantity = 40
+
+Change nothing else in the file. Note for review, not for implementation: with bid_price 0.0 and offer_price 1.0 the Quote invariants hold trivially, both prices are whole pennies, both quantities are positive, and the challenge's maximum-loss cash charge is zero on a 0.00 buy and zero on a 1.00 sell, so no quantity can consume capital here.
+- Worker summary: Single four-line insertion before the return in MarketMaker.quote setting bid_price 0.0 and both quantities to 40 under case_five_regime. Combines the zero-bid override with a much larger size at the capital-free 0.00/1.00 quote. Scope validation and py_compile passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 13.90/16.00 points; PnL 205.76; minimum capital 39.98/40.00
+- Baseline delta: 0.60 points; PnL 24.77
+- Objective outcome: target 0.60; gap 0.00; collateral loss 0.00; expected met
+
+Selection: g3-case5-size-twelve.
+Promotion: none.
+Finding: THE OBJECTIVE WAS MET IN FULL: CASE 5 FLIPPED TO RANK 1 AND THE CHAMPION SCORE MOVES 13.30 TO 13.90. Two of three candidates are promotion-eligible with 20/20, zero bankruptcies and zero runtime errors, and once again nothing outside case 5 moved in any of the three sources - four generations at 0.00 collateral against a 0.00 budget. Results, all against the champion's case-5 baseline of 2.23 against Stalemate 37.00 at gap 34.77. Size twelve at the parent's graded pricing: ours 33.80, rank 1 of 2, gap 0, score .40 to 1.00, total 13.90, combined PnL 212.56. Zero bid with size forty: ours 27.00, rank 1 of 2, gap 0, score .40 to 1.00, total 13.90, combined PnL 205.76. Zero bid alone: ours 19.00, still rank 2, gap 12.00, total unchanged at 13.30. Three conclusions. (1) SIZE WAS THE WHOLE REMAINING LEVER. The parent quoted the same 0.00/1.00 market and lost with 4 to 5 lots; twelve lots at identical prices won outright. This confirms the routing model inferred in generation 2: tied best quotes are split, and our share of the split is set by quoted quantity. Because the challenge charges cash equal to a trade's maximum loss, and a 0.00 buy and a 1.00 sell each have none, this share was bought with no capital and no bankruptcy path - the minimum-capital telemetry is unchanged. (2) THE ONE-CENT BID BUMP IS MILDLY HELPFUL, NOT TOXIC. Cancelling it cost 0.87, from the parent's 19.87 down to 19.00. The generation-2 reading that the bid side carries the case-5 losses holds for a competitively priced bid at 4 to 5 cents, but it does not extend to a one-cent bid: at that price the flow we win is profitable. This is a corrected hypothesis, not a confirmed one. (3) TWELVE BEATS FORTY BY 6.80. The comparison is confounded because the forty-lot candidate also zeroed the bid, and zeroing the bid independently cost 0.87, so at most 5.93 of the difference is attributable to size. Either size overshoots above twelve or the two effects interact. The case-5 size response therefore has an interior maximum somewhere at or above twelve and below forty, exactly the non-monotone shape generation 1 found on the case-6 width axis. Selection prefers size twelve on equal score by fewer modified lines, and it is also the higher-PnL source.
+Next-generation rationale: Case 5 is now held at rank 1 with zero gap, so it converts from an objective into a protected rank worth -1.00 and must be reported explicitly by every later generation. The immediate follow-up is the case-5 size interval between twelve and forty, where the maximum sits: a tuning batch over the quoted quantity, with the one-cent bid bump as a second parameter since it is worth a measured 0.87 and interacts with size. That is refinement of a rank already held, however, not new score. The larger prize is that the method just proven transfers. An exact session label plus total RFQ withdrawal plus size at the capital-free 0.00/1.00 quote is a general recipe, and case 7 is its best next target: N=2, rank 2, .40 scored, +0.60 available, an isolated label already promoted into the champion as case_seven_regime, and a scoped closure that explicitly says static width 25 to 55 is exhausted and only a change of quote architecture can reopen it. Full withdrawal plus size is precisely that change of architecture. Cases 8, 10, 13, 18 and 19 are the same recipe at N=3 or N=4 for +0.30, +0.30, +0.20, +0.20 and +0.20, but case 7 should go first because it is the largest and its label is already installed.

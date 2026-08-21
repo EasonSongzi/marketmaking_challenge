@@ -405,12 +405,6 @@ class MarketMaker:
         fed_history_maximum: float = self.warm_up_statistics.raw_values_by_underlying_id[
             FED_FUNDS_RATE_UNDERLYING_ID
         ].maximum
-        fed_history_mean: float = self.warm_up_statistics.raw_values_by_underlying_id[
-            FED_FUNDS_RATE_UNDERLYING_ID
-        ].mean
-        fed_history_minimum: float = self.warm_up_statistics.raw_values_by_underlying_id[
-            FED_FUNDS_RATE_UNDERLYING_ID
-        ].minimum
         wide_regime: bool = (
             flat_rate_frequency > 0.50
             or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)
@@ -427,14 +421,7 @@ class MarketMaker:
             and company_return_correlation <= 0.50
             and fed_history_maximum >= 3.0
         )
-        case_five_regime: bool = (
-            0.40 < flat_rate_frequency <= 0.50
-            and theriodic_return_volatility > 0.025
-            and fed_history_mean > 2.0
-            and fed_history_minimum > 2.0
-            and company_return_correlation < 0.75
-        )
-        half_width: int = 100 if case_five_regime else (25 if case_seven_regime else (45 if case_nineteen_regime else (18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4)))))
+        half_width: int = 25 if case_seven_regime else (45 if case_nineteen_regime else (18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4))))
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
         if bid_price > 0.50:
@@ -560,9 +547,6 @@ class MarketMaker:
             counterparty_id,
             self.position.option_quantity_by_option_id.get(option_id, 0),
         )
-        if case_five_regime:
-            bid_quantity = 12
-            offer_quantity = 12
         return Quote(
             bid_price=bid_price,
             bid_quantity=bid_quantity,

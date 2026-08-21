@@ -1,20 +1,20 @@
 {
   "schemaVersion": 3,
-  "strategy": "g3-case7-width25",
+  "strategy": "g3-case5-size-twelve",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "183cf6019cee631065b0a11f8ee7f88f7ebd3c817b6e4eca917b7f9fab7add59",
-  "experimentId": "market-loop-20260820-4:g03:g3-case7-width25",
+  "sourceSha256": "d107dc127f6890aed6a1cc71569239286f5011cac949c9c29d972a808a0d8808",
+  "experimentId": "market-loop-20260820-5:g03:g3-case5-size-twelve",
   "experiment": {
-    "runId": "market-loop-20260820-4",
+    "runId": "market-loop-20260820-5",
     "generation": 3,
-    "candidateId": "g3-case7-width25"
+    "candidateId": "g3-case5-size-twelve"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
-    "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 18099,
+    "scoredPointsHundredths": 1390,
+    "combinedPnlCents": 21256,
     "minimumCapital": {
       "endingCashCents": 3998,
       "startingCapitalCents": 4000
@@ -143,34 +143,34 @@
       "number": 5,
       "type": "SCORED",
       "passed": true,
-      "scoreHundredths": 40,
+      "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 1223,
+      "endingCashCents": 4380,
       "startingCapitalCents": 1000,
-      "cashPnlCents": 223,
-      "pnlCents": 223,
+      "cashPnlCents": 3380,
+      "pnlCents": 3380,
       "ranking": {
         "entries": [
           {
             "rank": 1,
-            "name": "Stalemate Quoter",
-            "pnlCents": 3700
+            "name": "Mola mola",
+            "pnlCents": 3380
           },
           {
             "rank": 2,
-            "name": "Mola mola",
-            "pnlCents": 223
+            "name": "Stalemate Quoter",
+            "pnlCents": 1600
           }
         ],
-        "rank": 2,
+        "rank": 1,
         "participantCount": 2,
-        "ourPnlCents": 223,
-        "leaderName": "Stalemate Quoter",
-        "leaderPnlCents": 3700,
-        "gapToLeaderCents": 3477,
-        "runnerUpName": null,
-        "runnerUpPnlCents": null,
-        "marginToRunnerUpCents": null
+        "ourPnlCents": 3380,
+        "leaderName": "Mola mola",
+        "leaderPnlCents": 3380,
+        "gapToLeaderCents": 0,
+        "runnerUpName": "Stalemate Quoter",
+        "runnerUpPnlCents": 1600,
+        "marginToRunnerUpCents": 1780
       }
     },
     {
@@ -773,17 +773,5 @@
         "marginToRunnerUpCents": 1249
       }
     }
-  ],
-  "anchorSelection": {
-    "rule": [
-      "score",
-      "losingGapSum",
-      "heldMarginFloor",
-      "sourceLines",
-      "candidateId"
-    ],
-    "gapSumCents": 16211,
-    "minimumHeldMarginCents": 330,
-    "sourceLines": 1180
-  }
+  ]
 }

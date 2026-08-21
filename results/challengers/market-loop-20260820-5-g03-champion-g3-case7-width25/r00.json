@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g3-case7-width25",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-5-g03-champion-g3-case7-width25/r00.py",
+  "sourceSha256": "183cf6019cee631065b0a11f8ee7f88f7ebd3c817b6e4eca917b7f9fab7add59",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 18099,
+    "minimumCapital": {
+      "endingCashCents": 3998,
+      "startingCapitalCents": 4000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}
