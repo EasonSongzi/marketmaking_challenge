@@ -79,15 +79,36 @@ ignored `results/runs/<run-id>/inputs/` directory.
 
 ### Explore
 
-Write a schema-version-2 plan with `mode: "explore"`, one generation-level `method`
+Write a schema-version-3 plan with `mode: "explore"`, one generation-level `method`
 (`quote`, `respond_to_fok`, or `warm_up`), a rationale, exactly three structurally
-distinct candidates, and one hash-pinned `parent`. Use
-`{"type":"champion","sourceSha256":"..."}` for the current champion or
-`{"type":"challenger","challengerId":"...","sourceSha256":"..."}` for the current
+distinct candidates, one hash-pinned `parent`, and one machine-checkable
+`objective`. Use `{"type":"champion","sourceSha256":"..."}` for the current champion
+or `{"type":"challenger","challengerId":"...","sourceSha256":"..."}` for the current
 revision of an active challenger. A challenger parent initializes every worktree
 from its complete source, so the generation can explore a different method without
 method-level merging. Never put candidate-level or plural target-method
 declarations in the plan.
+
+The objective is the generation's score contract. An `exploit` objective declares
+non-empty SCORED `targetCases` (5-20), positive `expectedGainHundredths`, and a
+`collateralBudgetHundredths` between 0 and 1600. A zero-gain diagnostic declares
+`kind: "probe"`, `expectedGainHundredths: 0`, and an `unlock` statement naming the
+positive-score decision it enables. Archive scores every candidate against this
+contract as target gain, target gap, and collateral loss.
+
+```json
+{
+  "kind": "exploit",
+  "targetCases": [6],
+  "expectedGainHundredths": 30,
+  "collateralBudgetHundredths": 0
+}
+```
+
+Promotion itself is score-only: 20 structurally complete outcomes, no runtime error,
+cases 1-4 PASS, every failed scored case an explicit bankruptcy, and SCORED points
+strictly above the current champion. Combined PnL and minimum capital are telemetry
+and never break a tie.
 
 ```bash
 candidate_pipeline/loop.sh prepare --run-id <run-id> --plan <absolute-plan-path>
@@ -128,8 +149,9 @@ Do not write a test file, harness, or simulation to decide — the scope validat
 
 Select one active challenger from `results/strategy-state.json` and tune its
 complete current revision without merging any champion methods into it. Write a
-schema-version-2 plan containing `mode: "tune"`, `challengerId`,
-`parentSourceSha256`, `method`, optional `helpers`, rationale, and `sampleCount` N,
+schema-version-3 plan containing `mode: "tune"`, `challengerId`,
+`parentSourceSha256`, `method`, optional `helpers`, rationale, `sampleCount` N, and
+the same `objective` block used by Explore,
 plus one or more parameters with `name`, `type`, `direction`, `parentValue`,
 inclusive `minimum`/`maximum`, and literal `bindings`. Each binding identifies a
 `MarketMaker` method and the zero-based numeric/bool constant ordinal visited in
