@@ -4158,6 +4158,58 @@
         "reason": "Direct ancestor fully composed into g2-fed-max-probe; same 13.30 score, lower 177.94 PnL, and its case-19 branch remains byte-equivalent in the current champion while case 7 is added disjointly.",
         "at": "2026-08-21T01:56:35.124Z"
       }
+    },
+    {
+      "id": "market-loop-20260820-4-g06-g6-case5-corr-seventyfive",
+      "status": "active",
+      "method": "quote",
+      "origin": "curated",
+      "rationale": "Working complementary session discriminator for the primary case-5 objective. Within the exact high-THR middle/FED-mean>2/FED-minimum>2 gate {5,11}, grader evidence proves raw company-return correlation >=0.75 moves only protected case 11. The structurally adjacent inverse comparator <0.75 therefore isolates case 5, whose broad 45-cent evidence improves own PnL by 5.71 without needing to re-measure any session map. Preserve this full evaluated source as the closest hash-pinned parent for a one-condition Explore inversion; do not Tune its current harmful direction.",
+      "tuningAttempts": 0,
+      "currentRevision": 0,
+      "revisions": [
+        {
+          "number": 0,
+          "sourcePath": "results/challengers/market-loop-20260820-4-g06-g6-case5-corr-seventyfive/r00.py",
+          "sourceSha256": "0d0fe72d09c9496fe174a20b26396dd9e74d76a5e2a1500f53067f04374dc6d9",
+          "evaluationPath": "results/challengers/market-loop-20260820-4-g06-g6-case5-corr-seventyfive/r00.json",
+          "summaryPath": "results/challengers/market-loop-20260820-4-g06-g6-case5-corr-seventyfive/r00.md",
+          "evaluation": {
+            "schemaVersion": 1,
+            "candidateId": "g6-case5-corr-seventyfive",
+            "valid": true,
+            "eligible": false,
+            "sourcePath": "results/challengers/market-loop-20260820-4-g06-g6-case5-corr-seventyfive/r00.py",
+            "sourceSha256": "0d0fe72d09c9496fe174a20b26396dd9e74d76a5e2a1500f53067f04374dc6d9",
+            "modifiedLines": 13,
+            "summary": {
+              "passed": 20,
+              "total": 20,
+              "bankruptcies": 0,
+              "scoredPointsHundredths": 1270,
+              "combinedPnlCents": 15937,
+              "minimumCapital": {
+                "endingCashCents": 1955,
+                "startingCapitalCents": 2000
+              },
+              "runtimeErrors": 0
+            },
+            "baselineDelta": {
+              "scoredPointsHundredths": -60,
+              "combinedPnlCents": -2162
+            },
+            "reasons": [
+              "Candidate did not strictly exceed the baseline"
+            ]
+          },
+          "createdAt": "2026-08-21T01:56:48.656Z"
+        }
+      ],
+      "tuningHistory": [],
+      "curation": {
+        "admittedFrom": "results/runs/market-loop-20260820-4/archive/g06/g6-case5-corr-seventyfive",
+        "at": "2026-08-21T01:56:48.657Z"
+      }
     }
   ],
   "evaluations": {

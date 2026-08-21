@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g6-case5-corr-seventyfive",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260820-4-g06-g6-case5-corr-seventyfive/r00.py",
+  "sourceSha256": "0d0fe72d09c9496fe174a20b26396dd9e74d76a5e2a1500f53067f04374dc6d9",
+  "modifiedLines": 13,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1270,
+    "combinedPnlCents": 15937,
+    "minimumCapital": {
+      "endingCashCents": 1955,
+      "startingCapitalCents": 2000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": -60,
+    "combinedPnlCents": -2162
+  },
+  "reasons": [
+    "Candidate did not strictly exceed the baseline"
+  ]
+}
