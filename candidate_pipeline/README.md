@@ -120,12 +120,28 @@ candidate_pipeline/validate-candidate.sh \
 
 For challenger-parent Explore, `--baseline` is the immutable challenger
 revision. With `--target-method`, the validator rejects changes to every other
-core method while still allowing required imports, `MarketMaker` helpers, and
-`on_trade`. `on_trade` is bookkeeping rather than strategy: the grader hands it the
-price and counterparty of every executed trade, so it is exempt from the one-target
-freeze and may be extended alongside any target method. Its signature stays frozen and
-it must keep whatever `self.position.add_option_quantity` recording the baseline
-performs.
+core method while still allowing required imports, `MarketMaker` helpers, the two
+bookkeeping hooks, and appended `__init__` state.
+
+`on_trade` and `on_step_advance` are bookkeeping rather than strategy. Both return
+`None`, so a recording only reaches behaviour through the method that reads it, which
+under the one-target freeze is the target method being attributed. They are the only
+observation hooks the grader offers: `on_trade` sees every executed fill's price and
+counterparty, and `on_step_advance` sees the day boundary — the previous underlying
+state before it is overwritten, the options that expired out of the active book, and
+every day including those with no RFQ. Both are exempt from the one-target freeze and
+may be extended alongside any target method. Their signatures stay frozen, and each
+must keep the side effect the baseline performs: `on_trade` its
+`self.position.add_option_quantity` recording, and `on_step_advance` its assignment of
+`self.underlying_state` and `self.active_option_state` from its parameters.
+
+`__init__` is neither a target nor bookkeeping, and may only be **appended** to. The
+baseline body must survive as an exact prefix, and every appended statement must assign
+a `self._`-prefixed attribute to a constant, a literal container, or an empty
+`list()`/`dict()`/`set()`/`tuple()` call. This lets the bookkeeping hooks and the target
+method share state without each carrying its own `getattr` lazy initialiser — which the
+one-target freeze would forbid them from keeping in agreement, since only the target
+method may change. Anything computed belongs in the target method, not here.
 The serial dispatcher repeats this validation before using cached evidence or
 launching HackerRank. A scope-invalid candidate is skipped and must be passed
 to `archive` with `--invalid <candidate-id>`. Workers receive one repair pass

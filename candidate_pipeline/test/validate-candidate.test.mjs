@@ -215,3 +215,103 @@ test("rejects on_trade dropping the baseline position recording", async (t) => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /on_trade must still call self\.position\.add_option_quantity/);
 });
+
+test("permits on_step_advance bookkeeping alongside a target method", async (t) => {
+  const candidate = baseline
+    .replace(
+      "    def on_step_advance(self, new_underlying_state: list, new_option_state: list) -> None:\n        pass",
+      "    def on_step_advance(self, new_underlying_state: list, new_option_state: list) -> None:\n        self._days += 1",
+    )
+    .replace(
+      "    def quote(self, option: object, counterparty_id: int) -> object:\n        return None",
+      "    def quote(self, option: object, counterparty_id: int) -> object:\n        return self._days",
+    );
+  const result = runValidator(await fixture(t, candidate), "quote");
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /validation passed/);
+});
+
+test("rejects on_step_advance dropping the baseline state refresh", async (t) => {
+  const refreshingBaseline = baseline.replace(
+    "    def on_step_advance(self, new_underlying_state: list, new_option_state: list) -> None:\n        pass",
+    "    def on_step_advance(self, new_underlying_state: list, new_option_state: list) -> None:\n        self.underlying_state = new_underlying_state\n        self.active_option_state = new_option_state",
+  );
+  const directory = await fsPromises.mkdtemp(path.join(tmpdir(), "candidate-scope-"));
+  t.after(() => fsPromises.rm(directory, { recursive: true, force: true }));
+  const baselinePath = path.join(directory, "baseline.py");
+  const candidatePath = path.join(directory, "candidate.py");
+  await Promise.all([
+    fsPromises.writeFile(baselinePath, refreshingBaseline),
+    fsPromises.writeFile(
+      candidatePath,
+      refreshingBaseline.replace("        self.active_option_state = new_option_state", "        self._seen = new_option_state"),
+    ),
+  ]);
+  const result = runValidator({ baselinePath, candidatePath }, "quote");
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /on_step_advance must still assign self\.active_option_state from new_option_state/);
+});
+
+test("permits appending private constant state to __init__ alongside a target method", async (t) => {
+  const candidate = baseline
+    .replace(
+      "        self.cash_balance = cash_balance",
+      "        self.cash_balance = cash_balance\n        self._open_trades = []\n        self._counterparty_markout: dict = {}\n        self._daily_returns = list()\n        self._skew_ticks = 0",
+    )
+    .replace(
+      "    def quote(self, option: object, counterparty_id: int) -> object:\n        return None",
+      "    def quote(self, option: object, counterparty_id: int) -> object:\n        return len(self._open_trades)",
+    );
+  const result = runValidator(await fixture(t, candidate), "quote");
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /validation passed/);
+});
+
+test("rejects __init__ changes that do not keep the baseline body as a prefix", async (t) => {
+  const changed = runValidator(
+    await fixture(t, baseline.replace("        self.cash_balance = cash_balance", "        self.cash_balance = cash_balance * 2")),
+    "quote",
+  );
+  assert.equal(changed.status, 1);
+  assert.match(changed.stderr, /__init__ must keep the baseline body as a prefix; statement 1 differs/);
+
+  const prepended = runValidator(
+    await fixture(t, baseline.replace("        self.cash_balance = cash_balance", "        self._ready = True\n        self.cash_balance = cash_balance")),
+    "quote",
+  );
+  assert.equal(prepended.status, 1);
+  assert.match(prepended.stderr, /__init__ must keep the baseline body as a prefix/);
+});
+
+test("rejects __init__ appending public attributes, computed values, or statements", async (t) => {
+  const publicAttribute = runValidator(
+    await fixture(t, baseline.replace("        self.cash_balance = cash_balance", "        self.cash_balance = cash_balance\n        self.open_trades = []")),
+    "quote",
+  );
+  assert.equal(publicAttribute.status, 1);
+  assert.match(publicAttribute.stderr, /may only append assignments to self\._<name> attributes/);
+
+  const computed = runValidator(
+    await fixture(t, baseline.replace("        self.cash_balance = cash_balance", "        self.cash_balance = cash_balance\n        self._floor = cash_balance * 0.75")),
+    "quote",
+  );
+  assert.equal(computed.status, 1);
+  assert.match(computed.stderr, /appended state must be a constant, a literal container/);
+
+  const factoryWithArguments = runValidator(
+    await fixture(t, baseline.replace("        self.cash_balance = cash_balance", "        self.cash_balance = cash_balance\n        self._seen = set(option_initial_state)")),
+    "quote",
+  );
+  assert.equal(factoryWithArguments.status, 1);
+  assert.match(factoryWithArguments.stderr, /appended state must be a constant, a literal container/);
+
+  const statement = runValidator(
+    await fixture(t, baseline.replace("        self.cash_balance = cash_balance", "        self.cash_balance = cash_balance\n        self._log()")),
+    "quote",
+  );
+  assert.equal(statement.status, 1);
+  assert.match(statement.stderr, /may only append private state assignments; found Expr/);
+});

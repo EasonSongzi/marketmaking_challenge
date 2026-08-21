@@ -117,8 +117,8 @@ candidate_pipeline/loop.sh prepare --run-id <run-id> --plan <absolute-plan-path>
 Read the prepared worktree and result-directory paths from
 `results/runs/<run-id>/state.json`, then spawn three `market-maker-candidate`
 agents in one block. Workers may change only the single target core method plus
-`MarketMaker` helpers, required imports, and `on_trade`. Each must validate against
-the selected parent and compile:
+`MarketMaker` helpers, required imports, the two bookkeeping hooks, and appended
+`__init__` state. Each must validate against the selected parent and compile:
 
 ```bash
 candidate_pipeline/validate-candidate.sh \
@@ -127,12 +127,22 @@ candidate_pipeline/validate-candidate.sh \
   --target-method <method>
 ```
 
-`on_trade` is bookkeeping, not strategy, and is exempt from the one-target freeze so
-an accumulator and the code consuming it land in the same generation. The grader hands
-it the price and counterparty of every executed trade; the champion currently discards
-both. Its signature stays frozen and it must keep calling
-`self.position.add_option_quantity`, which the validator enforces. `on_step_advance`,
-`__init__`, `name`, `price_option` and `price_option_from_parameters` remain frozen.
+`on_trade` and `on_step_advance` are bookkeeping, not strategy, and are exempt from
+the one-target freeze so an accumulator and the code consuming it land in the same
+generation. `on_trade` sees the price and counterparty of every executed fill;
+`on_step_advance` sees the day boundary, meaning the previous underlying state before
+it is overwritten, the options that expired out of the active book, and every day
+including those with no RFQ. Fill quality needs both. Their signatures stay frozen,
+and each must keep the side effect the baseline performs: `on_trade` its
+`self.position.add_option_quantity` call, and `on_step_advance` its assignment of
+`self.underlying_state` and `self.active_option_state`. The validator enforces both.
+
+`__init__` may only be appended to: the baseline body must survive as an exact prefix,
+and each appended statement must assign a `self._` attribute to a constant, a literal
+container, or an empty container factory call. Use it so the hooks and the target
+method share state without a `getattr` lazy initialiser in each, which the one-target
+freeze would forbid them from keeping in agreement. Anything computed belongs in the
+target method. `name`, `price_option` and `price_option_from_parameters` remain frozen.
 
 For a challenger-parent Explore, `--baseline` is the immutable challenger revision.
 Grant each worker one repair pass after a failed validation or local check. A
