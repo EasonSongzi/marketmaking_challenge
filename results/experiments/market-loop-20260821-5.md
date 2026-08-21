@@ -273,3 +273,47 @@ Selection: No candidate passed the promotion gate.
 Promotion: none.
 Finding: All three candidates passed 20/20 and held the 14.70 score, but each widened case 18's gap from the parent's 1.74. Central-only one-step depth produced a 5.12 gap, so wing contracts are beneficial even though the broad all-expiry moneyness arm was also negative. Single-leg-only depth produced a 2.47 gap, proving comparison options contribute a smaller but still positive part of the response. Fair-value-aware cheap-side allocation widened the gap to 19.18, closing the remaining conditional side hypothesis and confirming the need for symmetric depth within each selected option. Case 20 remained rank 1 throughout; central-only widened its margin to 15.39, but telemetry and held-margin improvements cannot replace the worse target objective. The unchanged parent remains the best safe source.
 Next-generation rationale: Option and side selection are now closed around the full one-step book. For the sixth and final generation, preserve the cutoff-1 symmetric two-cent all-option price rule and test only quantity allocation inside that already-contested label. The prior size closure predates the cutoff-1 discovery, so it may be reopened narrowly under this condition; do not revisit price depth, expiry, moneyness, topology, broad side, FOK selection, or markout accumulation.
+
+## Generation 6: explore quote
+
+This is the sixth and final generation. The parent still ties the 14.70 champion and has the best recorded case-18 objective: 17.74 PnL, a 19.48 leader, and a 1.74 gap. Generations 2 through 5 closed price selection around a precise rule -- the exclusive {18,20} label, all counterparties, every option family and moneyness, symmetric two-cent depth, and expiry cutoff 1. The previous ledger closes quote size after the full-book label width took the book, but that closure was measured before cutoff 1 removed depth from longer expiries; the changed flow mix is the stated condition that narrowly reopens size. A prior guarded extra lot improved the old full-book target gap without winning, so capacity is the remaining mechanism with direct positive evidence. These three structurally distinct arms leave every price path unchanged and alter only where a single capacity-guarded lot is offered: everywhere in the selected one-step book, only when entering from flat option inventory, or only on the side that reduces existing option inventory. Every added lot must satisfy the existing conservative maximum-loss arithmetic. The parent's three thinnest held margins are case 13 at 1.35, case 10 at 1.90 and case 14 at 5.21, all outside the label; case 20's 5.49 margin is the in-label collateral guard. Case 18 remains rank 2 of 4 and is worth exactly 0.20, with zero collateral budget.
+
+Objective: exploit; targets 18; expected +0.20; collateral budget 0.00.
+
+Parent: challenger `market-loop-20260821-5-g02-g2-label-expiry-depth r01` (`89d103c8072d97fdecc9a5f85ddd1e21d764261a22be3116ac91d4d8939f9747`).
+
+### g6-label-guarded-extra-lot
+
+- Hypothesis: The cutoff-1 price rule has nearly tied the leader but may lose the last 1.74 because it cannot supply enough quantity at the winning price. One additional conservatively funded lot on each side of every selected quote should capture the residual routed flow without changing edge.
+- Implementation plan: In `quote`, after the existing low-band and positive-markout quantity bonuses but before the case_five and case_thirteen terminal overrides, add a `label_depth_applies` block. Increase `bid_quantity` by one only if `signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity`. Increase `offer_quantity` by one only if `active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity`. Do not change prices, earlier size ladders, cash floor, or any other method.
+- Worker summary: Added at most one capacity-guarded bid lot and one capacity-guarded offer lot to every selected one-step label quote, after existing bonuses and before terminal overrides. Prices and prior logic remained unchanged; validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 268.07; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 22.25
+- Objective outcome: target 0.00; gap 2.34; collateral loss 0.00; expected not met
+
+### g6-label-flat-extra-lot
+
+- Hypothesis: Extra size is useful for acquiring the first position at the near-closing price but becomes adverse once the option already carries inventory. Restricting one extra guarded lot per side to flat option inventory should capture initial flow without compounding risk or informed repeat fills.
+- Implementation plan: In `quote`, after the existing low-band and positive-markout bonuses and before terminal case overrides, enter a block only when `label_depth_applies` and the current option position is zero. Within it, add at most one bid lot under `signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity` and at most one offer lot under `active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity`. Preserve every price and all other size logic.
+- Worker summary: Added at most one capacity-guarded lot per side only when the selected one-step label option had zero inventory. Prices and other behavior remained unchanged; validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 268.42; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 22.60
+- Objective outcome: target 0.00; gap 2.49; collateral loss 0.00; expected not met
+
+### g6-label-unwind-extra-lot
+
+- Hypothesis: The profitable residual flow is inventory-reducing rather than new risk. Supplying one extra lot only on the offer while long or on the bid while short should accelerate unwind at the established price and release capacity without enlarging the opposite side.
+- Implementation plan: In `quote`, after the existing low-band and positive-markout bonuses and before terminal case overrides, read the current option position. Under `label_depth_applies`, when position is positive, increase only `offer_quantity` by one if `active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity`; when position is negative, increase only `bid_quantity` by one if `signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity`. Do nothing while flat. Keep all prices and other methods unchanged.
+- Worker summary: Added one capacity-guarded offer lot while long or bid lot while short under the selected one-step label, with no change while flat. Prices and other behavior remained unchanged; validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 267.26; minimum capital 39.26/40.00
+- Baseline delta: 0.00 points; PnL 21.44
+- Objective outcome: target 0.00; gap 1.58; collateral loss 0.00; expected not met
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: All three final-generation candidates passed 20/20 and retained the 14.70 score. The inventory-unwind arm is the only source that improves the declared objective: case 18 PnL rose from 17.74 to 17.80 while the leader fell from 19.48 to 19.38, narrowing the gap from 1.74 to a new repository best of 1.58 with zero collateral loss. Case 20 remained rank 1 with a 5.49 margin and every non-label case was unchanged. Indiscriminate guarded size widened the target gap to 2.34, and flat-entry-only size widened it to 2.49, establishing that the useful marginal quantity is specifically inventory-reducing. The gain is too small to change rank in this fixed run, so no promotion is possible; the unwind source should be preserved as the final active target-gap challenger.
+Next-generation rationale: The run has reached its six-generation stop. For any future run, start from the unwind challenger only if testing the magnitude or inventory threshold of the single extra unwind lot; the direction has positive case-18 evidence and zero collateral, while symmetric and flat-entry size are closed negative. Preserve the cutoff-1, symmetric two-cent, all-option price rule and do not revisit the quote-selection axes closed in generations 2 through 5.
+Challenger update: derived market-loop-20260821-5-g06-g6-label-unwind-extra-lot.
