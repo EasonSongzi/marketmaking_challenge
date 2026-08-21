@@ -1,21 +1,21 @@
 {
   "schemaVersion": 2,
-  "id": "g3-case7-risk-gate",
+  "id": "g1-case13-width-two",
   "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "1e3cd20d9053de865d8688e6ab77b6b0be7b5a442839cff41fea151795254401",
+  "sourceSha256": "e9fe4f1e868dbfdd925d03970f4ec0b3c9db3216798958d6e03dc208d94f63d1",
   "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260821-7:g03:g3-case7-risk-gate",
+  "experimentId": "market-loop-20260821-8:g01:g1-case13-width-two",
   "experiment": {
-    "runId": "market-loop-20260821-7",
-    "generation": 3,
-    "candidateId": "g3-case7-risk-gate"
+    "runId": "market-loop-20260821-8",
+    "generation": 1,
+    "candidateId": "g1-case13-width-two"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
-    "scoredPointsHundredths": 1510,
-    "combinedPnlCents": 27301,
+    "scoredPointsHundredths": 1530,
+    "combinedPnlCents": 27419,
     "minimumCapital": {
       "endingCashCents": 3998,
       "startingCapitalCents": 4000
@@ -441,44 +441,44 @@
       "number": 13,
       "type": "SCORED",
       "passed": true,
-      "scoreHundredths": 80,
+      "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 2802,
+      "endingCashCents": 2920,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 802,
-      "pnlCents": 802,
+      "cashPnlCents": 920,
+      "pnlCents": 920,
       "ranking": {
         "entries": [
           {
             "rank": 1,
-            "name": "Fixed Width 0.1",
-            "pnlCents": 822
+            "name": "Mola mola",
+            "pnlCents": 920
           },
           {
             "rank": 2,
-            "name": "Mola mola",
-            "pnlCents": 802
+            "name": "Fixed Width 0.1",
+            "pnlCents": 867
           },
           {
             "rank": 3,
             "name": "Lattice",
-            "pnlCents": 712
+            "pnlCents": 757
           },
           {
             "rank": 4,
             "name": "Situational Unawareness",
-            "pnlCents": 164
+            "pnlCents": 169
           }
         ],
-        "rank": 2,
+        "rank": 1,
         "participantCount": 4,
-        "ourPnlCents": 802,
-        "leaderName": "Fixed Width 0.1",
-        "leaderPnlCents": 822,
-        "gapToLeaderCents": 20,
-        "runnerUpName": null,
-        "runnerUpPnlCents": null,
-        "marginToRunnerUpCents": null
+        "ourPnlCents": 920,
+        "leaderName": "Mola mola",
+        "leaderPnlCents": 920,
+        "gapToLeaderCents": 0,
+        "runnerUpName": "Fixed Width 0.1",
+        "runnerUpPnlCents": 867,
+        "marginToRunnerUpCents": 53
       }
     },
     {

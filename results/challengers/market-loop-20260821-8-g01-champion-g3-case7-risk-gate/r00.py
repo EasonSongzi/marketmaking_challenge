@@ -479,7 +479,7 @@ class MarketMaker:
         if label_depth_applies and repeat_request:
             half_width = max(half_width - 1, 1)
         if label_depth_applies or counterparty_markout.get(counterparty_id, 0.0) > 0.0:
-            half_width = max(half_width - (1 if case_thirteen_regime else 2), 1)
+            half_width = max(half_width - 2, 1)
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
         if bid_price > 0.50:

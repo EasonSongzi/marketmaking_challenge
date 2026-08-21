@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-21T22:29:41.640Z
+- Date: 2026-08-21T23:04:29.051Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g3-case7-risk-gate
+- Label: g1-case13-width-two
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `1e3cd20d9053de865d8688e6ab77b6b0be7b5a442839cff41fea151795254401`
+- Source SHA-256: `e9fe4f1e868dbfdd925d03970f4ec0b3c9db3216798958d6e03dc208d94f63d1`
 - Overall: All available test cases passed
 - Passed: 20/20
 
@@ -273,12 +273,12 @@ Hidden test cases help evaluate whether your code handles different scenarios co
 Compiler Message
 
 Ranking:
-1. Fixed Width 0.1: $8.22
-2. Mola mola: $8.02
-3. Lattice: $7.12
-4. Situational Unawareness: $1.64
-Mola mola bankrupt: False (cash balance: 28.02, starting capital: 20.0)
-Result: PASS (score=0.80)
+1. Mola mola: $9.2
+2. Fixed Width 0.1: $8.67
+3. Lattice: $7.57
+4. Situational Unawareness: $1.69
+Mola mola bankrupt: False (cash balance: 29.2, starting capital: 20.0)
+Result: PASS (score=1.00)
 
 Hidden Test Case
 Hidden test cases help evaluate whether your code handles different scenarios correctly. You can use print or log statements to debug and understand their behavior.
