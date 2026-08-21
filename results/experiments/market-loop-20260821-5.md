@@ -187,3 +187,46 @@ Promotion: none.
 Finding: The fine vector expiry_cutoff=1 and narrowing_amount=2 is the only batch member that improves the parent's declared objective while preserving all sixteen scored ranks: case 18 PnL rose from 15.58 to 17.74, the endogenous leader fell from 18.36 to 19.48 only slightly, and the gap narrowed from 2.78 to 1.74. Case 20 remained rank 1 with a 5.49 margin, and the other fourteen scored cases retained their ranks. Moving the narrowing amount to 3 or 4 was structurally unsafe: because the bound literal is shared by the label and counterparty-markout arms, all three depth-above-two vectors lost case 12 and fell to 14.10. One-cent depth preserved the score but widened the case-18 gap to 13.65 or worse. The expiry cutoff has a local optimum at 1 within the tested integer neighborhood: cutoff 0 widened the target gap to 28.83 and cutoff 2 is the 2.78 parent, so the updated revision exhausts this discrete cutoff on the safe two-cent depth.
 Next-generation rationale: The expiry/depth parameter surface is now closed around its safe optimum: cutoff 0, 1, 2, 4 and 5 were measured at one- or two-cent depth, while all deeper shared-branch settings either missed the target or lost case 12. Continue structurally from the revised cutoff-1 challenger only if a quote rule can isolate the label's narrowing amount from the counterparty-markout amount or can discriminate the remaining case-18 flow without touching case 20; otherwise explore a distinct target method or mechanism.
 Challenger update: updated market-loop-20260821-5-g02-g2-label-expiry-depth to cutoff-one-depth-two.
+
+## Generation 4: explore quote
+
+The revised challenger is now only 1.74 behind the case-18 leader while tying the 14.70 champion and holding every scored rank. Generation 3 located expiry cutoff 1 as the safe discrete optimum at the parent's two-cent tightening: cutoff 0 widened the target gap to 28.83, cutoff 2 is 2.78, and cutoff 1 is 1.74. It also showed why a conventional depth tune cannot answer the remaining question: the single narrowing literal is shared by the fed_low_mean_regime label and the global counterparty-markout arm, so every three- or four-cent vector changed non-label sessions and lost case 12. This Explore generation separates mechanisms rather than repeating that parameter sweep. The parent applies the two-cent depth symmetrically to all option families with at most one step remaining inside the exclusive {18,20} label. The three candidates independently test HOW MUCH depth the label wants after decoupling markout, WHICH SIDE carries the target response, and WHICH OPTION FAMILY carries it. The parent's three thinnest held margins are case 13 at 1.35, case 10 at 1.90, and case 14 at 5.21; all are outside the label, so any movement there is disqualifying evidence of a misplaced change. Case 20's margin is 5.49 and remains the in-label collateral check. Case 18 is rank 2 of 4, worth exactly 0.20, and the collateral budget remains zero.
+
+Objective: exploit; targets 18; expected +0.20; collateral budget 0.00.
+
+Parent: challenger `market-loop-20260821-5-g02-g2-label-expiry-depth r01` (`89d103c8072d97fdecc9a5f85ddd1e21d764261a22be3116ac91d4d8939f9747`).
+
+### g4-label-only-depth-three
+
+- Hypothesis: The safe two-cent ceiling observed in tuning belongs to the global counterparty-markout branch, not to case 18 itself. Once label depth is decoupled, three cents on the one-step label book can close the remaining 1.74 gap without reproducing case 12's rank loss.
+- Implementation plan: In `quote`, replace the shared `if label_depth_applies or counterparty_markout...` narrowing with two non-additive branches. When `label_depth_applies` is true, use `half_width = max(half_width - 3, 1)`. Otherwise, when counterparty markout is positive, preserve the parent's `half_width = max(half_width - 2, 1)`. If both conditions are true the label's three-cent setting wins, rather than summing the adjustments. Keep the cutoff at `option.steps_until_expiry <= 1`, preserve every downstream price, fill-signal and sizing rule, and change nothing outside `quote`.
+- Worker summary: Separated label and counterparty-markout depth in quote: one-step label flow narrows by three cents, positive markout flow remains at two cents, and the branches do not stack. Validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 260.96; minimum capital 37.05/40.00
+- Baseline delta: 0.00 points; PnL 15.14
+- Objective outcome: target 0.00; gap 12.65; collateral loss 0.00; expected not met
+
+### g4-label-bid-only-depth
+
+- Hypothesis: Generation 2's offer-only label tightening widened the case-18 gap to 20.83, so the complementary bid side may carry the near-closing response. Spending the parent's two cents only on the bid for one-step label options should retain favourable buy-side flow while avoiding adverse offer fills.
+- Implementation plan: In `quote`, preserve the positive-counterparty-markout rule as a symmetric two-cent tightening. Construct `bid_half_width` and `offer_half_width` from the untightened base: markout-positive flow sets both to `max(half_width - 2, 1)`, while `label_depth_applies` sets only `bid_half_width` to `max(half_width - 2, 1)` and leaves the offer at the base unless markout independently applies. Use the side widths only in the existing bid/offer price construction and keep all downstream adjustments and sizes unchanged. Ensure bid_price remains strictly below offer_price for fair values 0..100.
+- Worker summary: Constructed independent bid/offer widths in quote so positive markout remains symmetrically two cents tighter while one-step label flow tightens only the bid. Removed an initially proposed generic clamp during lead repair to preserve unrelated sessions. Validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 259.00; minimum capital 33.81/40.00
+- Baseline delta: 0.00 points; PnL 13.18
+- Objective outcome: target 0.00; gap 16.29; collateral loss 0.00; expected not met
+
+### g4-label-company-only-depth
+
+- Hypothesis: The cutoff-1 gain is carried by AJR/THR options whose live idiosyncratic-volatility theo changes through the session, while FED options in the same label add noise and adverse flow. Restricting label depth to contracts with at least one company leg should preserve the target response with better edge.
+- Implementation plan: In `quote`, extend `label_depth_applies` so it requires the existing fed_low_mean_regime, `option.steps_until_expiry <= 1`, and at least one option leg whose underlying id is AJARAI_UNDERLYING_ID or THERIODIC_UNDERLYING_ID. Keep the counterparty-markout arm and two-cent narrowing line otherwise exactly as the parent. Do not change option pricing, side construction, downstream widening, fill signals, quantities, or any other method.
+- Worker summary: Restricted one-step label tightening to options containing at least one AJR or THR leg while preserving the positive-markout arm and all other quote logic. Validator, compilation, diff check, and lead review passed.
+- Status: archived
+- Result: 20/20 passed; 0 bankruptcies; 14.70/16.00 points; PnL 268.08; minimum capital 39.98/40.00
+- Baseline delta: 0.00 points; PnL 22.26
+- Objective outcome: target 0.00; gap 2.66; collateral loss 0.00; expected not met
+
+Selection: No candidate passed the promotion gate.
+Promotion: none.
+Finding: Every structural arm preserved all twenty outcomes and the 14.70 score, but none improved the cutoff-1 parent on case 18. Decoupling the label and using three cents widened the target gap from 1.74 to 12.65, proving that two cents is the label's own local depth optimum rather than merely a limit imposed by the shared global markout branch. Bid-only depth widened the gap to 16.29, so the successful near-expiry response requires the offer side as well; combined with generation 2's 20.83 offer-only result, symmetric treatment is established. Restricting depth to company-linked options widened the gap modestly to 2.66, showing that the FED-only portion is small but beneficial and the all-option scope should remain. Case 20 held rank 1 in every arm, although the three-cent label margin compressed to 2.07. The parent revision remains the best safe source at a 1.74 target gap.
+Next-generation rationale: Preserve the cutoff-1, symmetric two-cent, all-option label rule. The remaining structural surface inside that rule is option granularity finer than the broad company/FED split, particularly contract moneyness or comparison-versus-single-leg selection within the one-step book; do not repeat depth, side, expiry cutoff, or broad company-only filters.
