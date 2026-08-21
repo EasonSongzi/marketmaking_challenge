@@ -1,20 +1,20 @@
 {
   "schemaVersion": 3,
-  "strategy": "g3-case5-size-twelve",
+  "strategy": "g5-case13-width-three-size-three",
   "resultArtifact": "results/champion/result.md",
-  "sourceSha256": "d107dc127f6890aed6a1cc71569239286f5011cac949c9c29d972a808a0d8808",
-  "experimentId": "market-loop-20260820-5:g03:g3-case5-size-twelve",
+  "sourceSha256": "fbe274bc77f4a70333d18d8df6d7744fdff98b34c851e4d565c0fcc51b94b633",
+  "experimentId": "market-loop-20260820-5:g05:g5-case13-width-three-size-three",
   "experiment": {
     "runId": "market-loop-20260820-5",
-    "generation": 3,
-    "candidateId": "g3-case5-size-twelve"
+    "generation": 5,
+    "candidateId": "g5-case13-width-three-size-three"
   },
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
-    "scoredPointsHundredths": 1390,
-    "combinedPnlCents": 21256,
+    "scoredPointsHundredths": 1410,
+    "combinedPnlCents": 21494,
     "minimumCapital": {
       "endingCashCents": 3998,
       "startingCapitalCents": 4000
@@ -440,44 +440,44 @@
       "number": 13,
       "type": "SCORED",
       "passed": true,
-      "scoreHundredths": 80,
+      "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 2890,
+      "endingCashCents": 3128,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 890,
-      "pnlCents": 890,
+      "cashPnlCents": 1128,
+      "pnlCents": 1128,
       "ranking": {
         "entries": [
           {
             "rank": 1,
-            "name": "Fixed Width 0.1",
-            "pnlCents": 1573
+            "name": "Mola mola",
+            "pnlCents": 1128
           },
           {
             "rank": 2,
-            "name": "Mola mola",
-            "pnlCents": 890
+            "name": "Fixed Width 0.1",
+            "pnlCents": 887
           },
           {
             "rank": 3,
             "name": "Lattice",
-            "pnlCents": 752
+            "pnlCents": 709
           },
           {
             "rank": 4,
             "name": "Situational Unawareness",
-            "pnlCents": 145
+            "pnlCents": 169
           }
         ],
-        "rank": 2,
+        "rank": 1,
         "participantCount": 4,
-        "ourPnlCents": 890,
-        "leaderName": "Fixed Width 0.1",
-        "leaderPnlCents": 1573,
-        "gapToLeaderCents": 683,
-        "runnerUpName": null,
-        "runnerUpPnlCents": null,
-        "marginToRunnerUpCents": null
+        "ourPnlCents": 1128,
+        "leaderName": "Mola mola",
+        "leaderPnlCents": 1128,
+        "gapToLeaderCents": 0,
+        "runnerUpName": "Fixed Width 0.1",
+        "runnerUpPnlCents": 887,
+        "marginToRunnerUpCents": 241
       }
     },
     {
