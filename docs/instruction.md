@@ -1,48 +1,48 @@
-# Score-Frontier Research After market-loop-20260821-4
+# Score-Frontier Research After market-loop-20260821-5
 
 ## 1. Canonical State
 
 ```text
-champion        g6-lowband-size-eight
+champion        g6-lowband-size-eight                     UNCHANGED
 source SHA      a01930269b7599e2e2d68ba8f1fa92215547a4651baf7d9ae4a5eb056e1a4e40
 score           14.70 / 16.00
 combined PnL    245.82                    telemetry only
-gap sum         78.60 across cases 6, 7, 18, 19
-thinnest margin 0.96 at case 10
+case 18         7.44, rank 2 of 4, gap 31.57
 
-head challenger market-loop-20260821-4-g04-g4-live-company-vol   revision 0
-source SHA      04bf99be3c63c3a1797a12fa08352e569537c96041ac6b64129f75091f4ed425
+head challenger market-loop-20260821-5-g06-g6-label-unwind-extra-lot   revision 0
+source SHA      bc7c9e616940ec822735220327747e6810a5943380ddb7d3a9945e2a33421a59
 score           14.70, tied, not promotable
-combined PnL    267.49
-gap sum         56.85 across cases 6, 7, 18, 19
-thinnest margin 1.35 at case 13, then 1.90 at case 10, then 5.21 at case 14
+combined PnL    267.26
+gap sum         47.93 across cases 6, 7, 18, 19        was 56.85
+case 18         17.80, rank 2 of 4, GAP 1.58           repository best, was 8.85
+thinnest margin 1.35 at case 13, then 1.90 at case 10, then 5.21 at case 14,
+                then 5.49 at case 20
 tuningAttempts  0
 
-second source   market-loop-20260821-4-g01-g1-label-breadth-all   revision 0
-source SHA      6b6a8ebc92e5c50841e10c77e061ead22f6fe33158b02f35542757aff159e520
-score           14.70, PnL 271.36 -- the repository PnL record, telemetry only
+its parent      market-loop-20260821-5-g02-g2-label-expiry-depth   revision 1
+source SHA      89d103c8072d97fdecc9a5f85ddd1e21d764261a22be3116ac91d4d8939f9747
+score           14.70, case 18 gap 1.74, tuningAttempts 1
 ```
 
-Run `market-loop-20260821-4` ran all six generations, graded eighteen sources,
-promoted nothing, and **closed the board**. Unlike the previous memo, which
-reopened it, this one has to report that every axis the current editable surface
-exposes is now graded.
+Run `market-loop-20260821-5` ran all six generations, graded twenty-three
+sources, promoted nothing, and **cut the case-18 gap from 8.85 to 1.58 — an
+82 percent reduction, and the closest this repository has come to a promotion
+since the champion was set.** Two active challengers were created, one of them
+tuned once.
 
-The run is `complete`. `market-loop-20260821-3` remains dormant at generation 3
-of 6, status `active`, and may be resumed or left alone; nothing depends on it.
+The previous memo declared the board closed and said nothing inside the surface
+was worth a generation. **That was wrong**, and Section 4 explains exactly which
+measurement misled it. The surface was not exhausted; one dimension of it had
+never been graded.
 
-**Two archived reports are known-wrong and cannot be edited.** The
-`market-loop-20260821` g06 analysis names the twelve-lot rung as generation
-winner when selection actually took the eight-lot rung on a candidate-ID tie.
-The `market-loop-20260821-3` g01 analysis claims the counterparty branch narrows
-case 10 to 0.55; that is an endogeneity error and the true figure is 1.54.
-A third correction is added in Section 2 below.
+`market-loop-20260821-3` remains dormant at generation 3 of 6, status `active`.
+Nothing depends on it.
 
 **Do not run `frontier.sh apply`.** Its anchor rule minimises gap sum, which is
 not sign-aware. Use `candidate_pipeline/frontier.sh <repo>` in its default
 `report` mode as a per-case evidence lookup only.
 
-## 2. Objective Model, and a Correction to the Previous Memo
+## 2. Objective Model
 
 Promotion is score-only: twenty structurally complete outcomes, no runtime
 error, cases 1-4 PASS, every failed scored case an explicit bankruptcy, and
@@ -50,19 +50,19 @@ SCORED points strictly above the champion. PnL and minimum capital are telemetry
 and never break a tie. Order score-equal candidates by target gain, target gap,
 modified lines, then candidate ID.
 
-**The per-case score map is `0.40 + 0.60 * (competitors beaten / (N - 1))`**,
-measured across all archived evidence: rank 1 of any N scores 1.00, rank 2 of 4
-scores 0.80, rank 2 of 3 scores 0.70, rank 2 of 2 scores 0.40. VERBOSE cases
-score 1.00 whenever neither bankrupt nor erroring.
+**The per-case score map is `0.40 + 0.60 * (competitors beaten / (N - 1))`.**
+Rank 1 of any N scores 1.00, rank 2 of 4 scores 0.80, rank 2 of 3 scores 0.70,
+rank 2 of 2 scores 0.40. VERBOSE cases score 1.00 whenever neither bankrupt nor
+erroring. Price every collateral budget from this formula, never from archived
+prose.
 
-The previous memo's Section 9(a) states that losing case 20 costs "a full point"
-against case 18's 0.20. **That is wrong by a factor of five.** Both cases have
-four participants, so one rank is 0.20 either way. Price every collateral budget
-from the formula, never from archived prose.
+**Case 18 is worth exactly 0.20 and it is 1.58 away.** Taking it puts the head
+lineage at 14.90 and promotes. No other single case in the book is within
+seven dollars. This is the whole dispatch queue.
 
 ## 3. Rank and Risk Ledger
 
-Head challenger. Champion figures in Section 1 of the previous memo if needed.
+Head challenger `market-loop-20260821-5-g06-g6-label-unwind-extra-lot` r00.
 
 | Case | Cap | N | Our PnL | Rank | Gap / margin |
 |---:|---:|---:|---:|---:|---:|
@@ -79,111 +79,137 @@ Head challenger. Champion figures in Section 1 of the previous memo if needed.
 | 15 | 20 | 3 | 17.96 | 1 | +12.06 |
 | 16 | 40 | 3 | 34.26 | 1 | +25.35 |
 | 17 | 40 | 4 | 18.28 | 1 | +11.84 |
-| 18 | 40 | 4 | 15.58 | 2 | **-8.85** |
+| 18 | 40 | 4 | 17.80 | 2 | **-1.58** |
 | 19 | 40 | 4 | 2.99 | 2 | -20.46 |
-| 20 | 40 | 4 | 1.71 | 1 | +11.55 |
+| 20 | 40 | 4 | -0.74 | 1 | **+5.49** |
 
-Case 13 is no longer the emergency the previous memo made it. Case 10 at 1.90 is
-the binding constraint. **Report the parent's own three thinnest margins in every
-plan** -- they move with the parent.
+**Report the parent's own three thinnest margins in every plan** — they move
+with the parent. For this head they are cases 13, 10 and 14. Cases 13, 10 and 14
+sit outside the `{18, 20}` label and a label-gated change cannot reach them.
 
-## 4. The One Instrument, Reconfirmed and Then Read Negative
+**Case 20 is now the binding collateral constraint, and it changed character
+this run.** Our case-20 PnL fell from +1.71 to -0.74 as the near-expiry rule went
+in, and the held margin halved from 11.55 to 5.49. We still hold rank 1 only
+because the entire field is underwater there: Lattice -6.23, Mongoose -32.67,
+Fixed Width 0.05 -105.36. Any further label change that costs case 20 more than
+5.49 flips it to rank 2 and gives back 0.20 — exactly what case 18 would win.
 
-The reliable instrument remains the **endogenous leader response**, measurable
-only after the fact. The leaderboard archetype is still dead as a forward
-predictor.
+## 4. The Instrument, and the Measurement That Misled the Last Memo
 
-Run `-4` gave the instrument its first clean NEGATIVE reading, in case 19. Across
-four graded sources at half widths of 12, 25, 45 and 70, Fixed Width 0.05 reads
-exactly -20.53 and Mongoose exactly -23.65, **to the cent, in all four**. Forty
-dollars leaves those two players every session and none of it moves when we move.
-By the instrument, case 19 is not contestable, and that is now measured rather
-than assumed.
+The reliable instrument is still the **endogenous leader response**, measurable
+only after the fact.
 
-In case 18 the instrument reads flat: Fixed Width 0.05 has sat between 23.3 and
-24.5 across fifteen graded sources regardless of width, size, FOK policy or theo.
-It fell once, 39.01 to 23.47, when the counterparty markout branch was introduced
-in run `-3`, and has not moved since.
-
-## 5. What Run `-4` Proved
-
-### The {18, 20} label and the width lever (g01, g02)
-
-The session label -- middle band, THR volatility above 0.025, FED mean at or
-below 2.0 -- is **exactly {18, 20}**, now confirmed by grading across nine
-independent sources in which the other fourteen scored cases came back
-byte-identical every time.
+The previous memo recorded that in case 18 the instrument reads flat: Fixed
+Width 0.05 "has sat between 23.3 and 24.5 across fifteen graded sources
+regardless of width, size, FOK policy or theo." That reading was accurate and
+the conclusion drawn from it was not.
 
 ```text
-g01  depth 4 on the markout gate      case18 gap 13.18   case20 margin 2.06
-g01  breadth to zero-markout only     case18 gap 24.99   leader ROSE to 32.06
-g01  breadth to every counterparty    case18 gap  9.34   PnL 271.36 record
-g02  flat width 2, no repeat penalty  case18 gap 10.21
-g02  width 1 when flat in the option  case18 gap 12.66
-g02  one extra guarded lot per side   case18 gap  9.58
+case-18 leader (Fixed Width 0.05) across this run
+  parent, uniform two-cent label tightening        24.43
+  tightening restricted to steps_until_expiry <= 2 18.36    fell 6.07
+  tightening restricted to steps_until_expiry <= 1 19.48
+  plus the inventory-unwind extra lot              19.38
 ```
 
-1. **Breadth is strongly NON-MONOTONE**: 12.71 at the parent, 24.99 at partial
-   breadth, 9.34 at full breadth. The branch is not decomposable into
-   per-counterparty decisions. Inside this label it must be all-or-nothing.
-2. **Run -3's "never narrow toward adverse flow" does not hold inside the label.**
-   The only difference between the two breadth arms is whether negative-markout
-   counterparties are quoted tightly, and including them is worth +7.32 to us and
-   -8.33 to the leader.
-3. **Depth is exhausted at two cents**, rejected by a global sweep (run -3 g02),
-   by a positive-markout gate, and by an inventory gate. Three independent
-   measurements, same answer.
-4. **The ladder's extra cent on a repeat request is load-bearing**, worth 0.87 of
-   case-18 gap.
-5. **Selective size stops paying once width has taken the book.**
+**The leader is strongly responsive — to WHERE the width is spent, not to HOW
+MUCH of it there is.** Fifteen sources had swept the level of a lever while
+holding its allocation uniform, and a flat instrument reading was generalised
+into "case 18 is closed." A flat response to one parameterisation of a lever is
+evidence about that parameterisation only.
 
-### respond_to_fok (g03)
+**The general rule this establishes: when a lever's LEVEL is closed, its
+ALLOCATION has not been tested.** Depth, size, side, breadth and threshold
+sweeps all answer "how much"; none of them answer "on which contracts". That
+question was worth 7.27 of case-18 gap in a single generation.
+
+## 5. What Run `-5` Proved
+
+### respond_to_fok is closed from both directions (g01)
 
 ```text
-edge 0.01 inside the label    case18 gap 13.12   leader rose to 25.46
-cap 0.50 -> 2.00              case18 gap 11.59   PnL 272.16, case20 +3.26 best ever
-unwind concession             case18 BYTE-IDENTICAL; only case 20 moved
+reject counterparties with negative markout   case18 gap 8.85 -> 10.10
+relax the edge for positive-markout parties   BYTE-IDENTICAL, all 20 cases
+refuse repeat same-direction flow             BYTE-IDENTICAL, all 20 cases
 ```
 
-The label does carry FOK flow and it is **informed**: loosening the edge loses,
-reproducing the archived cases 6 and 7 result from a third case. The unwind branch
-never fires in case 18, so our inventory and the FOK flow never coincide there.
+Two byte-identical arms are a measurement, not a null run: the reject arm proves
+FOK acceptance is frequent and moves eleven cases, so the inertness says that
+**at the moment a FOK order arrives its counterparty essentially never carries a
+positive settled markout and never has prior same-direction fills against us in
+that option.** FOK flow here is one-shot per (counterparty, option, direction)
+and arrives measured-adverse.
 
-**Cases 18 and 20 want identical quote treatment but OPPOSITE FOK treatment.**
-The raised cap is case 20's best reading ever and feeds the leader in case 18.
+The reject arm's direction is the substantive result: refusing the flow that has
+marked against us **costs** 1.25 of case-18 gap, so that flow is net profitable
+to accept. This reproduces run `-4` g01's breadth finding on an independent
+mechanism. Combined with run `-4` g03, which closed the FOK edge and per-order
+cap as uniform thresholds, `respond_to_fok` is closed on the target from both
+the price side and the selection side.
 
-### price_option, the live theo (g04, g05)
+This also retired dispatch item (b) of the previous memo. Rebuilding the markout
+accumulator in `on_step_advance` was queued only as the quality input for item
+(a); item (a) graded negative, and inside the label the width branch fires on
+`fed_low_mean_regime` regardless of markout, so it has no remaining score path.
 
-Never graded before this run. The technique in every arm: accumulate in
-`on_step_advance`, blend by observation count, clamp, rebuild with `replace`.
+### The near-expiry allocation, and its tuning (g02, g03)
 
 ```text
-g04  live rate transition blend       13.40  PnL 188.79  lost cases 10, 13, 17
-g04  live company idio volatility     14.70  PnL 267.49  case18 15.58, gap 8.85
-g04  fill-pressure shaded theo        14.10  PnL 268.53  lost case 14
-g05  volatility prior 10 -> 3         14.70  case18 gap 10.88
-g05  scale sector betas too           14.40  PnL 240.16  lost case 10
-g05  live company drift               12.70  PnL 201.01  lost 8, 10, 13, 14, 17
+g02  depth only when steps_until_expiry <= 2   case18 gap 2.78   PnL 278.17
+g02  depth only when 25 <= fair_value <= 75    case18 gap 7.79
+g02  offer-side-only three-cent depth          case18 gap 20.83
+g03  cutoff 1, depth 2                         case18 gap 1.74   INSTALLED
+g03  cutoff 0, depth 1                         case18 gap 28.83
+g03  depth 3 or 4, any cutoff                  LOST CASE 12, score 14.10
 ```
 
-**THE RULE, GRADED TWICE AND ESTABLISHED: live adaptation is decided per
-parameter by how fast its estimator converges, not by how important the parameter
-is.** A realized variance from squared returns converges in days; a three-state
-transition frequency from counts over the same days is noise, and it feeds a
-discrete lattice that amplifies it. A mean log return converges slower still and
-moves the LOCATION of the distribution, carrying a binary option's probability
-across its strike.
+The tuning batch found the joint optimum at cutoff 1 with the two-cent depth
+intact. Two structural facts came out of it:
 
-Only **the per-company idiosyncratic variance level, from squared returns, with a
-prior of about ten observations, clamped to a factor of two** survives. The prior
-of 10 is measured, not merely first: a prior of 3 costs 2.03 of case-18 gap.
+1. **The depth literal is SHARED** by the label arm and the counterparty-markout
+   arm, so every attempt to deepen the label past two cents also deepened the
+   global markout branch and lost case 12 outright.
+2. Generation 4 then decoupled them and graded a label-only three-cent depth:
+   **gap 12.65.** Two cents is the label's own local optimum, not an artifact of
+   the shared literal. The constraint is real, not a coding accident.
 
-### The engine unlocks paid, again
+### Everything else inside the cutoff-1 rule is closed (g04, g05, g06)
 
-Both forward steps this run made came from surface that had just been unlocked:
-g01 from the widened `quote` scope, g04 from `price_option` plus
-`on_step_advance` plus `__init__` appends. Eighteen graded sources, one
-improvement, and it came from the newly reachable axis.
+```text
+g04  label-only depth three (decoupled)        case18 gap 12.65
+g04  bid-side-only depth                       case18 gap 16.29
+g04  depth on company-linked options only      case18 gap  2.66
+g05  depth on central (near-the-money) only    case18 gap  5.12
+g05  depth on single-leg options only          case18 gap  2.47
+g05  fair-value-aware cheap-side allocation    case18 gap 19.18
+g06  indiscriminate guarded extra lot          case18 gap  2.34
+g06  extra lot on flat-book entry only         case18 gap  2.49
+g06  extra lot only when it REDUCES inventory  case18 gap  1.58   INSTALLED
+```
+
+Side asymmetry is closed in both directions: offer-only 20.83 and bid-only 16.29
+against 1.74 symmetric. Option-scope narrowing is closed in every direction
+tried — company-only, central-only and single-leg-only each widened the gap, so
+**the full one-step book is the right scope and each selected contract wants
+symmetric treatment.**
+
+The size closure was correctly reopened under the new rule: it predated the
+cutoff-1 discovery. Only the inventory-reducing lot pays. Indiscriminate and
+flat-entry size are closed negative under this condition, as they were before it.
+
+### The installed rule, in full
+
+Two hunks on top of `market-loop-20260821-4-g04-g4-live-company-vol`:
+
+```python
+label_depth_applies: bool = fed_low_mean_regime and option.steps_until_expiry <= 1
+if label_depth_applies or counterparty_markout.get(counterparty_id, 0.0) > 0.0:
+    half_width = max(half_width - 2, 1)
+```
+
+and, after the low-band size block, one extra lot on the side that reduces an
+existing position, each guarded by the same capacity arithmetic the surrounding
+ladder uses.
 
 ## 6. The Editable Surface
 
@@ -195,7 +221,7 @@ improvement, and it came from the newly reachable axis.
 
 `price_option` has three consumers and a plan must name which one it targets: the
 quoted fair value, the `respond_to_fok` threshold, and the `signed_reserve`
-capacity arithmetic. A fourth path exists inside our own instrumentation --
+capacity arithmetic. A fourth path exists inside our own instrumentation —
 `_settle_markout` marks open trades to `price_option`, so shading theo shades the
 markout measure that drives the width branch.
 
@@ -209,7 +235,7 @@ Still frozen: `name`, `price_option_from_parameters`, and every method signature
 ## 7. Session Map
 
 `self.warm_up_statistics` is constant per session and is the only sound
-discriminator. **Never gate on `self.cash_balance`** -- the grader mutates it live.
+discriminator. **Never gate on `self.cash_balance`** — the grader mutates it live.
 
 ```text
 > 0.60          {6}                     exact; installed
@@ -221,97 +247,113 @@ discriminator. **Never gate on `self.cash_balance`** -- the grader mutates it li
 Middle band with THR log-return `sample_std_dev <= 0.025` gives {7, 13, 19}:
 
 ```text
-corr > 0.50                             {19}    installed; GRADED EXCLUSIVE in g06
+corr > 0.50                             {19}    installed
 corr <= 0.50 and FEDmax >= 3.0          {7}     installed as case_seven_regime
 corr <= 0.50 and FEDmax < 3.0           {13}    installed as case_thirteen_regime
 ```
 
 Middle band above 0.025 is {5, 11, 14, 16, 18, 20}; FEDmean > 2.0 narrows it to
 {5, 11, 14, 16}, so **FEDmean <= 2.0 is exactly {18, 20}**, installed as
-`fed_low_mean_regime` and graded exclusive nine times. Inside {5,11,14,16},
-FEDmin > 2.0 gives {5, 11} and raw corr < 0.75 gives {5}, installed as
-`case_five_regime`.
+`fed_low_mean_regime`. Inside {5,11,14,16}, FEDmin > 2.0 gives {5, 11} and raw
+corr < 0.75 gives {5}, installed as `case_five_regime`.
 
-The `18 from 20` threshold remains unfound and is now **score-worthless**:
-everything it would unlock benefits case 20, which is already rank 1.
+The `18 from 20` threshold remains unfound. It is **no longer score-worthless**:
+the previous memo dismissed it because everything it would unlock benefited case
+20, which was rank 1 by 11.55. Case 20 now holds by 5.49 with a negative PnL, and
+the label's remaining case-18 levers all cost it. **A discriminator separating 18
+from 20 is now the cleanest way to spend case-20 margin on case 18 without
+risking the rank**, and it is worth looking for again.
 
 ## 8. Scoped Closures
 
 A closure is only as wide as the interval actually graded, and only valid for the
-editable surface it was measured on.
+editable surface it was measured on. **Every "closed" entry below closes a LEVEL,
+a SCOPE or a SIDE that was actually swept — read Section 4 before generalising
+any of them to an allocation that was not.**
 
 ```text
 case 6                    CLOSED ON EVERY AXIS THE FILE EXPOSES.
-  static width            interior maximum at 18, both directions.
-  size / skew / rate      closed; company drift worse under every shrinkage.
-  respond_to_fok          loosening loses; tightening byte-identical.
-  counterparty axis       never fires.
-  live company theo       INERT. Byte-identical under the volatility change.
+                          Width interior maximum at 18; size, skew, rate, FOK,
+                          counterparty and live theo all closed or inert.
 case 7                    CLOSED. Width graded 12..100; flat plateau at >=25
                           where we win no RFQ. Size, FOK, rate, drift closed.
-case 18                   CLOSED AT A GAP OF 8.85 ON THIS SURFACE.
-  quote width depth       closed 3 ways; two cents is the answer.
+case 18                   OPEN AT 1.58 and 0.20 from a promotion.
+  label depth level       CLOSED at two cents, now four independent ways,
+                          including a decoupled label-only three-cent arm.
+  label depth by expiry   CLOSED at cutoff 1 across the integer neighborhood
+                          0, 1, 2, 4, 5 at one- and two-cent depth.
+  label depth by side     CLOSED both directions. Offer-only 20.83, bid-only
+                          16.29, symmetric 1.74.
+  label depth by scope    CLOSED. Company-only 2.66, central-only 5.12,
+                          single-leg-only 2.47, cheap-side 19.18; all-option
+                          scope wins.
+  label size              Indiscriminate 2.34 and flat-entry 2.49 CLOSED;
+                          inventory-reducing extra lot POSITIVE, installed,
+                          magnitude and threshold NOT yet swept.
   quote width breadth     closed; non-monotone, must be all-or-nothing.
   repeat-request cent     LOAD-BEARING; removing it costs 0.87.
-  quote size              closed negative once the book is contested.
-  respond_to_fok          edge closed negative; cap closed negative on target;
-                          unwind INERT, the branch never fires.
+  respond_to_fok          CLOSED BOTH DIRECTIONS. Thresholds closed in run -4
+                          g03; counterparty selection negative or inert in g01.
   price_option            volatility strength, sector scope, drift, rate: closed.
 case 19                   CLOSED. Width graded 12/25/45/70: FLAT at and above 45
-                          (70 is byte-identical to 45 in all twenty cases, so we
-                          win NO RFQ at 45), and monotone harmful below it. Our
-                          2.99 is not RFQ income. Rate, withdrawal, counterparty
-                          all previously closed.
+                          and monotone harmful below it. Our 2.99 is not RFQ
+                          income. Rate, withdrawal, counterparty all closed.
+                          The instrument read it NEGATIVE in run -4: Fixed Width
+                          0.05 and Mongoose are identical to the cent across four
+                          graded half widths. Not contestable.
 counterparty widening     CLOSED twice, two independent measures.
 counterparty amount       CLOSED at 2, globally and inside the label.
 counterparty threshold    CLOSED at 0.0, monotone.
 graduated markout         CLOSED NEGATIVE. Binary is correct.
+markout accumulator work  NO SCORE PATH. Retired with dispatch item (b).
 live rate probabilities   CLOSED NEGATIVE. 13.40, the convergence rule.
 live sector loadings      CLOSED NEGATIVE. Corrupts cross-company correlation.
-live company drift        CLOSED NEGATIVE. 12.70, worst arm of the run.
+live company drift        CLOSED NEGATIVE. 12.70, worst arm of run -4.
 live idio volatility      OPEN AND POSITIVE, at prior 10 and clamp [0.5, 2.0].
-                          Both constants graded; stronger is worse.
-low band / capital / size COMPLETE.
 warm_up (all estimators)  CLOSED across six estimators.
 global PnL and capital    Closed as objectives. Telemetry only.
 ```
 
+**THE CONVERGENCE RULE, graded twice and unchanged:** live adaptation is decided
+per parameter by how fast its estimator converges, not by how important the
+parameter is. Only the per-company idiosyncratic variance survives.
+
 ## 9. Dispatch Queue
 
-**Nothing inside the current surface is worth a generation.** All four losing
-cases are closed on it. Eighteen graded sources this run produced one improvement
-and it came from an axis that had just been unlocked. In order:
+**Case 18 at 1.58 is the entire queue.** It is 0.20, it promotes, and it is the
+only case in the book within seven dollars. Start every generation from
+`market-loop-20260821-5-g06-g6-label-unwind-extra-lot` r00.
 
-**a. Counterparty-selective FOK acceptance.** The cheapest untried idea left, and
-it needs no engine change. `respond_to_fok` already receives
-`fok_order.counterparty_id` and never uses it, and the counterparty markout the
-file already accumulates is in scope there. Run `-4` g03 changed FOK
-*thresholds* and closed them; this changes FOK *selection*, which is a different
-mechanism and the one the width branch already proved pays. Target case 18, gate
-on nothing or on the label as the hypothesis requires, and keep an explicit
-per-trade maximum-loss bound -- `respond_to_fok` has no capacity guard of its own.
+**a. Tune the unwind lot.** The single highest-value action available and the
+only queued item with measured positive evidence behind it. The installed branch
+adds exactly one lot, gated on a non-zero position, guarded by the surrounding
+capacity arithmetic. Its magnitude and its position threshold have never been
+swept — g06 graded the direction, not the size. Bind the lot increment and the
+position threshold as quote constants and run a Tune batch. `tuningAttempts` is 0,
+so the lineage has both attempts available. Collateral budget stays at zero and
+case 20's 5.49 margin is the check that matters.
 
-**b. Rebuild the markout accumulator on `on_step_advance`.** `_settle_markout`
-runs inside `quote`, so it only updates on days carrying an RFQ, and it silently
-drops any option that has left `self.active_option_state`, losing every expiring
-trade's final markout. `__init__` appends remove the two `getattr` lazy
-initialisers. **Do this only after (a) lands**, because its own score value is
-measurably zero -- inside the label the head lineage ignores markout for width,
-and in the fourteen cases where the branch still gates width we are already
-rank 1. Ordered after (a) it is the quality input (a) depends on.
+**b. Hunt the `18 from 20` discriminator again.** See Section 7. It was dismissed
+as score-worthless under a case-20 margin of 11.55 that no longer exists. Every
+remaining label lever helps 18 and costs 20; a discriminator converts that
+tradeoff into a free gain. Worth a probe objective with an explicit unlock.
 
-**c. Ask for a surface widening.** The record is unambiguous: unlocking
-`on_trade`, then `on_step_advance` and `__init__`, then `price_option` produced
-the only forward steps of the last two runs, and search inside a frozen surface
-has produced none. Anything that lets a session act on *who* is trading, or that
-exposes per-day fill outcomes rather than inferred ones, is worth more than any
-generation of search.
+**c. Apply the allocation lesson to a second lever.** Section 4's rule is
+general and has been paid once. The levers whose LEVEL is closed but whose
+ALLOCATION has never been graded are the repeat-request cent, the fill-signal
+cent, and the wing-widening block — each currently applies uniformly to every
+contract in the label. Ask of each: which contracts should get it.
 
-Do not re-run: the counterparty amount or threshold, a graduated markout
-response, indiscriminate capacity in case 18, any `warm_up` estimator,
-counterparty widening, any FOK threshold change, live rate probabilities, live
-sector loadings, live company drift, the volatility blend strength, or case 19
-width.
+**d. Ask for a surface widening.** Unchanged in priority and still true:
+unlocking `on_trade`, then `on_step_advance` and `__init__`, then `price_option`
+produced the forward steps of runs `-3` and `-4`. Anything exposing per-day fill
+outcomes rather than inferred ones is worth more than a generation of search.
+
+Do not re-run: any FOK change of any kind; the markout accumulator; the label
+depth level, expiry cutoff, side, or option scope; indiscriminate or flat-entry
+label size; the counterparty amount, threshold or breadth; a graduated markout;
+any `warm_up` estimator; live rate probabilities, sector loadings, company drift,
+or the volatility blend strength; case 19 width; case 6 or case 7 on any axis.
 
 ## 10. Hard Invariants
 
@@ -329,6 +371,11 @@ charge, and that applies with full force to `respond_to_fok`.
 `self.cash_balance` is the **live** balance the grader mutates, not starting
 capital. Never gate a session label on it.
 
-`price_option` is a hot path -- once per quote, once per FOK, and once per open
+`price_option` is a hot path — once per quote, once per FOK, and once per open
 position inside `signed_reserve`. No loops over history inside it; accumulate in
 the hooks.
+
+A shared numeric literal is a coupling. Before binding any constant for a Tune
+batch, check every branch that reads it: run `-5` g03 lost case 12 three times
+over because the label arm and the counterparty-markout arm share one depth
+literal.
