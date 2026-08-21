@@ -1,6 +1,8 @@
 const RESULT_LINE = /^Result:[^\r\n]*$/gm;
 const BANKRUPTCY_LINE = /^Mola mola bankrupt:[^\r\n]*$/gm;
 const RUNTIME_ERROR_LINE = /^Testcase\s+\d+\s+failed with (?:an unhandled|a runtime) error and is scored 0\.[^\r\n]*$/gim;
+const RANKING_LINE = /^Ranking:\s*$/gm;
+const RANKING_ENTRY = /^(\d+)\. (.+): \$([+-]?\d+(?:\.\d+)?)$/;
 
 function caseType(number) {
   if (number === 1) {
@@ -47,6 +49,55 @@ function runtimeMessage(text, runtimeLine) {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .find((line) => /(?:Error|Exception):\s*\S/.test(line)) ?? runtimeLine;
+}
+
+export function parseRanking(text) {
+  const rankingLines = [...text.matchAll(RANKING_LINE)];
+  if (rankingLines.length !== 1) {
+    throw new Error(`Expected exactly one Ranking block, found ${rankingLines.length}`);
+  }
+
+  const entries = [];
+  const remainder = text.slice(rankingLines[0].index + rankingLines[0][0].length);
+  for (const line of remainder.split(/\r?\n/).slice(1)) {
+    const match = line.match(RANKING_ENTRY);
+    if (match === null) break;
+    entries.push({
+      rank: Number(match[1]),
+      name: match[2],
+      pnlCents: parseHundredths(match[3], "ranking PnL"),
+    });
+  }
+  if (entries.length < 2) throw new Error("Ranking block must contain at least two entries");
+  if (entries.some(({ rank }, index) => rank !== index + 1)) {
+    throw new Error("Ranking entries must use consecutive ranks starting at one");
+  }
+  if (new Set(entries.map(({ name }) => name)).size !== entries.length) {
+    throw new Error("Ranking entries must use unique names");
+  }
+
+  const ours = entries.filter(({ name }) => name === "Mola mola");
+  if (ours.length !== 1) throw new Error(`Expected Mola mola once in Ranking, found ${ours.length}`);
+  const ourEntry = ours[0];
+  const leader = entries[0];
+  const runnerUp = ourEntry.rank === 1 ? entries[1] : null;
+  return {
+    entries,
+    rank: ourEntry.rank,
+    participantCount: entries.length,
+    ourPnlCents: ourEntry.pnlCents,
+    leaderName: leader.name,
+    leaderPnlCents: leader.pnlCents,
+    gapToLeaderCents: leader.pnlCents - ourEntry.pnlCents,
+    runnerUpName: runnerUp?.name ?? null,
+    runnerUpPnlCents: runnerUp?.pnlCents ?? null,
+    marginToRunnerUpCents: runnerUp ? ourEntry.pnlCents - runnerUp.pnlCents : null,
+  };
+}
+
+function expectedScore(ranking) {
+  const intervals = ranking.participantCount - 1;
+  return Math.round((100 * intervals - 60 * (ranking.rank - 1)) / intervals);
 }
 
 export function parseCaseResult(rawCase) {
@@ -103,6 +154,7 @@ export function parseCaseResult(rawCase) {
     return parsed;
   }
 
+  const ranking = parseRanking(rawCase.text);
   const bankruptcyLine = onlyMatch(rawCase.text, BANKRUPTCY_LINE, "bankruptcy field");
   const bankruptcy = bankruptcyLine.match(
     /^Mola mola bankrupt:\s*(True|False)\s*\(cash balance:\s*([+-]?\d+(?:\.\d+)?),\s*starting capital:\s*([+-]?\d+(?:\.\d+)?)\)\s*$/,
@@ -114,7 +166,18 @@ export function parseCaseResult(rawCase) {
   parsed.bankrupt = bankruptcy[1] === "True";
   parsed.endingCashCents = parseHundredths(bankruptcy[2], "cash balance");
   parsed.startingCapitalCents = parseHundredths(bankruptcy[3], "starting capital");
-  parsed.pnlCents = parsed.endingCashCents - parsed.startingCapitalCents;
+  parsed.cashPnlCents = parsed.endingCashCents - parsed.startingCapitalCents;
+  parsed.pnlCents = ranking.ourPnlCents;
+  if (!parsed.bankrupt && ranking.ourPnlCents !== parsed.cashPnlCents) {
+    throw new Error(`Ranking PnL does not match cash balance in case ${rawCase.number}`);
+  }
+  if (parsed.bankrupt && parsed.scoreHundredths !== 0) {
+    throw new Error(`Bankrupt case ${rawCase.number} must score zero`);
+  }
+  if (type === "SCORED" && parsed.passed && !parsed.bankrupt && parsed.scoreHundredths !== expectedScore(ranking)) {
+    throw new Error(`Score does not match Ranking in case ${rawCase.number}`);
+  }
+  parsed.ranking = ranking;
   return parsed;
 }
 
@@ -125,11 +188,6 @@ export function compareCapital(first, second) {
 }
 
 export function comparePerformance(first, second) {
-  if (first.scoredPointsHundredths !== second.scoredPointsHundredths) {
-    return first.scoredPointsHundredths > second.scoredPointsHundredths ? 1 : -1;
-  }
-  if (first.combinedPnlCents !== second.combinedPnlCents) {
-    return first.combinedPnlCents > second.combinedPnlCents ? 1 : -1;
-  }
-  return compareCapital(first.minimumCapital, second.minimumCapital);
+  if (first.scoredPointsHundredths === second.scoredPointsHundredths) return 0;
+  return first.scoredPointsHundredths > second.scoredPointsHundredths ? 1 : -1;
 }

@@ -1,15 +1,11 @@
 {
   "schemaVersion": 2,
-  "id": "g3-case7-width25",
-  "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "183cf6019cee631065b0a11f8ee7f88f7ebd3c817b6e4eca917b7f9fab7add59",
-  "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260820-4:g03:g3-case7-width25",
-  "experiment": {
-    "runId": "market-loop-20260820-4",
-    "generation": 3,
-    "candidateId": "g3-case7-width25"
-  },
+  "candidateId": "g2-fed-max-probe",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/frontier-g2-fed-max-probe/r00.py",
+  "sourceSha256": "6ea3c0dfee02dbb4c4092cd29bc53d63e4a6d31bff21bb876552b723bc853133",
+  "modifiedLines": null,
   "summary": {
     "passed": 20,
     "total": 20,
@@ -775,16 +771,11 @@
       }
     }
   ],
-  "anchorSelection": {
-    "rule": [
-      "score",
-      "losingGapSum",
-      "heldMarginFloor",
-      "sourceLines",
-      "candidateId"
-    ],
-    "gapSumCents": 16211,
-    "minimumHeldMarginCents": 330,
-    "sourceLines": 1180
-  }
+  "baselineDelta": {
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 18099
+  },
+  "reasons": [
+    "Research frontier retained during score-only objective migration"
+  ]
 }

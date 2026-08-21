@@ -410,18 +410,20 @@ class MarketMaker:
             or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)
             or (flat_rate_frequency <= 0.40 and self.cash_balance < 30.0)
         )
-        case_nineteen_regime: bool = (
-            0.40 < flat_rate_frequency <= 0.50
-            and theriodic_return_volatility <= 0.025
-            and company_return_correlation > 0.50
+        probe_regime: bool = (
+            (
+                0.40 < flat_rate_frequency <= 0.50
+                and theriodic_return_volatility <= 0.025
+                and company_return_correlation > 0.50
+            )
+            or (
+                0.40 < flat_rate_frequency <= 0.50
+                and theriodic_return_volatility <= 0.025
+                and company_return_correlation <= 0.50
+                and fed_history_maximum >= 3.0
+            )
         )
-        case_seven_regime: bool = (
-            0.40 < flat_rate_frequency <= 0.50
-            and theriodic_return_volatility <= 0.025
-            and company_return_correlation <= 0.50
-            and fed_history_maximum >= 3.0
-        )
-        half_width: int = 25 if case_seven_regime else (45 if case_nineteen_regime else (18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4))))
+        half_width: int = 45 if probe_regime else (18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4)))
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
         if bid_price > 0.50:

@@ -5,8 +5,12 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 
-import { comparePerformance } from "./case-result.mjs";
 import { evaluateRun } from "./evaluate.mjs";
+import {
+  defaultObjective,
+  objectiveOutcome,
+  promotionEligible,
+} from "./objective.mjs";
 import { selectFromFiles } from "./select.mjs";
 import {
   activeChallenger,
@@ -141,8 +145,8 @@ function pathsFor(repo, runId) {
 }
 
 function validateBaseline(baseline) {
-  if (![1, 2].includes(baseline?.schemaVersion) || typeof baseline?.summary !== "object") {
-    throw new LoopInputError("Best baseline must use schema version 1 or 2");
+  if (![1, 2, 3].includes(baseline?.schemaVersion) || typeof baseline?.summary !== "object") {
+    throw new LoopInputError("Best baseline must use schema version 1, 2, or 3");
   }
   const summary = baseline.summary;
   const integers = [
@@ -157,11 +161,11 @@ function validateBaseline(baseline) {
   if (!integers.every(Number.isSafeInteger) || summary.total !== 20) {
     throw new LoopInputError("Best baseline summary is incomplete");
   }
-  if (baseline.schemaVersion === 2 && !/^[a-f0-9]{64}$/.test(baseline.sourceSha256 ?? "")) {
-    throw new LoopInputError("Version 2 baseline is missing sourceSha256");
+  if (baseline.schemaVersion >= 2 && !/^[a-f0-9]{64}$/.test(baseline.sourceSha256 ?? "")) {
+    throw new LoopInputError("Versioned baseline is missing sourceSha256");
   }
-  if (baseline.schemaVersion === 2 && (typeof baseline.experimentId !== "string" || !baseline.experimentId)) {
-    throw new LoopInputError("Version 2 baseline is missing experimentId");
+  if (baseline.schemaVersion >= 2 && (typeof baseline.experimentId !== "string" || !baseline.experimentId)) {
+    throw new LoopInputError("Versioned baseline is missing experimentId");
   }
 }
 
@@ -284,6 +288,8 @@ export function renderReportText(state) {
       "",
       generation.rationale,
       "",
+      `Objective: ${generation.objective?.kind ?? "legacy"}; targets ${(generation.objective?.targetCases ?? []).join(", ") || "all"}; expected +${formatHundredths(generation.objective?.expectedGainHundredths ?? 0)}; collateral budget ${formatHundredths(generation.objective?.collateralBudgetHundredths ?? 1600)}.`,
+      "",
     );
     if ((generation.mode ?? "explore") === "explore" && generation.parent) {
       const parentId = generation.parent.type === "champion"
@@ -301,6 +307,7 @@ export function renderReportText(state) {
         `- Status: ${candidate.status}`,
         `- Result: ${summaryLine(candidate.evaluation?.summary)}`,
         `- Baseline delta: ${candidate.evaluation?.baselineDelta ? `${formatHundredths(candidate.evaluation.baselineDelta.scoredPointsHundredths)} points; PnL ${candidate.evaluation.baselineDelta.combinedPnlCents === null ? "n/a" : formatHundredths(candidate.evaluation.baselineDelta.combinedPnlCents)}` : "n/a"}`,
+        `- Objective outcome: ${candidate.objectiveOutcome ? `target ${formatHundredths(candidate.objectiveOutcome.targetGainHundredths)}; gap ${candidate.objectiveOutcome.targetGapCents === null ? "n/a" : formatHundredths(candidate.objectiveOutcome.targetGapCents)}; collateral loss ${formatHundredths(candidate.objectiveOutcome.collateralLossHundredths)}; expected ${candidate.objectiveOutcome.expectedMet ? "met" : "not met"}` : "n/a"}`,
         "",
       );
     }
@@ -375,7 +382,7 @@ export async function startRun(options) {
   const baseline = await readJson(paths.baselinePath, "best baseline");
   validateBaseline(baseline);
   const sourceSha256 = await sha256(paths.sourcePath);
-  if (baseline.schemaVersion === 2 && baseline.sourceSha256 !== sourceSha256) {
+  if (baseline.schemaVersion >= 2 && baseline.sourceSha256 !== sourceSha256) {
     throw new LoopInputError("Current strategy SHA-256 does not match the best baseline");
   }
   const { stdout: head } = await git(repo, "rev-parse", "HEAD");
@@ -384,6 +391,7 @@ export async function startRun(options) {
     resultArtifact: baseline.resultArtifact,
     sourceSha256,
     summary: baseline.summary,
+    ...(Array.isArray(baseline.caseResults) ? { caseResults: structuredClone(baseline.caseResults) } : {}),
     gitCommit: head.trim(),
     legacyBaseline: baseline.schemaVersion === 1,
   };
@@ -468,16 +476,65 @@ function exploreParent(plan, registry) {
   };
 }
 
+function validateObjective(plan) {
+  if (plan.schemaVersion < 3) return defaultObjective();
+  const objective = plan.objective;
+  if (typeof objective !== "object" || objective === null) {
+    throw new LoopInputError("Schema-version-3 plans require an objective");
+  }
+  assertOnlyKeys(
+    objective,
+    new Set(["kind", "targetCases", "expectedGainHundredths", "collateralBudgetHundredths", "unlock"]),
+    "Generation objective",
+  );
+  if (!["exploit", "probe"].includes(objective.kind)) {
+    throw new LoopInputError("Objective kind must be exploit or probe");
+  }
+  if (
+    !Array.isArray(objective.targetCases)
+    || objective.targetCases.length === 0
+    || new Set(objective.targetCases).size !== objective.targetCases.length
+    || objective.targetCases.some((number) => !Number.isSafeInteger(number) || number < 5 || number > 20)
+  ) {
+    throw new LoopInputError("Objective targetCases must be unique SCORED case numbers");
+  }
+  if (
+    !Number.isSafeInteger(objective.expectedGainHundredths)
+    || objective.expectedGainHundredths < 0
+    || (objective.kind === "exploit" && objective.expectedGainHundredths === 0)
+    || (objective.kind === "probe" && objective.expectedGainHundredths !== 0)
+  ) {
+    throw new LoopInputError("Exploit objectives require positive expected gain; probes require zero");
+  }
+  if (
+    !Number.isSafeInteger(objective.collateralBudgetHundredths)
+    || objective.collateralBudgetHundredths < 0
+    || objective.collateralBudgetHundredths > 1600
+  ) {
+    throw new LoopInputError("Objective collateral budget must be between zero and 1600");
+  }
+  if (objective.kind === "probe" && (typeof objective.unlock !== "string" || !objective.unlock.trim())) {
+    throw new LoopInputError("Probe objectives require a score-path unlock statement");
+  }
+  return {
+    kind: objective.kind,
+    targetCases: [...objective.targetCases],
+    expectedGainHundredths: objective.expectedGainHundredths,
+    collateralBudgetHundredths: objective.collateralBudgetHundredths,
+    ...(objective.kind === "probe" ? { unlock: objective.unlock.trim() } : {}),
+  };
+}
+
 function validatePlan(plan, registry) {
   const mode = plan?.mode ?? (plan?.schemaVersion === 1 ? "explore" : null);
-  if (![1, 2].includes(plan?.schemaVersion) || !MODES.has(mode) || !METHODS.has(plan.method)) {
+  if (![1, 2, 3].includes(plan?.schemaVersion) || !MODES.has(mode) || !METHODS.has(plan.method)) {
     throw new LoopInputError("Plan must use a supported schema, mode, and target method");
   }
   if (typeof plan.rationale !== "string" || !plan.rationale.trim()) {
     throw new LoopInputError("Plan rationale is required");
   }
   if (mode === "tune") {
-    if (plan.schemaVersion !== 2) throw new LoopInputError("Tune plans require schemaVersion 2");
+    if (![2, 3].includes(plan.schemaVersion)) throw new LoopInputError("Tune plans require schemaVersion 2 or 3");
     const challenger = activeChallenger(registry, plan.challengerId);
     if (!challenger) throw new LoopInputError("Tune plan must select an active challenger");
     const revision = currentRevision(challenger);
@@ -491,11 +548,11 @@ function validatePlan(plan, registry) {
     if (!Array.isArray(plan.parameters) || plan.parameters.length === 0) {
       throw new LoopInputError("Tune plan requires parameter bindings");
     }
-    return { mode, parent: null };
+    return { mode, parent: null, objective: validateObjective(plan) };
   }
   assertOnlyKeys(
     plan,
-    new Set(["schemaVersion", "mode", "method", "rationale", "parent", "candidates"]),
+    new Set(["schemaVersion", "mode", "method", "rationale", "parent", "objective", "candidates"]),
     "Explore plan",
   );
   if (!Array.isArray(plan.candidates) || plan.candidates.length !== 3) {
@@ -514,7 +571,7 @@ function validatePlan(plan, registry) {
       }
     }
   }
-  return { mode, parent: exploreParent(plan, registry) };
+  return { mode, parent: exploreParent(plan, registry), objective: validateObjective(plan) };
 }
 
 export function getStopReason(state) {
@@ -588,7 +645,7 @@ export async function prepareGeneration(options) {
   const plan = await readJson(planPath, "generation plan");
   const baseline = await readJson(paths.baselinePath, "best baseline");
   const registry = await loadRegistry(paths.repo, { ...baseline, sourceSha256: state.baseline.sourceSha256 });
-  const { mode, parent } = validatePlan(plan, registry);
+  const { mode, parent, objective } = validatePlan(plan, registry);
   if (mode === "explore" && await sha256(exploreParentPath(paths, { parent })) !== parent.sourceSha256) {
     throw new LoopInputError("Explore plan parent source SHA-256 changed");
   }
@@ -600,6 +657,7 @@ export async function prepareGeneration(options) {
     number,
     mode,
     method: plan.method,
+    objective,
     rationale: plan.rationale.trim(),
     status: "preparing",
     planPath: path.relative(paths.repo, planArchivePath),
@@ -635,6 +693,21 @@ export async function prepareGeneration(options) {
       variantsRoot: path.join(worktreePath, ".tuning", state.runId, `g${String(number).padStart(2, "0")}`, "variants"),
     };
   }
+  generation.parentEvaluation = mode === "tune"
+    ? structuredClone(generation.parentRevision.evaluation)
+    : parent.type === "challenger"
+      ? structuredClone(currentRevision(activeChallenger(registry, parent.challengerId)).evaluation)
+      : {
+          schemaVersion: registry.evaluations[parent.sourceSha256]?.schemaVersion ?? 1,
+          candidateId: registry.champion.id,
+          valid: true,
+          sourceSha256: parent.sourceSha256,
+          modifiedLines: 0,
+          summary: structuredClone(state.baseline.summary),
+          ...(Array.isArray(registry.evaluations[parent.sourceSha256]?.caseResults)
+            ? { caseResults: structuredClone(registry.evaluations[parent.sourceSha256].caseResults) }
+            : {}),
+        };
   state.generations.push(generation);
   await saveState(paths, state);
   await ensureWorktrees(paths, state, generation);
@@ -775,18 +848,7 @@ async function ensureWorktrees(paths, state, generation) {
 }
 
 function recomputeEligibility(evaluation, baseline) {
-  const summary = evaluation?.summary;
-  const complete = evaluation?.valid === true
-    && summary?.passed === 20
-    && summary?.total === 20
-    && summary?.bankruptcies === 0
-    && Number.isSafeInteger(summary?.scoredPointsHundredths)
-    && Number.isSafeInteger(summary?.combinedPnlCents)
-    && Number.isSafeInteger(summary?.minimumCapital?.endingCashCents)
-    && Number.isSafeInteger(summary?.minimumCapital?.startingCapitalCents)
-    && summary.minimumCapital.startingCapitalCents > 0;
-  if (!complete) return false;
-  return comparePerformance(summary, baseline.summary) > 0;
+  return promotionEligible(evaluation, baseline.summary);
 }
 
 async function validateExploreCandidate(paths, generation, sourcePath) {
@@ -1054,6 +1116,13 @@ export async function archiveGeneration(options) {
     for (const candidate of generation.candidates) {
       const evaluationPath = await copyCandidate(paths, state, generation, candidate, invalidIds);
       if (evaluationPath) evaluationPaths.push(evaluationPath);
+      if (candidate.evaluation) {
+        candidate.objectiveOutcome = objectiveOutcome(
+          candidate.evaluation,
+          generation.parentEvaluation,
+          generation.objective,
+        );
+      }
     }
     const selection = evaluationPaths.length
       ? await selectFromFiles(evaluationPaths)
@@ -1098,8 +1167,13 @@ export async function archiveGeneration(options) {
         }
         const validCandidates = generation.candidates.filter(({ evaluation }) => evaluation?.valid);
         const best = [...validCandidates]
-          .sort((first, second) => compareStrategy(first.evaluation, second.evaluation))[0] ?? null;
-        if (best && strictlyImproves(best.evaluation, parentRevision.evaluation)) {
+          .sort((first, second) => compareStrategy(
+            first.evaluation,
+            second.evaluation,
+            generation.objective,
+            parentRevision.evaluation,
+          ))[0] ?? null;
+        if (best && strictlyImproves(best.evaluation, parentRevision.evaluation, generation.objective)) {
           derivedCandidate = best;
           derivedFrom = {
             challengerId: parentChallenger.id,
@@ -1139,8 +1213,13 @@ export async function archiveGeneration(options) {
       const parent = currentRevision(challenger);
       challenger.tuningAttempts += 1;
       const validCandidates = generation.candidates.filter(({ evaluation }) => evaluation?.valid);
-      const best = [...validCandidates].sort((first, second) => compareStrategy(first.evaluation, second.evaluation))[0] ?? null;
-      const improved = best && strictlyImproves(best.evaluation, parent.evaluation);
+      const best = [...validCandidates].sort((first, second) => compareStrategy(
+        first.evaluation,
+        second.evaluation,
+        generation.objective,
+        parent.evaluation,
+      ))[0] ?? null;
+      const improved = best && strictlyImproves(best.evaluation, parent.evaluation, generation.objective);
       const manifestArchive = path.join(
         paths.challengersPath,
         challenger.id,
@@ -1258,7 +1337,7 @@ function baselineMarkdown(baseline) {
 
 function championRecord(baseline) {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     id: baseline.strategy,
     sourcePath: SOURCE,
     sourceSha256: baseline.sourceSha256,
@@ -1266,6 +1345,7 @@ function championRecord(baseline) {
     experimentId: baseline.experimentId,
     experiment: structuredClone(baseline.experiment),
     summary: structuredClone(baseline.summary),
+    ...(Array.isArray(baseline.caseResults) ? { caseResults: structuredClone(baseline.caseResults) } : {}),
   };
 }
 
@@ -1312,13 +1392,16 @@ async function promotionPreflight(paths, state) {
 
 function promotedBaseline(state, generation, winner) {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     strategy: winner.id,
     resultArtifact: "results/champion/result.md",
     sourceSha256: winner.sourceSha256,
     experimentId: `${state.runId}:g${String(generation.number).padStart(2, "0")}:${winner.id}`,
     experiment: { runId: state.runId, generation: generation.number, candidateId: winner.id },
     summary: winner.evaluation.summary,
+    ...(Array.isArray(winner.evaluation.caseResults)
+      ? { caseResults: structuredClone(winner.evaluation.caseResults) }
+      : {}),
   };
 }
 
@@ -1331,6 +1414,7 @@ function finalizePromotion(state, generation, winner, baseline, commit) {
     resultArtifact: baseline.resultArtifact,
     sourceSha256: baseline.sourceSha256,
     summary: baseline.summary,
+    ...(Array.isArray(baseline.caseResults) ? { caseResults: structuredClone(baseline.caseResults) } : {}),
     gitCommit: commit,
     legacyBaseline: false,
   };

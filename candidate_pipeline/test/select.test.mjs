@@ -32,7 +32,7 @@ test("selectCandidates orders multiple candidates by points", () => {
   assert.equal(selection.winner.candidateId, "higher");
 });
 
-test("selectCandidates breaks point ties by PnL before capital ratio", () => {
+test("selectCandidates ignores PnL and capital when scores tie", () => {
   const selection = selectCandidates([
     candidate("higher-capital", {
       combinedPnlCents: 99,
@@ -43,15 +43,15 @@ test("selectCandidates breaks point ties by PnL before capital ratio", () => {
       minimumCapital: { endingCashCents: 7, startingCapitalCents: 10 },
     }),
   ]);
-  assert.equal(selection.winner.candidateId, "higher-pnl");
+  assert.equal(selection.winner.candidateId, "higher-capital");
 });
 
-test("selectCandidates then breaks ties by capital ratio and modified lines", () => {
-  const capitalWinner = selectCandidates([
+test("selectCandidates breaks score ties by modified lines", () => {
+  const capitalIgnored = selectCandidates([
     candidate("lower-capital", { minimumCapital: { endingCashCents: 799, startingCapitalCents: 1000 } }),
     candidate("higher-capital", { minimumCapital: { endingCashCents: 4, startingCapitalCents: 5 } }),
   ]);
-  assert.equal(capitalWinner.winner.candidateId, "higher-capital");
+  assert.equal(capitalIgnored.winner.candidateId, "higher-capital");
 
   const diffWinner = selectCandidates([
     candidate("larger-diff", {}, { modifiedLines: 11 }),

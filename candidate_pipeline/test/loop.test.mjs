@@ -68,7 +68,7 @@ function baseline(schemaVersion = 1, sourceSha256) {
       minimumCapital: { endingCashCents: 769, startingCapitalCents: 1000 },
     },
   };
-  if (schemaVersion === 2) {
+  if (schemaVersion >= 2) {
     value.sourceSha256 = sourceSha256;
     value.experimentId = "old-run:g01:old";
     value.experiment = { runId: "old-run", generation: 1, candidateId: "old" };
@@ -225,8 +225,8 @@ async function populateEvaluations(generation, points = [1000, 1100, 1050]) {
   }
 }
 
-test("start accepts an unrelated unstaged file and supports v1 and v2 baselines", async (t) => {
-  for (const schemaVersion of [1, 2]) {
+test("start accepts an unrelated unstaged file and supports v1, v2, and v3 baselines", async (t) => {
+  for (const schemaVersion of [1, 2, 3]) {
     await t.test(`schema ${schemaVersion}`, async () => {
       const repo = await createRepo(schemaVersion);
       const id = runId(`start-v${schemaVersion}`);
@@ -322,6 +322,46 @@ test("schema-version-2 Explore can explicitly pin the current champion parent", 
   }
 });
 
+test("schema-version-3 Explore requires a machine-checkable objective", async () => {
+  const repo = await createRepo(2);
+  const id = runId("explore-objective");
+  try {
+    const best = JSON.parse(await fs.readFile(path.join(repo, "results", "baselines", "best.json")));
+    await startRun({ repo, runId: id });
+    const objectivePlan = {
+      ...plan(),
+      schemaVersion: 3,
+      mode: "explore",
+      parent: { type: "champion", sourceSha256: best.sourceSha256 },
+      objective: {
+        kind: "exploit",
+        targetCases: [6],
+        expectedGainHundredths: 30,
+        collateralBudgetHundredths: 30,
+      },
+    };
+    await assert.rejects(
+      prepareGeneration({
+        repo,
+        runId: id,
+        planPath: await writePlan(repo, {
+          ...objectivePlan,
+          objective: { ...objectivePlan.objective, kind: "probe", expectedGainHundredths: 0 },
+        }),
+      }),
+      /unlock statement/,
+    );
+    const prepared = await prepareGeneration({
+      repo,
+      runId: id,
+      planPath: await writePlan(repo, objectivePlan),
+    });
+    assert.deepEqual(prepared.generation.objective, objectivePlan.objective);
+  } finally {
+    await cleanup(repo, id);
+  }
+});
+
 test("Explore selects a hash-pinned active challenger and rejects extra method declarations", async () => {
   const repo = await createRepo(2);
   const id = runId("explore-parent");
@@ -399,8 +439,10 @@ test("tune prepare creates one designer worktree and registers exactly N variant
   const repo = await createRepo(2);
   const id = runId("tune-prepare");
   try {
-    const realSourcePath = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../../Market_making_binary_option.py");
-    const realSource = await fs.readFile(realSourcePath, "utf8");
+    const realSource = marketMakerSource.replace(
+      "        return None",
+      "        values = (3, 1, 2, 3)\n        return values",
+    );
     const mainSourcePath = path.join(repo, "Market_making_binary_option.py");
     await fs.writeFile(mainSourcePath, realSource);
     const championSha = createHash("sha256").update(realSource).digest("hex");
@@ -448,7 +490,7 @@ test("tune prepare creates one designer worktree and registers exactly N variant
         parentValue: 3,
         minimum: 1,
         maximum: 5,
-        bindings: [{ method: "quote", ordinal: 1 }, { method: "quote", ordinal: 4 }],
+        bindings: [{ method: "quote", ordinal: 0 }, { method: "quote", ordinal: 3 }],
       }],
     };
     const prepared = await prepareGeneration({ repo, runId: id, planPath: await writePlan(repo, tunePlan) });
@@ -573,7 +615,7 @@ test("failure preserves worktrees and the same generation can resume", async () 
   }
 });
 
-test("resume locally reclassifies legacy failed and bankrupt evidence without another run", async () => {
+test("resume prices legacy scored bankruptcy without another run", async () => {
   const repo = await createRepo();
   const id = runId("legacy-performance");
   try {
@@ -607,8 +649,9 @@ test("resume locally reclassifies legacy failed and bankrupt evidence without an
     const refreshed = JSON.parse(await fs.readFile(path.join(candidate.resultDirectory, "evaluation.json")));
     assert.equal(refreshed.valid, true);
     assert.equal(refreshed.eligible, false);
-    assert.match(refreshed.reasons.join("\n"), /Cases did not pass: 7/);
-    assert.match(refreshed.reasons.join("\n"), /Bankruptcy reported in cases: 7/);
+    assert.equal(refreshed.schemaVersion, 2);
+    assert.equal(refreshed.summary.bankruptcies, 1);
+    assert.match(refreshed.reasons.join("\n"), /baseline score/);
     await fs.access(path.join(candidate.resultDirectory, "evaluation.legacy-invalid.json"));
     assert.equal(resumed.generation.candidates[0].evaluation.valid, true);
   } finally {
@@ -982,7 +1025,7 @@ test("challenger-parent Explore discards branches that do not improve the parent
   }
 });
 
-test("archive recomputes the PnL promotion tie-break", async () => {
+test("archive never turns equal-score PnL into a promotion", async () => {
   const repo = await createRepo();
   const id = runId("pnl-gate");
   try {
@@ -1006,9 +1049,9 @@ test("archive recomputes the PnL promotion tie-break", async () => {
       ...await archiveInputs(repo, "pnl-gate"),
     });
     assert.equal(generation.candidates[0].evaluation.eligible, false);
-    assert.equal(generation.candidates[1].evaluation.eligible, true);
+    assert.equal(generation.candidates[1].evaluation.eligible, false);
     assert.equal(generation.candidates[2].evaluation.eligible, false);
-    assert.equal(generation.selection.winner.candidateId, "candidate-b");
+    assert.equal(generation.selection.promotion, false);
   } finally {
     await cleanup(repo, id);
   }
@@ -1032,7 +1075,7 @@ test("an archive SHA mismatch is a hard stop and preserves every worktree", asyn
   }
 });
 
-test("promotion migrates v1 to v2 and commits only loop outputs", async () => {
+test("promotion migrates v1 to v3 and commits only loop outputs", async () => {
   const repo = await createRepo();
   const id = runId("promote");
   try {
@@ -1043,7 +1086,7 @@ test("promotion migrates v1 to v2 and commits only loop outputs", async () => {
     await archiveGeneration({ repo, runId: id, ...await archiveInputs(repo, "promote") });
     const promoted = await promoteGeneration({ repo, runId: id });
     const migrated = JSON.parse(await fs.readFile(path.join(repo, "results", "baselines", "best.json")));
-    assert.equal(migrated.schemaVersion, 2);
+    assert.equal(migrated.schemaVersion, 3);
     assert.equal(migrated.experimentId, `${id}:g01:candidate-b`);
     assert.equal(migrated.experiment.runId, id);
     assert.equal(migrated.strategy, "candidate-b");

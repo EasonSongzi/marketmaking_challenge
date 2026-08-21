@@ -71,8 +71,8 @@ def typed_value(value: Any, kind: str, label: str) -> int | float | bool:
 
 
 def validate_plan(plan: dict[str, Any], source: str) -> tuple[list[dict[str, Any]], dict[str, list[ast.Constant]]]:
-    if plan.get("schemaVersion") != 2 or plan.get("mode") != "tune":
-        raise TuningError("tuning plan must use schemaVersion 2 and mode tune")
+    if plan.get("schemaVersion") not in {2, 3} or plan.get("mode") != "tune":
+        raise TuningError("tuning plan must use schemaVersion 2 or 3 and mode tune")
     sample_count = plan.get("sampleCount")
     if not isinstance(sample_count, int) or sample_count < 3:
         raise TuningError("sampleCount must be an integer of at least three")

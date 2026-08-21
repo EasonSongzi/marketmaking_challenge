@@ -95,16 +95,16 @@ test("strict improvement ignores the deterministic candidate ID tie-break", () =
   const second = evaluation("candidate-z", "b".repeat(64), 900);
   assert.equal(strictlyImproves(first, second), false);
   first.summary.combinedPnlCents += 1;
-  assert.equal(strictlyImproves(first, second), true);
+  assert.equal(strictlyImproves(first, second), false);
 });
 
-test("pool comparison uses PnL before capital after equal points", () => {
+test("pool comparison does not treat PnL as objective progress", () => {
   const parent = evaluation("parent", "a".repeat(64), 900);
   const candidate = evaluation("candidate", "b".repeat(64), 900);
   candidate.summary.combinedPnlCents += 1;
   candidate.summary.minimumCapital = { endingCashCents: 700, startingCapitalCents: 1000 };
 
-  assert.equal(strictlyImproves(candidate, parent), true);
+  assert.equal(strictlyImproves(candidate, parent), false);
   assert.equal([parent, candidate].sort(compareStrategy)[0].candidateId, "candidate");
 });
 
@@ -124,7 +124,7 @@ test("cached evidence is rebound to the current champion", () => {
   assert.equal(rebound.cached, true);
 });
 
-test("cached evidence uses PnL before capital after equal points", () => {
+test("cached evidence does not promote equal-score PnL", () => {
   const registry = { evaluations: {} };
   const original = evaluation("old", "e".repeat(64), 900);
   original.summary.minimumCapital = { endingCashCents: 700, startingCapitalCents: 1000 };
@@ -139,7 +139,37 @@ test("cached evidence uses PnL before capital after equal points", () => {
     "/tmp/new.py",
     { summary: baseline },
   );
-  assert.equal(rebound.eligible, true);
+  assert.equal(rebound.eligible, false);
+});
+
+test("target-case gap progress advances a challenger without PnL", () => {
+  const parent = evaluation("parent", "a".repeat(64), 900);
+  const candidate = evaluation("candidate", "b".repeat(64), 900);
+  const caseResults = Array.from({ length: 20 }, (_, index) => {
+    const number = index + 1;
+    if (number === 1) return { number, type: "THEO", passed: true };
+    return {
+      number,
+      type: number <= 4 ? "VERBOSE" : "SCORED",
+      passed: true,
+      scoreHundredths: number <= 4 ? 100 : 60,
+      bankrupt: false,
+      ranking: { gapToLeaderCents: number === 13 ? 500 : 1000 },
+    };
+  });
+  Object.assign(parent, { schemaVersion: 2, caseResults: structuredClone(caseResults) });
+  Object.assign(candidate, { schemaVersion: 2, caseResults: structuredClone(caseResults) });
+  candidate.caseResults[12].ranking.gapToLeaderCents = 300;
+  candidate.summary.combinedPnlCents -= 1000;
+  const objective = {
+    kind: "exploit",
+    targetCases: [13],
+    expectedGainHundredths: 20,
+    collateralBudgetHundredths: 0,
+  };
+
+  assert.equal(strictlyImproves(candidate, parent, objective), true);
+  assert.ok(compareStrategy(candidate, parent, objective, parent) < 0);
 });
 
 test("runtime-failure cache preserves unavailable ranking data and remains comparable", () => {

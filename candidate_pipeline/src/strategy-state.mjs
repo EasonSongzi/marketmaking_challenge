@@ -2,7 +2,13 @@ import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { compareCapital, comparePerformance } from "./case-result.mjs";
+import {
+  compareObjective,
+  defaultObjective,
+  improvesObjective,
+  promotionEligible,
+  promotionReason,
+} from "./objective.mjs";
 
 const REGISTRY = path.join("results", "strategy-state.json");
 const CHALLENGERS = path.join("results", "challengers");
@@ -29,6 +35,7 @@ function championFromBaseline(baseline) {
     resultArtifact: baseline.resultArtifact,
     experimentId: baseline.experimentId ?? null,
     summary: structuredClone(baseline.summary),
+    ...(Array.isArray(baseline.caseResults) ? { caseResults: structuredClone(baseline.caseResults) } : {}),
   };
 }
 
@@ -89,17 +96,16 @@ export async function saveRegistry(repo, registry) {
   await fs.rename(temporary, output);
 }
 
-function promotionEligible(summary, baselineSummary) {
-  if (summary.passed !== 20 || summary.total !== 20 || summary.bankruptcies !== 0) return false;
-  return comparePerformance(summary, baselineSummary) > 0;
-}
-
 export function cacheEvaluation(registry, evaluation) {
   if (!evaluation?.valid || !/^[a-f0-9]{64}$/.test(evaluation.sourceSha256 ?? "")) return;
   registry.evaluations[evaluation.sourceSha256] = {
+    schemaVersion: evaluation.schemaVersion,
     valid: true,
     modifiedLines: evaluation.modifiedLines,
     summary: structuredClone(evaluation.summary),
+    ...(Array.isArray(evaluation.caseResults)
+      ? { caseResults: structuredClone(evaluation.caseResults) }
+      : {}),
     reasons: [...evaluation.reasons],
   };
 }
@@ -107,24 +113,32 @@ export function cacheEvaluation(registry, evaluation) {
 export function cachedEvaluation(registry, sourceSha256, candidateId, sourcePath, baseline) {
   const cached = registry.evaluations[sourceSha256];
   if (!cached?.valid) return null;
-  const eligible = promotionEligible(cached.summary, baseline.summary);
-  const performanceReasons = cached.reasons.filter((reason) => (
-    reason.startsWith("Cases did not pass:")
-    || reason.startsWith("Bankruptcy reported in cases:")
-    || reason.startsWith("Candidate runtime error in cases ")
-  ));
-  if (!eligible && performanceReasons.length === 0) {
-    performanceReasons.push("Candidate did not strictly exceed the baseline");
-  }
-  return {
-    schemaVersion: 1,
+  const rebound = {
+    schemaVersion: cached.schemaVersion ?? 1,
     candidateId,
     valid: true,
-    eligible,
+    eligible: false,
     sourcePath,
     sourceSha256,
     modifiedLines: cached.modifiedLines,
     summary: structuredClone(cached.summary),
+    ...(Array.isArray(cached.caseResults)
+      ? { caseResults: structuredClone(cached.caseResults) }
+      : {}),
+  };
+  const eligible = promotionEligible(rebound, baseline.summary);
+  const performanceReasons = cached.reasons.filter((reason) => (
+    reason.startsWith("Cases did not pass:")
+    || reason.startsWith("Guard cases did not pass:")
+    || reason.startsWith("Scored cases failed without bankruptcy:")
+    || reason.startsWith("Candidate runtime error in cases ")
+  ));
+  if (!eligible && performanceReasons.length === 0) {
+    performanceReasons.push(promotionReason(rebound, baseline.summary));
+  }
+  return {
+    ...rebound,
+    eligible,
     baselineDelta: {
       scoredPointsHundredths:
         cached.summary.scoredPointsHundredths - baseline.summary.scoredPointsHundredths,
@@ -137,46 +151,12 @@ export function cachedEvaluation(registry, sourceSha256, candidateId, sourcePath
   };
 }
 
-function safeSummary(summary) {
-  return summary?.passed === 20 && summary?.total === 20 && summary?.bankruptcies === 0;
+export function compareStrategy(first, second, objective = defaultObjective(), parent = second) {
+  return compareObjective(first, second, objective, parent);
 }
 
-function compareOptionalCapital(first, second) {
-  if (first === null || second === null) {
-    return first === second ? 0 : first === null ? -1 : 1;
-  }
-  return compareCapital(first, second);
-}
-
-function compareOptionalNumber(first, second) {
-  if (first === null || second === null) {
-    return first === second ? 0 : first === null ? -1 : 1;
-  }
-  return first === second ? 0 : first > second ? 1 : -1;
-}
-
-function compareStrategyQuality(first, second) {
-  const safeDelta = Number(safeSummary(second.summary)) - Number(safeSummary(first.summary));
-  if (safeDelta !== 0) return safeDelta;
-  const pointDelta = second.summary.scoredPointsHundredths - first.summary.scoredPointsHundredths;
-  if (pointDelta !== 0) return pointDelta;
-  const pnl = compareOptionalNumber(first.summary.combinedPnlCents, second.summary.combinedPnlCents);
-  if (pnl !== 0) return -pnl;
-  const capital = compareOptionalCapital(first.summary.minimumCapital, second.summary.minimumCapital);
-  if (capital !== 0) return -capital;
-  const passDelta = second.summary.passed - first.summary.passed;
-  if (passDelta !== 0) return passDelta;
-  return 0;
-}
-
-export function compareStrategy(first, second) {
-  const quality = compareStrategyQuality(first, second);
-  if (quality !== 0) return quality;
-  return first.candidateId.localeCompare(second.candidateId);
-}
-
-export function strictlyImproves(candidate, parent) {
-  return compareStrategyQuality(candidate, parent) < 0;
+export function strictlyImproves(candidate, parent, objective = defaultObjective()) {
+  return improvesObjective(candidate, parent, objective);
 }
 
 export function currentRevision(challenger) {

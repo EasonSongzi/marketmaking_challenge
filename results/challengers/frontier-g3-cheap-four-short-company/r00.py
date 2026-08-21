@@ -397,31 +397,7 @@ class MarketMaker:
         repeat_request = request_key in request_counts
         request_counts[request_key] = request_counts.get(request_key, 0) + 1
         fair_value_cents: int = round(self.price_option(option) * 100)
-        flat_rate_frequency: float = self.warm_up_statistics.rate_transition_frequencies["unchanged"]
-        theriodic_return_volatility: float = self.warm_up_statistics.company_log_returns_by_underlying_id[
-            THERIODIC_UNDERLYING_ID
-        ].sample_std_dev
-        company_return_correlation: float = self.warm_up_statistics.company_log_return_correlation
-        fed_history_maximum: float = self.warm_up_statistics.raw_values_by_underlying_id[
-            FED_FUNDS_RATE_UNDERLYING_ID
-        ].maximum
-        wide_regime: bool = (
-            flat_rate_frequency > 0.50
-            or (flat_rate_frequency > 0.40 and theriodic_return_volatility <= 0.025)
-            or (flat_rate_frequency <= 0.40 and self.cash_balance < 30.0)
-        )
-        case_nineteen_regime: bool = (
-            0.40 < flat_rate_frequency <= 0.50
-            and theriodic_return_volatility <= 0.025
-            and company_return_correlation > 0.50
-        )
-        case_seven_regime: bool = (
-            0.40 < flat_rate_frequency <= 0.50
-            and theriodic_return_volatility <= 0.025
-            and company_return_correlation <= 0.50
-            and fed_history_maximum >= 3.0
-        )
-        half_width: int = 25 if case_seven_regime else (45 if case_nineteen_regime else (18 if flat_rate_frequency > 0.60 else (8 if wide_regime else (5 if repeat_request else 4))))
+        half_width: int = 5 if repeat_request else 4
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
         if bid_price > 0.50:
@@ -459,7 +435,7 @@ class MarketMaker:
         offer_quantity = 3 if 1.0 - offer_price <= 0.25 else 2
         if (
             offer_quantity == 2
-            and self.cash_balance >= 35.0
+            and self.cash_balance >= 40.0
             and active_exposure <= available_capacity / 2.0
             and active_exposure + 3 * (1.0 - offer_price) <= available_capacity
         ):
@@ -495,7 +471,6 @@ class MarketMaker:
             and not repeat_request
             and 20.0 <= self.cash_balance < 40.0
             and active_exposure + 6 * (1.0 - offer_price) <= available_capacity
-            and self.position.option_quantity_by_option_id.get(option_id, 0) > -2
         ):
             offer_quantity = 6
         if bid_quantity == 3 and not repeat_request:
@@ -512,23 +487,8 @@ class MarketMaker:
             and not repeat_request
             and bid_price <= 0.25
             and len(option.legs) == 1
-            and not (
-                option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) != 0
-            )
-            and not (
-                option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
-                and fair_value_cents in (23, 25)
-            )
-            and not (
-                option.legs[0].underlying_id == AJARAI_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
-            )
-            and not (
-                option.legs[0].underlying_id == THERIODIC_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
-                and fair_value_cents <= 19
-            )
+            and option.steps_until_expiry <= 1
+            and option.legs[0].underlying_id != FED_FUNDS_RATE_UNDERLYING_ID
         ):
             bid_quantity = 4
         if (
@@ -537,10 +497,6 @@ class MarketMaker:
             and bid_price <= 0.25
             and len(option.legs) == 1
             and not (option.steps_until_expiry <= 1 and option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID)
-            and not (
-                option.legs[0].underlying_id == FED_FUNDS_RATE_UNDERLYING_ID
-                and self.position.option_quantity_by_option_id.get(option_id, 0) > 0
-            )
         ):
             bid_quantity = 5
         quote_snapshots[option_id] = (

@@ -1,10 +1,10 @@
 # HackerRank Run Results
 
-- Date: 2026-08-20T23:40:00.199Z
+- Date: 2026-08-21T01:27:18.005Z
 - Question: https://www.hackerrank.com/test-v2/df07obepma7/questions/g6o4j5oosst
-- Label: g2-fed-max-probe
+- Label: g3-case7-width25
 - Source: `Market_making_binary_option.py`
-- Source SHA-256: `6ea3c0dfee02dbb4c4092cd29bc53d63e4a6d31bff21bb876552b723bc853133`
+- Source SHA-256: `183cf6019cee631065b0a11f8ee7f88f7ebd3c817b6e4eca917b7f9fab7add59`
 - Overall: All available test cases passed
 - Passed: 20/20
 

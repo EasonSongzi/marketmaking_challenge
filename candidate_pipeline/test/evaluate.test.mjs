@@ -22,12 +22,10 @@ const evaluateScript = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 function equalScoreCases(minimumCash = 1000, secondCash = 1000) {
   return Array.from({ length: 20 }, (_, index) => {
     const number = index + 1;
-    if (number < 5) {
-      return rawCase(number);
-    }
+    if (number < 5) return rawCase(number);
     return rawCase(number, {
       endingCashCents: number === 5 ? minimumCash : number === 6 ? secondCash : 1000,
-      scoreHundredths: number <= 13 ? 100 : 0,
+      ...(number === 5 ? { bankrupt: true } : {}),
     });
   });
 }
@@ -36,6 +34,7 @@ test("evaluateCandidate accepts a complete 20/20 higher-scoring result", () => {
   const result = evaluateCandidate(rawReport(), baseline, matchingHash, 12);
 
   assert.equal(result.valid, true);
+  assert.equal(result.schemaVersion, 2);
   assert.equal(result.eligible, true);
   assert.equal(result.summary.passed, 20);
   assert.equal(result.summary.bankruptcies, 0);
@@ -43,9 +42,10 @@ test("evaluateCandidate accepts a complete 20/20 higher-scoring result", () => {
   assert.equal(result.modifiedLines, 12);
 });
 
-test("evaluateCandidate accepts baseline schema versions 1 and 2", () => {
+test("evaluateCandidate accepts baseline schema versions 1, 2, and 3", () => {
   assert.equal(evaluateCandidate(rawReport(), baseline, matchingHash).valid, true);
   assert.equal(evaluateCandidate(rawReport(), baselineV2, matchingHash).valid, true);
+  assert.equal(evaluateCandidate(rawReport(), { ...baselineV2, schemaVersion: 3 }, matchingHash).valid, true);
 });
 
 test("evaluateCandidate requires source and experiment identity for baseline schema version 2", () => {
@@ -85,20 +85,26 @@ test("evaluateCandidate rejects missing and duplicate case numbers", () => {
   );
 });
 
-test("evaluateCandidate treats FAIL and bankruptcy as valid but ineligible performance", () => {
+test("evaluateCandidate rejects non-bankruptcy FAIL but prices scored bankruptcy through score", () => {
   const failed = rawReport();
   failed.cases[5] = rawCase(6, { passed: false });
   const failedResult = evaluateCandidate(failed, baseline, matchingHash);
   assert.equal(failedResult.valid, true);
   assert.equal(failedResult.eligible, false);
-  assert.match(failedResult.reasons.join("\n"), /did not pass: 6/);
+  assert.match(failedResult.reasons.join("\n"), /failed without bankruptcy: 6/);
 
   const bankrupt = rawReport();
   bankrupt.cases[5] = rawCase(6, { bankrupt: true });
   const bankruptResult = evaluateCandidate(bankrupt, baseline, matchingHash);
   assert.equal(bankruptResult.valid, true);
   assert.equal(bankruptResult.eligible, false);
-  assert.match(bankruptResult.reasons.join("\n"), /Bankruptcy/);
+  assert.match(bankruptResult.reasons.join("\n"), /baseline score/);
+
+  bankrupt.cases[6] = rawCase(7, { scoreHundredths: 70 });
+  const netImprovement = evaluateCandidate(bankrupt, baseline, matchingHash);
+  assert.equal(netImprovement.summary.scoredPointsHundredths, 910);
+  assert.equal(netImprovement.summary.bankruptcies, 1);
+  assert.equal(netImprovement.eligible, true);
 });
 
 test("evaluateCandidate treats explicit runtime errors as valid candidate failures without ranking data", () => {
@@ -200,15 +206,13 @@ test("evaluateCandidate rejects an incomplete set of 16 SCORED results", () => {
   assert.match(result.reasons.join("\n"), /exactly 16 SCORED results/);
 });
 
-test("evaluateCandidate compares equal points by PnL and then capital ratio", () => {
+test("evaluateCandidate never promotes equal points through PnL or capital", () => {
   const higherPnlLowerCapital = rawReport({ cases: equalScoreCases(760, 1040) });
   const equalPnlHigherCapital = rawReport({ cases: equalScoreCases(770, 957) });
   const exactTie = rawReport({ cases: equalScoreCases(769, 958) });
   const lowerPnlHigherCapital = rawReport({ cases: equalScoreCases(770, 950) });
 
-  assert.equal(evaluateCandidate(higherPnlLowerCapital, baseline, matchingHash).eligible, true);
-  assert.equal(evaluateCandidate(equalPnlHigherCapital, baseline, matchingHash).eligible, true);
-  for (const report of [exactTie, lowerPnlHigherCapital]) {
+  for (const report of [higherPnlLowerCapital, equalPnlHigherCapital, exactTie, lowerPnlHigherCapital]) {
     const result = evaluateCandidate(report, baseline, matchingHash);
     assert.equal(result.valid, true);
     assert.equal(result.eligible, false);

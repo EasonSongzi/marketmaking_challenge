@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { comparePerformance } from "./case-result.mjs";
+import { promotionSafetyReason } from "./objective.mjs";
 
 class InputError extends Error {}
 
@@ -38,7 +39,7 @@ function parseOptions(argumentsList) {
 
 function evaluationReason(evaluation) {
   if (
-    evaluation?.schemaVersion !== 1
+    ![1, 2].includes(evaluation?.schemaVersion)
     || typeof evaluation.candidateId !== "string"
     || evaluation.candidateId.length === 0
     || typeof evaluation.valid !== "boolean"
@@ -54,6 +55,14 @@ function evaluationReason(evaluation) {
   }
 
   const summary = evaluation.summary;
+  const caseNumbers = evaluation.schemaVersion === 2
+    ? evaluation.caseResults?.map(({ number }) => number) ?? []
+    : [];
+  const casesComplete = evaluation.schemaVersion === 1 || (
+    caseNumbers.length === 20
+    && new Set(caseNumbers).size === 20
+    && caseNumbers.every((number) => Number.isSafeInteger(number) && number >= 1 && number <= 20)
+  );
   const runtimeErrors = summary?.runtimeErrors ?? 0;
   const capital = summary?.minimumCapital;
   const capitalComplete = capital !== null
@@ -80,9 +89,8 @@ function evaluationReason(evaluation) {
     || runtimeErrors < 0
     || runtimeErrors > summary.total - summary.passed
     || (!rankingComplete && !unavailableRankingValid)
-    || (evaluation.eligible && (
-      !rankingComplete || summary.passed !== 20 || summary.bankruptcies !== 0
-    ))
+    || !casesComplete
+    || (evaluation.eligible && (!rankingComplete || promotionSafetyReason(evaluation) !== null))
     || (evaluation.modifiedLines != null
       && (!Number.isSafeInteger(evaluation.modifiedLines) || evaluation.modifiedLines < 0))
   ) {

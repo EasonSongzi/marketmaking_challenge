@@ -5,7 +5,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { compareCapital, comparePerformance, parseCaseResult } from "./case-result.mjs";
+import { compareCapital, parseCaseResult } from "./case-result.mjs";
+import { promotionEligible, promotionReason } from "./objective.mjs";
 
 class InputError extends Error {}
 
@@ -85,8 +86,8 @@ export function countModifiedLines(sourcePath) {
 
 function baselineReason(baseline) {
   const summary = baseline?.summary;
-  const supportedVersion = baseline?.schemaVersion === 1 || baseline?.schemaVersion === 2;
-  const validV2Identity = baseline?.schemaVersion !== 2 || (
+  const supportedVersion = [1, 2, 3].includes(baseline?.schemaVersion);
+  const validIdentity = baseline?.schemaVersion === 1 || (
     typeof baseline.sourceSha256 === "string"
     && /^[a-f0-9]{64}$/i.test(baseline.sourceSha256)
     && typeof baseline.experimentId === "string"
@@ -103,12 +104,12 @@ function baselineReason(baseline) {
   ];
   if (
     !supportedVersion
-    || !validV2Identity
+    || !validIdentity
     || !integerFields.every(Number.isSafeInteger)
     || summary.total !== 20
     || summary.minimumCapital.startingCapitalCents <= 0
   ) {
-    return "Baseline JSON does not match supported schema version 1 or 2";
+    return "Baseline JSON does not match supported schema version 1, 2, or 3";
   }
   return null;
 }
@@ -191,12 +192,18 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
     }
   }
 
-  const failed = parsedCases.filter((result) => !result.passed);
-  if (failed.length > 0) {
-    performanceReasons.push(`Cases did not pass: ${failed.map(({ number }) => number).join(", ")}`);
-  }
   const runtimeCases = parsedCases.filter(({ runtimeError }) => typeof runtimeError === "string");
   performanceReasons.push(...runtimeReasons(runtimeCases));
+  const guardFailures = parsedCases.filter(({ number, passed }) => number <= 4 && !passed);
+  if (guardFailures.length > 0) {
+    performanceReasons.push(`Guard cases did not pass: ${guardFailures.map(({ number }) => number).join(", ")}`);
+  }
+  const scoredFailures = parsedCases.filter(({ number, passed, bankrupt, runtimeError }) => (
+    number >= 5 && number <= 20 && !passed && bankrupt !== true && typeof runtimeError !== "string"
+  ));
+  if (scoredFailures.length > 0) {
+    performanceReasons.push(`Scored cases failed without bankruptcy: ${scoredFailures.map(({ number }) => number).join(", ")}`);
+  }
   const financialOutcomes = parsedCases.filter(({ number }) => number >= 2 && number <= 20);
   if (financialOutcomes.length !== 19) {
     evidenceReasons.push(`Expected complete outcomes for 19 financial cases, found ${financialOutcomes.length}`);
@@ -205,9 +212,6 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
     Number.isSafeInteger(startingCapitalCents)
   ));
   const bankruptcies = financialCases.filter(({ bankrupt }) => bankrupt);
-  if (bankruptcies.length > 0) {
-    performanceReasons.push(`Bankruptcy reported in cases: ${bankruptcies.map(({ number }) => number).join(", ")}`);
-  }
   const scoredCases = parsedCases.filter(({ number, scoreHundredths }) => (
     number >= 5 && number <= 20 && Number.isSafeInteger(scoreHundredths)
   ));
@@ -241,24 +245,16 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
     evidenceReasons.push(invalidBaseline);
   }
   const valid = evidenceReasons.length === 0;
-  let eligible = false;
-  if (valid && performanceReasons.length === 0) {
-    eligible = comparePerformance(summary, baseline.summary) > 0;
-    if (!eligible) {
-      performanceReasons.push("Candidate did not strictly exceed the baseline");
-    }
-  }
-  const reasons = [...evidenceReasons, ...performanceReasons];
-
-  return {
-    schemaVersion: 1,
+  const evaluation = {
+    schemaVersion: 2,
     candidateId,
     valid,
-    eligible,
+    eligible: false,
     sourcePath,
     sourceSha256,
     modifiedLines: Number.isSafeInteger(lineCount) && lineCount >= 0 ? lineCount : null,
     summary: rawCases.length === 0 ? emptySummary() : summary,
+    caseResults: parsedCases,
     baselineDelta: invalidBaseline === null ? {
       scoredPointsHundredths:
         summary.scoredPointsHundredths - baseline.summary.scoredPointsHundredths,
@@ -266,8 +262,14 @@ export function evaluateCandidate(rawReport, baseline, currentSourceSha256, line
         ? null
         : summary.combinedPnlCents - baseline.summary.combinedPnlCents,
     } : null,
-    reasons,
+    reasons: [],
   };
+  if (valid && performanceReasons.length === 0) {
+    evaluation.eligible = promotionEligible(evaluation, baseline.summary);
+    if (!evaluation.eligible) performanceReasons.push(promotionReason(evaluation, baseline.summary));
+  }
+  evaluation.reasons = [...evidenceReasons, ...performanceReasons];
+  return evaluation;
 }
 
 async function findRawReport(runDirectory) {

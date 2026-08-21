@@ -24,7 +24,7 @@ candidate_pipeline/loop.sh start --run-id <run-id>
 candidate_pipeline/loop.sh status --run-id <run-id>
 ```
 
-For each generation, supply a schema-version-2 plan whose `mode` is `explore`
+For each generation, supply a schema-version-3 plan whose `mode` is `explore`
 or `tune`, then prepare detached worktrees:
 
 ```bash
@@ -35,12 +35,18 @@ The plan schema is:
 
 ```json
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "mode": "explore",
   "method": "quote",
   "parent": {
     "type": "champion",
     "sourceSha256": "<current-champion-sha256>"
+  },
+  "objective": {
+    "kind": "exploit",
+    "targetCases": [6],
+    "expectedGainHundredths": 30,
+    "collateralBudgetHundredths": 30
   },
   "rationale": "Evidence-based generation rationale.",
   "candidates": [
@@ -76,15 +82,17 @@ SHA-256 of that challenger's current active revision:
 }
 ```
 
-The Explore schema accepts one generation-level `method`; candidate-level or
+The objective is either `exploit`, with positive expected gain, or `probe`, with
+zero expected gain and an `unlock` statement naming the positive-score path it
+enables. The Explore schema accepts one generation-level `method`; candidate-level or
 plural method declarations are rejected. Challenger-parent worktrees are
 initialized from that revision's complete source, not by merging individual
 methods into the champion. Read the prepared worktree and result-directory
 paths from `results/runs/<run-id>/state.json`.
 
 A Tune plan selects an active entry in `results/strategy-state.json` and gives
-`challengerId`, the current `parentSourceSha256`, its method, `sampleCount`, and
-parameter records with type, direction, parent value, inclusive bounds, and
+`challengerId`, the current `parentSourceSha256`, its method, `sampleCount`, the
+same generation objective, and parameter records with type, direction, parent value, inclusive bounds, and
 literal bindings. Prepare creates one designer worktree from the challenger's
 complete source revision. The worker writes exactly N unique joint vectors
 covering coarse, medium, and fine granularities. Materialize and register them:
@@ -154,13 +162,15 @@ exhausted its repair pass. `archive` runs selection internally, records
 report-only commit when needed, and skips an empty commit.
 
 Explore promotion eligibility is always recomputed against the current
-champion, regardless of which parent supplied the source. If the parent is an
+champion by SCORED points only, regardless of which parent supplied the source. If the parent is an
 active challenger and no candidate beats the champion, the best valid
-candidate that strictly improves the parent is automatically stored as a new
+candidate that improves the declared target score or target gap within its
+collateral budget is automatically stored as a new
 active `derived-explore` challenger with immutable parent lineage. An optional
 analysis `challenger` decision may add rationale for that same candidate, but
 cannot replace it with a weaker branch. Only a candidate that strictly exceeds
-the current champion can enter the promotion transaction.
+the current champion's total score can enter the promotion transaction. PnL and
+minimum capital never break a score tie.
 
 A browser or authentication failure is automatically recorded and retried once
 for the same source. A second consecutive failure stops without selection or
@@ -206,9 +216,9 @@ writes `evaluation.json` beside the worktree's raw Markdown and JSON.
 
 Candidate exit statuses are:
 
-- `0`: valid and strictly exceeds the baseline by SCORED points, combined PnL, then minimum-capital ratio;
-- `2`: evidence is valid but performance is ineligible, including failed tests,
-  bankruptcy, or not strictly exceeding the baseline;
+- `0`: valid and strictly exceeds the baseline SCORED points;
+- `2`: evidence is valid but performance is ineligible, including runtime errors,
+  guard-case failures, non-bankruptcy scored failures, or not strictly exceeding the baseline score;
 - `3`: evidence is malformed or incomplete, or the source SHA changed;
 - `1`: runner or pipeline failure.
 
@@ -217,6 +227,10 @@ was scored zero is a complete failed outcome even when HackerRank omits its norm
 The evaluator records the runtime error, counts the case as failed with score zero, and leaves
 unavailable bankruptcy, PnL, and minimum-capital aggregates as `null`. It returns `2`; only an
 ambiguous, missing, hash-invalid, or identity-invalid outcome returns `3`.
+
+A bankruptcy in cases 5-20 is a complete, valid zero-score case. It may promote
+when gains in other scored cases make total score strictly higher. Cases 1-4
+must still pass.
 
 Each unique source SHA receives at most one live HackerRank run. Cached evidence
 is rebound to the current champion before selection.
@@ -235,8 +249,8 @@ is rebound to the current champion before selection.
 ```
 
 The selector rechecks every valid source SHA, filters on `valid=true` and
-`eligible=true`, then orders by SCORED points, combined PnL, minimum
-remaining-capital ratio, modified line count, and candidate ID. Before temporary worktrees
+`eligible=true`, then orders by SCORED points, modified line count, and candidate
+ID. Before temporary worktrees
 are removed, the main agent must copy the winner's raw Markdown, raw JSON, and
 evaluation into the main run directory and recheck the promoted source SHA.
 
@@ -258,6 +272,24 @@ updates `results/champion/`, the registry, and the compatibility `best.*`
 files, and commits only the strategy state and report as
 `strategy: promote <candidate-id>`. It never stages unrelated changes and never
 pushes, tags, deploys, or submits.
+
+## Ranking frontier and retracking
+
+Every non-runtime financial case stores its complete Ranking block in evaluation
+schema version 2: participant count, our rank/PnL, leader, leader gap, runner-up,
+and held margin, all in integer cents. Rebuild the archive frontier without a
+grader run:
+
+```bash
+candidate_pipeline/frontier.sh /absolute/repo report
+```
+
+Use `apply` as the second argument for the explicit retracking transaction. It
+selects the maximum-score portfolio anchor by losing-case gap sum, held-margin
+floor, source lines, and candidate ID; preserves target frontier sources as
+active challengers; and updates the canonical source, baseline, champion record,
+registry, and `results/frontier.json`. The operation is hash-verified and
+idempotent.
 
 ## Manual fallback
 

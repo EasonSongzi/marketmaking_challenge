@@ -29,7 +29,8 @@ function decimal(hundredths) {
 }
 
 export function rawCase(number, options = {}) {
-  const passed = options.passed ?? true;
+  const bankrupt = options.bankrupt ?? false;
+  const passed = options.passed ?? !bankrupt;
   if (number === 1) {
     return {
       number,
@@ -38,13 +39,30 @@ export function rawCase(number, options = {}) {
   }
   const endingCashCents = options.endingCashCents ?? 1000;
   const startingCapitalCents = options.startingCapitalCents ?? 1000;
-  const scoreHundredths = options.scoreHundredths ?? (number <= 4 ? 100 : 60);
+  const scoreHundredths = options.scoreHundredths ?? (bankrupt ? 0 : number <= 4 ? 100 : 60);
+  const scoreRanks = {
+    0: [2, 2],
+    40: [2, 2],
+    60: [3, 4],
+    70: [2, 3],
+    80: [2, 4],
+    100: [1, 3],
+  };
+  const [rank, participantCount] = scoreRanks[scoreHundredths] ?? [];
+  if (!rank) throw new Error(`Fixture cannot build Ranking for score ${scoreHundredths}`);
+  const pnlCents = endingCashCents - startingCapitalCents;
+  const ranking = Array.from({ length: participantCount }, (_, index) => {
+    const entryRank = index + 1;
+    const name = entryRank === rank ? "Mola mola" : `Competitor ${entryRank}`;
+    const entryPnl = pnlCents + (rank - entryRank) * 100;
+    return `${entryRank}. ${name}: $${decimal(entryPnl)}`;
+  });
   return {
     number,
     text: options.text ?? [
       "Ranking:",
-      "1. Mola mola: $0.0",
-      `Mola mola bankrupt: ${options.bankrupt ? "True" : "False"} (cash balance: ${decimal(endingCashCents)}, starting capital: ${decimal(startingCapitalCents)})`,
+      ...ranking,
+      `Mola mola bankrupt: ${bankrupt ? "True" : "False"} (cash balance: ${decimal(endingCashCents)}, starting capital: ${decimal(startingCapitalCents)})`,
       `Result: ${passed ? "PASS" : "FAIL"} (score=${decimal(scoreHundredths)})`,
     ].join("\n"),
   };

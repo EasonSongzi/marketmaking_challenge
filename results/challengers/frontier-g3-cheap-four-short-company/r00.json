@@ -1,24 +1,20 @@
 {
   "schemaVersion": 2,
-  "id": "g3-case7-width25",
-  "sourcePath": "Market_making_binary_option.py",
-  "sourceSha256": "183cf6019cee631065b0a11f8ee7f88f7ebd3c817b6e4eca917b7f9fab7add59",
-  "resultArtifact": "results/champion/result.md",
-  "experimentId": "market-loop-20260820-4:g03:g3-case7-width25",
-  "experiment": {
-    "runId": "market-loop-20260820-4",
-    "generation": 3,
-    "candidateId": "g3-case7-width25"
-  },
+  "candidateId": "g3-cheap-four-short-company",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/frontier-g3-cheap-four-short-company/r00.py",
+  "sourceSha256": "b6ef3fbf41b2cd078a99b9acd8540a9bc9458af50a15c5866179942d4b4f180a",
+  "modifiedLines": null,
   "summary": {
     "passed": 20,
     "total": 20,
     "bankruptcies": 0,
     "scoredPointsHundredths": 1330,
-    "combinedPnlCents": 18099,
+    "combinedPnlCents": 15060,
     "minimumCapital": {
-      "endingCashCents": 3998,
-      "startingCapitalCents": 4000
+      "endingCashCents": 797,
+      "startingCapitalCents": 1000
     },
     "runtimeErrors": 0
   },
@@ -34,32 +30,32 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 1019,
+      "endingCashCents": 993,
       "startingCapitalCents": 1000,
-      "cashPnlCents": 19,
-      "pnlCents": 19,
+      "cashPnlCents": -7,
+      "pnlCents": -7,
       "ranking": {
         "entries": [
           {
             "rank": 1,
-            "name": "Mola mola",
-            "pnlCents": 19
+            "name": "Stalemate Quoter",
+            "pnlCents": 0
           },
           {
             "rank": 2,
-            "name": "Stalemate Quoter",
-            "pnlCents": 0
+            "name": "Mola mola",
+            "pnlCents": -7
           }
         ],
-        "rank": 1,
+        "rank": 2,
         "participantCount": 2,
-        "ourPnlCents": 19,
-        "leaderName": "Mola mola",
-        "leaderPnlCents": 19,
-        "gapToLeaderCents": 0,
-        "runnerUpName": "Stalemate Quoter",
-        "runnerUpPnlCents": 0,
-        "marginToRunnerUpCents": 19
+        "ourPnlCents": -7,
+        "leaderName": "Stalemate Quoter",
+        "leaderPnlCents": 0,
+        "gapToLeaderCents": 7,
+        "runnerUpName": null,
+        "runnerUpPnlCents": null,
+        "marginToRunnerUpCents": null
       }
     },
     {
@@ -68,21 +64,21 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 2000,
+      "endingCashCents": 2064,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 0,
-      "pnlCents": 0,
+      "cashPnlCents": 64,
+      "pnlCents": 64,
       "ranking": {
         "entries": [
           {
             "rank": 1,
-            "name": "Fixed Width 0.1",
-            "pnlCents": 105
+            "name": "Mola mola",
+            "pnlCents": 64
           },
           {
             "rank": 2,
-            "name": "Mola mola",
-            "pnlCents": 0
+            "name": "Fixed Width 0.1",
+            "pnlCents": 35
           },
           {
             "rank": 3,
@@ -90,15 +86,15 @@
             "pnlCents": 0
           }
         ],
-        "rank": 2,
+        "rank": 1,
         "participantCount": 3,
-        "ourPnlCents": 0,
-        "leaderName": "Fixed Width 0.1",
-        "leaderPnlCents": 105,
-        "gapToLeaderCents": 105,
-        "runnerUpName": null,
-        "runnerUpPnlCents": null,
-        "marginToRunnerUpCents": null
+        "ourPnlCents": 64,
+        "leaderName": "Mola mola",
+        "leaderPnlCents": 64,
+        "gapToLeaderCents": 0,
+        "runnerUpName": "Fixed Width 0.1",
+        "runnerUpPnlCents": 35,
+        "marginToRunnerUpCents": 29
       }
     },
     {
@@ -107,34 +103,34 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 3998,
+      "endingCashCents": 4085,
       "startingCapitalCents": 4000,
-      "cashPnlCents": -2,
-      "pnlCents": -2,
+      "cashPnlCents": 85,
+      "pnlCents": 85,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Fixed Width 0.05",
-            "pnlCents": 290
+            "pnlCents": 232
           },
           {
             "rank": 2,
-            "name": "Mongoose",
-            "pnlCents": 30
+            "name": "Mola mola",
+            "pnlCents": 85
           },
           {
             "rank": 3,
-            "name": "Mola mola",
-            "pnlCents": -2
+            "name": "Mongoose",
+            "pnlCents": 0
           }
         ],
-        "rank": 3,
+        "rank": 2,
         "participantCount": 3,
-        "ourPnlCents": -2,
+        "ourPnlCents": 85,
         "leaderName": "Fixed Width 0.05",
-        "leaderPnlCents": 290,
-        "gapToLeaderCents": 292,
+        "leaderPnlCents": 232,
+        "gapToLeaderCents": 147,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -146,10 +142,10 @@
       "passed": true,
       "scoreHundredths": 40,
       "bankrupt": false,
-      "endingCashCents": 1223,
+      "endingCashCents": 1224,
       "startingCapitalCents": 1000,
-      "cashPnlCents": 223,
-      "pnlCents": 223,
+      "cashPnlCents": 224,
+      "pnlCents": 224,
       "ranking": {
         "entries": [
           {
@@ -160,15 +156,15 @@
           {
             "rank": 2,
             "name": "Mola mola",
-            "pnlCents": 223
+            "pnlCents": 224
           }
         ],
         "rank": 2,
         "participantCount": 2,
-        "ourPnlCents": 223,
+        "ourPnlCents": 224,
         "leaderName": "Stalemate Quoter",
         "leaderPnlCents": 3700,
-        "gapToLeaderCents": 3477,
+        "gapToLeaderCents": 3476,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -180,21 +176,21 @@
       "passed": true,
       "scoreHundredths": 70,
       "bankrupt": false,
-      "endingCashCents": 1393,
+      "endingCashCents": 1005,
       "startingCapitalCents": 1000,
-      "cashPnlCents": 393,
-      "pnlCents": 393,
+      "cashPnlCents": 5,
+      "pnlCents": 5,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Fixed Width 0.25",
-            "pnlCents": 1037
+            "pnlCents": 1093
           },
           {
             "rank": 2,
             "name": "Mola mola",
-            "pnlCents": 393
+            "pnlCents": 5
           },
           {
             "rank": 3,
@@ -204,10 +200,10 @@
         ],
         "rank": 2,
         "participantCount": 3,
-        "ourPnlCents": 393,
+        "ourPnlCents": 5,
         "leaderName": "Fixed Width 0.25",
-        "leaderPnlCents": 1037,
-        "gapToLeaderCents": 644,
+        "leaderPnlCents": 1093,
+        "gapToLeaderCents": 1088,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -219,29 +215,29 @@
       "passed": true,
       "scoreHundredths": 40,
       "bankrupt": false,
-      "endingCashCents": 1280,
+      "endingCashCents": 797,
       "startingCapitalCents": 1000,
-      "cashPnlCents": 280,
-      "pnlCents": 280,
+      "cashPnlCents": -203,
+      "pnlCents": -203,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Fixed Width 0.25",
-            "pnlCents": 2311
+            "pnlCents": 2014
           },
           {
             "rank": 2,
             "name": "Mola mola",
-            "pnlCents": 280
+            "pnlCents": -203
           }
         ],
         "rank": 2,
         "participantCount": 2,
-        "ourPnlCents": 280,
+        "ourPnlCents": -203,
         "leaderName": "Fixed Width 0.25",
-        "leaderPnlCents": 2311,
-        "gapToLeaderCents": 2031,
+        "leaderPnlCents": 2014,
+        "gapToLeaderCents": 2217,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -253,21 +249,21 @@
       "passed": true,
       "scoreHundredths": 70,
       "bankrupt": false,
-      "endingCashCents": 1695,
+      "endingCashCents": 1163,
       "startingCapitalCents": 1000,
-      "cashPnlCents": 695,
-      "pnlCents": 695,
+      "cashPnlCents": 163,
+      "pnlCents": 163,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Fixed Width 0.1",
-            "pnlCents": 2786
+            "pnlCents": 3070
           },
           {
             "rank": 2,
             "name": "Mola mola",
-            "pnlCents": 695
+            "pnlCents": 163
           },
           {
             "rank": 3,
@@ -277,10 +273,10 @@
         ],
         "rank": 2,
         "participantCount": 3,
-        "ourPnlCents": 695,
+        "ourPnlCents": 163,
         "leaderName": "Fixed Width 0.1",
-        "leaderPnlCents": 2786,
-        "gapToLeaderCents": 2091,
+        "leaderPnlCents": 3070,
+        "gapToLeaderCents": 2907,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -292,37 +288,37 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 4134,
+      "endingCashCents": 4037,
       "startingCapitalCents": 1000,
-      "cashPnlCents": 3134,
-      "pnlCents": 3134,
+      "cashPnlCents": 3037,
+      "pnlCents": 3037,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Mola mola",
-            "pnlCents": 3134
+            "pnlCents": 3037
           },
           {
             "rank": 2,
             "name": "Fixed Width 0.1",
-            "pnlCents": 1251
+            "pnlCents": 778
           },
           {
             "rank": 3,
             "name": "Fixed Width 0.25",
-            "pnlCents": 100
+            "pnlCents": 200
           }
         ],
         "rank": 1,
         "participantCount": 3,
-        "ourPnlCents": 3134,
+        "ourPnlCents": 3037,
         "leaderName": "Mola mola",
-        "leaderPnlCents": 3134,
+        "leaderPnlCents": 3037,
         "gapToLeaderCents": 0,
         "runnerUpName": "Fixed Width 0.1",
-        "runnerUpPnlCents": 1251,
-        "marginToRunnerUpCents": 1883
+        "runnerUpPnlCents": 778,
+        "marginToRunnerUpCents": 2259
       }
     },
     {
@@ -331,34 +327,34 @@
       "passed": true,
       "scoreHundredths": 70,
       "bankrupt": false,
-      "endingCashCents": 3417,
+      "endingCashCents": 3059,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 1417,
-      "pnlCents": 1417,
+      "cashPnlCents": 1059,
+      "pnlCents": 1059,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Fixed Width 0.1",
-            "pnlCents": 3517
+            "pnlCents": 3411
           },
           {
             "rank": 2,
             "name": "Mola mola",
-            "pnlCents": 1417
+            "pnlCents": 1059
           },
           {
             "rank": 3,
             "name": "Stalemate Quoter",
-            "pnlCents": 400
+            "pnlCents": 500
           }
         ],
         "rank": 2,
         "participantCount": 3,
-        "ourPnlCents": 1417,
+        "ourPnlCents": 1059,
         "leaderName": "Fixed Width 0.1",
-        "leaderPnlCents": 3517,
-        "gapToLeaderCents": 2100,
+        "leaderPnlCents": 3411,
+        "gapToLeaderCents": 2352,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -370,16 +366,16 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 4117,
+      "endingCashCents": 4115,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 2117,
-      "pnlCents": 2117,
+      "cashPnlCents": 2115,
+      "pnlCents": 2115,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Mola mola",
-            "pnlCents": 2117
+            "pnlCents": 2115
           },
           {
             "rank": 2,
@@ -389,18 +385,18 @@
           {
             "rank": 3,
             "name": "Fixed Width 0.05",
-            "pnlCents": -1549
+            "pnlCents": -1542
           }
         ],
         "rank": 1,
         "participantCount": 3,
-        "ourPnlCents": 2117,
+        "ourPnlCents": 2115,
         "leaderName": "Mola mola",
-        "leaderPnlCents": 2117,
+        "leaderPnlCents": 2115,
         "gapToLeaderCents": 0,
         "runnerUpName": "Fixed Width 0.1",
         "runnerUpPnlCents": 17,
-        "marginToRunnerUpCents": 2100
+        "marginToRunnerUpCents": 2098
       }
     },
     {
@@ -409,32 +405,32 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 2321,
+      "endingCashCents": 2325,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 321,
-      "pnlCents": 321,
+      "cashPnlCents": 325,
+      "pnlCents": 325,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Mola mola",
-            "pnlCents": 321
+            "pnlCents": 325
           },
           {
             "rank": 2,
             "name": "Fixed Width 0.05",
-            "pnlCents": -581
+            "pnlCents": -743
           }
         ],
         "rank": 1,
         "participantCount": 2,
-        "ourPnlCents": 321,
+        "ourPnlCents": 325,
         "leaderName": "Mola mola",
-        "leaderPnlCents": 321,
+        "leaderPnlCents": 325,
         "gapToLeaderCents": 0,
         "runnerUpName": "Fixed Width 0.05",
-        "runnerUpPnlCents": -581,
-        "marginToRunnerUpCents": 902
+        "runnerUpPnlCents": -743,
+        "marginToRunnerUpCents": 1068
       }
     },
     {
@@ -443,39 +439,39 @@
       "passed": true,
       "scoreHundredths": 80,
       "bankrupt": false,
-      "endingCashCents": 2890,
+      "endingCashCents": 2948,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 890,
-      "pnlCents": 890,
+      "cashPnlCents": 948,
+      "pnlCents": 948,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Fixed Width 0.1",
-            "pnlCents": 1573
+            "pnlCents": 1121
           },
           {
             "rank": 2,
             "name": "Mola mola",
-            "pnlCents": 890
+            "pnlCents": 948
           },
           {
             "rank": 3,
             "name": "Lattice",
-            "pnlCents": 752
+            "pnlCents": 679
           },
           {
             "rank": 4,
             "name": "Situational Unawareness",
-            "pnlCents": 145
+            "pnlCents": 257
           }
         ],
         "rank": 2,
         "participantCount": 4,
-        "ourPnlCents": 890,
+        "ourPnlCents": 948,
         "leaderName": "Fixed Width 0.1",
-        "leaderPnlCents": 1573,
-        "gapToLeaderCents": 683,
+        "leaderPnlCents": 1121,
+        "gapToLeaderCents": 173,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -487,37 +483,37 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 3729,
+      "endingCashCents": 3512,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 1729,
-      "pnlCents": 1729,
+      "cashPnlCents": 1512,
+      "pnlCents": 1512,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Mola mola",
-            "pnlCents": 1729
+            "pnlCents": 1512
           },
           {
             "rank": 2,
             "name": "Lattice",
-            "pnlCents": 1399
+            "pnlCents": 1493
           },
           {
             "rank": 3,
             "name": "Fixed Width 0.05",
-            "pnlCents": 530
+            "pnlCents": 662
           }
         ],
         "rank": 1,
         "participantCount": 3,
-        "ourPnlCents": 1729,
+        "ourPnlCents": 1512,
         "leaderName": "Mola mola",
-        "leaderPnlCents": 1729,
+        "leaderPnlCents": 1512,
         "gapToLeaderCents": 0,
         "runnerUpName": "Lattice",
-        "runnerUpPnlCents": 1399,
-        "marginToRunnerUpCents": 330
+        "runnerUpPnlCents": 1493,
+        "marginToRunnerUpCents": 19
       }
     },
     {
@@ -526,37 +522,37 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 3303,
+      "endingCashCents": 2891,
       "startingCapitalCents": 2000,
-      "cashPnlCents": 1303,
-      "pnlCents": 1303,
+      "cashPnlCents": 891,
+      "pnlCents": 891,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Mola mola",
-            "pnlCents": 1303
+            "pnlCents": 891
           },
           {
             "rank": 2,
-            "name": "Lattice",
-            "pnlCents": 674
+            "name": "Situational Unawareness",
+            "pnlCents": 572
           },
           {
             "rank": 3,
-            "name": "Situational Unawareness",
-            "pnlCents": 627
+            "name": "Lattice",
+            "pnlCents": 214
           }
         ],
         "rank": 1,
         "participantCount": 3,
-        "ourPnlCents": 1303,
+        "ourPnlCents": 891,
         "leaderName": "Mola mola",
-        "leaderPnlCents": 1303,
+        "leaderPnlCents": 891,
         "gapToLeaderCents": 0,
-        "runnerUpName": "Lattice",
-        "runnerUpPnlCents": 674,
-        "marginToRunnerUpCents": 629
+        "runnerUpName": "Situational Unawareness",
+        "runnerUpPnlCents": 572,
+        "marginToRunnerUpCents": 319
       }
     },
     {
@@ -565,21 +561,21 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 6707,
+      "endingCashCents": 6650,
       "startingCapitalCents": 4000,
-      "cashPnlCents": 2707,
-      "pnlCents": 2707,
+      "cashPnlCents": 2650,
+      "pnlCents": 2650,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Mola mola",
-            "pnlCents": 2707
+            "pnlCents": 2650
           },
           {
             "rank": 2,
             "name": "Fixed Width 0.05",
-            "pnlCents": 843
+            "pnlCents": 902
           },
           {
             "rank": 3,
@@ -589,13 +585,13 @@
         ],
         "rank": 1,
         "participantCount": 3,
-        "ourPnlCents": 2707,
+        "ourPnlCents": 2650,
         "leaderName": "Mola mola",
-        "leaderPnlCents": 2707,
+        "leaderPnlCents": 2650,
         "gapToLeaderCents": 0,
         "runnerUpName": "Fixed Width 0.05",
-        "runnerUpPnlCents": 843,
-        "marginToRunnerUpCents": 1864
+        "runnerUpPnlCents": 902,
+        "marginToRunnerUpCents": 1748
       }
     },
     {
@@ -604,42 +600,42 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 5806,
+      "endingCashCents": 5819,
       "startingCapitalCents": 4000,
-      "cashPnlCents": 1806,
-      "pnlCents": 1806,
+      "cashPnlCents": 1819,
+      "pnlCents": 1819,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Mola mola",
-            "pnlCents": 1806
+            "pnlCents": 1819
           },
           {
             "rank": 2,
             "name": "Situational Unawareness",
-            "pnlCents": 1054
+            "pnlCents": 952
           },
           {
             "rank": 3,
             "name": "Lattice",
-            "pnlCents": 870
+            "pnlCents": 907
           },
           {
             "rank": 4,
             "name": "Mongoose",
-            "pnlCents": -3217
+            "pnlCents": -3170
           }
         ],
         "rank": 1,
         "participantCount": 4,
-        "ourPnlCents": 1806,
+        "ourPnlCents": 1819,
         "leaderName": "Mola mola",
-        "leaderPnlCents": 1806,
+        "leaderPnlCents": 1819,
         "gapToLeaderCents": 0,
         "runnerUpName": "Situational Unawareness",
-        "runnerUpPnlCents": 1054,
-        "marginToRunnerUpCents": 752
+        "runnerUpPnlCents": 952,
+        "marginToRunnerUpCents": 867
       }
     },
     {
@@ -648,26 +644,26 @@
       "passed": true,
       "scoreHundredths": 80,
       "bankrupt": false,
-      "endingCashCents": 4744,
+      "endingCashCents": 4746,
       "startingCapitalCents": 4000,
-      "cashPnlCents": 744,
-      "pnlCents": 744,
+      "cashPnlCents": 746,
+      "pnlCents": 746,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Fixed Width 0.05",
-            "pnlCents": 3901
+            "pnlCents": 3866
           },
           {
             "rank": 2,
             "name": "Mola mola",
-            "pnlCents": 744
+            "pnlCents": 746
           },
           {
             "rank": 3,
             "name": "Lattice",
-            "pnlCents": 225
+            "pnlCents": 253
           },
           {
             "rank": 4,
@@ -677,10 +673,10 @@
         ],
         "rank": 2,
         "participantCount": 4,
-        "ourPnlCents": 744,
+        "ourPnlCents": 746,
         "leaderName": "Fixed Width 0.05",
-        "leaderPnlCents": 3901,
-        "gapToLeaderCents": 3157,
+        "leaderPnlCents": 3866,
+        "gapToLeaderCents": 3120,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -692,39 +688,39 @@
       "passed": true,
       "scoreHundredths": 80,
       "bankrupt": false,
-      "endingCashCents": 4317,
+      "endingCashCents": 3786,
       "startingCapitalCents": 4000,
-      "cashPnlCents": 317,
-      "pnlCents": 317,
+      "cashPnlCents": -214,
+      "pnlCents": -214,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Situational Unawareness",
-            "pnlCents": 2345
+            "pnlCents": 2206
           },
           {
             "rank": 2,
             "name": "Mola mola",
-            "pnlCents": 317
+            "pnlCents": -214
           },
           {
             "rank": 3,
-            "name": "Fixed Width 0.05",
-            "pnlCents": -2053
+            "name": "Mongoose",
+            "pnlCents": -1398
           },
           {
             "rank": 4,
-            "name": "Mongoose",
-            "pnlCents": -2365
+            "name": "Fixed Width 0.05",
+            "pnlCents": -2434
           }
         ],
         "rank": 2,
         "participantCount": 4,
-        "ourPnlCents": 317,
+        "ourPnlCents": -214,
         "leaderName": "Situational Unawareness",
-        "leaderPnlCents": 2345,
-        "gapToLeaderCents": 2028,
+        "leaderPnlCents": 2206,
+        "gapToLeaderCents": 2420,
         "runnerUpName": null,
         "runnerUpPnlCents": null,
         "marginToRunnerUpCents": null
@@ -736,55 +732,50 @@
       "passed": true,
       "scoreHundredths": 100,
       "bankrupt": false,
-      "endingCashCents": 4023,
+      "endingCashCents": 3983,
       "startingCapitalCents": 4000,
-      "cashPnlCents": 23,
-      "pnlCents": 23,
+      "cashPnlCents": -17,
+      "pnlCents": -17,
       "ranking": {
         "entries": [
           {
             "rank": 1,
             "name": "Mola mola",
-            "pnlCents": 23
+            "pnlCents": -17
           },
           {
             "rank": 2,
             "name": "Lattice",
-            "pnlCents": -1226
+            "pnlCents": -899
           },
           {
             "rank": 3,
             "name": "Mongoose",
-            "pnlCents": -2977
+            "pnlCents": -2799
           },
           {
             "rank": 4,
             "name": "Fixed Width 0.05",
-            "pnlCents": -9823
+            "pnlCents": -10251
           }
         ],
         "rank": 1,
         "participantCount": 4,
-        "ourPnlCents": 23,
+        "ourPnlCents": -17,
         "leaderName": "Mola mola",
-        "leaderPnlCents": 23,
+        "leaderPnlCents": -17,
         "gapToLeaderCents": 0,
         "runnerUpName": "Lattice",
-        "runnerUpPnlCents": -1226,
-        "marginToRunnerUpCents": 1249
+        "runnerUpPnlCents": -899,
+        "marginToRunnerUpCents": 882
       }
     }
   ],
-  "anchorSelection": {
-    "rule": [
-      "score",
-      "losingGapSum",
-      "heldMarginFloor",
-      "sourceLines",
-      "candidateId"
-    ],
-    "gapSumCents": 16211,
-    "minimumHeldMarginCents": 330,
-    "sourceLines": 1180
-  }
+  "baselineDelta": {
+    "scoredPointsHundredths": 1330,
+    "combinedPnlCents": 15060
+  },
+  "reasons": [
+    "Research frontier retained during score-only objective migration"
+  ]
 }
