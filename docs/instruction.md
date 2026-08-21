@@ -17,10 +17,33 @@ case 13, each converting rank 2 to rank 1. Six generations ran with **zero
 collateral in every one**: since per-session warm-up labels became the unit of
 work, no candidate has moved a case outside its declared target.
 
-`results/frontier.json` still describes the 13.30 plateau. Regenerate it with
-`candidate_pipeline/frontier.sh <repo> apply` before trusting plateau queries.
-Note that `apply` also reseats the active challenger pool; use the default
-`report` mode if you only need the index.
+`results/frontier.json` on disk still describes the 13.30 plateau. Use
+`candidate_pipeline/frontier.sh <repo>` in the default `report` mode, which prints
+the index and writes nothing.
+
+**Do not run `frontier.sh apply` at 14.10.** A report-mode run on 2026-08-21
+scanned 297 archived reports and found four sources at the 14.10 maximum. Its
+anchor rule minimises gap sum, and on that rule it prefers `g6-lowband-fedmax-three`
+over the champion:
+
+```text
+g6-lowband-fedmax-three            gapSum 118.67   PnL 211.25
+g6-lowband-corr-fifty              gapSum 118.80   PnL 205.80
+g6-lowband-width-three-size-three  gapSum 118.80   PnL 205.80
+g5-case13-width-three-size-three   gapSum 120.51   PnL 214.94   <- champion
+```
+
+Applying that would be a regression in substance. The 1.84 gap-sum advantage comes
+entirely from case 8, where the gap narrowed 20.91 to 19.07 **because the leader
+fell 27.86 to 24.74 while we also fell 6.95 to 5.67**. We got absolutely worse; the
+leader merely got worse faster. Promoting it would bake the low-band width-3
+size-3 treatment — which Section 6 records as harmful in all four low-band cases —
+into the champion, and would cost 3.69 of combined PnL for no score.
+
+The underlying defect: gap sum is not sign-aware, so it scores "the leader fell"
+and "we rose" identically and can reward mutually destructive changes. Until the
+anchor rule distinguishes them, treat the frontier index as a per-case evidence
+lookup only, and never as a champion selector.
 
 ## 2. Objective Model
 
