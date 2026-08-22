@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "g1-case13-width-two",
+  "valid": true,
+  "eligible": false,
+  "sourcePath": "results/challengers/market-loop-20260821-9-g05-champion-g1-case13-width-two/r00.py",
+  "sourceSha256": "e9fe4f1e868dbfdd925d03970f4ec0b3c9db3216798958d6e03dc208d94f63d1",
+  "modifiedLines": 0,
+  "summary": {
+    "passed": 20,
+    "total": 20,
+    "bankruptcies": 0,
+    "scoredPointsHundredths": 1530,
+    "combinedPnlCents": 27419,
+    "minimumCapital": {
+      "endingCashCents": 3998,
+      "startingCapitalCents": 4000
+    },
+    "runtimeErrors": 0
+  },
+  "baselineDelta": {
+    "scoredPointsHundredths": 0,
+    "combinedPnlCents": 0
+  },
+  "reasons": [
+    "Demoted champion"
+  ]
+}

@@ -606,9 +606,10 @@ class MarketMaker:
             self.position.option_quantity_by_option_id.get(option_id, 0),
         )
         if low_band_regime or flat_rate_frequency > 0.60:
-            while bid_quantity < 8 and signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity:
+            size_ceiling = 12 if flat_rate_frequency > 0.60 else 8
+            while bid_quantity < size_ceiling and signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity:
                 bid_quantity += 1
-            while offer_quantity < 8 and active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity:
+            while offer_quantity < size_ceiling and active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity:
                 offer_quantity += 1
         if counterparty_markout.get(counterparty_id, 0.0) > 0.0:
             if signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity:

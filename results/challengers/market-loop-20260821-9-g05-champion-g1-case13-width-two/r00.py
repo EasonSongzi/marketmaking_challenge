@@ -507,7 +507,7 @@ class MarketMaker:
                 signed_reserve += position * self.price_option(active_option)
             elif position < 0:
                 signed_reserve -= position * (1.0 - self.price_option(active_option))
-        cash_floor = (0.0 if low_band_regime or flat_rate_frequency > 0.60 else 0.75) * self.cash_balance
+        cash_floor = (0.0 if low_band_regime else 0.75) * self.cash_balance
         available_capacity = self.cash_balance - cash_floor
         bid_quantity = (
             3
@@ -605,7 +605,7 @@ class MarketMaker:
             counterparty_id,
             self.position.option_quantity_by_option_id.get(option_id, 0),
         )
-        if low_band_regime or flat_rate_frequency > 0.60:
+        if low_band_regime:
             while bid_quantity < 8 and signed_reserve + (bid_quantity + 1) * bid_price <= available_capacity:
                 bid_quantity += 1
             while offer_quantity < 8 and active_exposure + (offer_quantity + 1) * (1.0 - offer_price) <= available_capacity:
