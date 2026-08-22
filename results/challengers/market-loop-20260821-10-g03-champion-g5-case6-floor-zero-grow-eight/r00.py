@@ -314,8 +314,6 @@ class MarketMaker:
         self._quote_snapshots: dict = {}
         self._fill_signals: dict = {}
         self._quote_request_counts: dict = {}
-        self._terminal_fills: dict = {}
-        self._counterparty_terminal: dict = {}
 
     def on_step_advance(self, new_underlying_state: list[Underlying], new_option_state: list[BinaryOption]) -> None:
         previous_ajarai: float = next(underlying.value for underlying in self.underlying_state if underlying.underlying_id == AJARAI_UNDERLYING_ID)
@@ -325,24 +323,6 @@ class MarketMaker:
         self._live_ajarai_squares += math.log(new_ajarai / previous_ajarai) ** 2
         self._live_theriodic_squares += math.log(new_theriodic / previous_theriodic) ** 2
         self._live_return_steps += 1
-        removed_options = {
-            option.option_id: option
-            for option in self.active_option_state
-            if option.option_id not in {new_option.option_id for new_option in new_option_state}
-        }
-        value_by_underlying_id = {underlying.underlying_id: underlying.value for underlying in new_underlying_state}
-        active_option_ids = {option.option_id for option in new_option_state}
-        for terminal_key, (terminal_quantity, terminal_notional) in list(self._terminal_fills.items()):
-            counterparty_id, option_id = terminal_key
-            option = removed_options.get(option_id)
-            if option is not None:
-                terminal_pnl = terminal_quantity * option.expiry_valuation(value_by_underlying_id) - terminal_notional
-                self._counterparty_terminal[counterparty_id] = (
-                    self._counterparty_terminal.get(counterparty_id, 0.0) + terminal_pnl
-                )
-                del self._terminal_fills[terminal_key]
-            elif option_id not in active_option_ids:
-                del self._terminal_fills[terminal_key]
         self.underlying_state = new_underlying_state
         self.active_option_state = new_option_state
 
@@ -352,18 +332,6 @@ class MarketMaker:
             theoretical_value = self.price_option(option)
             self._counterparty_markout[counterparty_id] = (
                 self._counterparty_markout.get(counterparty_id, 0.0) + quantity * (theoretical_value - price)
-            )
-        if (
-            self.warm_up_statistics is not None
-            and 0.40 < self.warm_up_statistics.rate_transition_frequencies["unchanged"] <= 0.50
-            and self.warm_up_statistics.company_log_returns_by_underlying_id[THERIODIC_UNDERLYING_ID].sample_std_dev > 0.025
-            and self.warm_up_statistics.raw_values_by_underlying_id[FED_FUNDS_RATE_UNDERLYING_ID].mean <= 2.0
-        ):
-            terminal_key = (counterparty_id, option.option_id)
-            terminal_quantity, terminal_notional = self._terminal_fills.get(terminal_key, (0, 0.0))
-            self._terminal_fills[terminal_key] = (
-                terminal_quantity + quantity,
-                terminal_notional + quantity * price,
             )
 
     @property
@@ -510,12 +478,7 @@ class MarketMaker:
         label_depth_applies: bool = fed_low_mean_regime and option.steps_until_expiry <= 1
         if label_depth_applies and repeat_request:
             half_width = max(half_width - 1, 1)
-        edge_signal = (
-            self._counterparty_terminal.get(counterparty_id, 0.0)
-            if fed_low_mean_regime and option.steps_until_expiry <= 2
-            else (0.0 if fed_low_mean_regime else counterparty_markout.get(counterparty_id, 0.0))
-        )
-        if label_depth_applies or edge_signal > 0.0:
+        if label_depth_applies or counterparty_markout.get(counterparty_id, 0.0) > 0.0:
             half_width = max(half_width - (1 if case_thirteen_regime else 2), 1)
         bid_price: float = max(fair_value_cents - half_width, 0) / 100
         offer_price: float = min(fair_value_cents + half_width, 100) / 100
