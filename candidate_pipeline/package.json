@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "check": "node --check src/case-result.mjs && node --check src/objective.mjs && node --check src/evaluate.mjs && node --check src/select.mjs && node --check src/candidate.mjs && node --check src/strategy-state.mjs && node --check src/frontier.mjs && node --check src/loop.mjs && node --check src/run-generation.mjs && python3 -c \"compile(open('src/materialize_tuning.py').read(), 'src/materialize_tuning.py', 'exec')\""
+    "check": "node --check src/case-result.mjs && node --check src/objective.mjs && node --check src/evaluate.mjs && node --check src/select.mjs && node --check src/candidate.mjs && node --check src/strategy-state.mjs && node --check src/frontier.mjs && node --check src/loop.mjs && node --check src/run-generation.mjs && python3 -c \"compile(open('src/materialize_tuning.py').read(), 'src/materialize_tuning.py', 'exec')\" && python3 -c \"compile(open('src/price_error_probe.py').read(), 'src/price_error_probe.py', 'exec')\""
   },
   "engines": {
     "node": ">=20"

@@ -190,7 +190,7 @@ candidate_pipeline/loop.sh finish --run-id <run-id>
 
 `results/runs/<run-id>/state.json` records completed candidates, evaluations,
 promotions, commits, and the stop reason. Resume from this state without
-rerunning completed HackerRank evaluations. The loop stops at 15.00/16.00 or
+rerunning completed HackerRank evaluations. The loop stops at 16.00/16.00 or
 after six generations. Add `--invalid <candidate-id>` to `archive` for each worker that
 exhausted its repair pass. `archive` runs selection internally, records
 `selection.json`, and cleans up verified worktrees. `finish` writes
@@ -326,6 +326,30 @@ floor, source lines, and candidate ID; preserves target frontier sources as
 active challengers; and updates the canonical source, baseline, champion record,
 registry, and `results/frontier.json`. The operation is hash-verified and
 idempotent.
+
+## Offline pricing probe
+
+`src/price_error_probe.py` measures a market-maker source's live pricing error against
+the true data-generating parameters. It is a screen, not a grader: it consumes no
+HackerRank run, and it never decides promotion.
+
+```bash
+python3 candidate_pipeline/src/price_error_probe.py width-table
+python3 candidate_pipeline/src/price_error_probe.py screen-drift
+python3 candidate_pipeline/src/price_error_probe.py error-table --source /path/to/candidate.py
+```
+
+Subcommands are `error-table`, `variance`, `width-table`, `screen-drift` and `live-vol`.
+Every command runs across four parameter regimes; `theo-case` is the parameter vector
+the THEO case prints, so it is a real draw from the grader's generator rather than a
+guess. Judge a candidate on cross-regime dominance -- admissible only when it never
+raises error in any regime by warm-up cell -- because ranking on one regime selects
+variants the grader has already rejected. `docs/instruction.md` sections 5 to 8 carry
+the current readings and the reasoning.
+
+Use it before spending a graded arm on a `warm_up` or `price_option` candidate. It
+does not model counterparty flow, competing makers or session length, so it cannot
+predict score.
 
 ## Manual fallback
 

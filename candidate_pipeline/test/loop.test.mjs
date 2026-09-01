@@ -237,7 +237,7 @@ test("start accepts an unrelated unstaged file and supports v1, v2, and v3 basel
         assert.equal(state.config.exploreCandidateCount, 3);
         assert.equal(state.config.maxTuningAttempts, 2);
         assert.equal(state.config.maxGenerations, 6);
-        assert.equal(state.config.targetPointsHundredths, 1500);
+        assert.equal(state.config.targetPointsHundredths, 1600);
         assert.equal(state.baseline.legacyBaseline, schemaVersion === 1);
       } finally {
         await cleanup(repo, id);
@@ -249,12 +249,14 @@ test("start accepts an unrelated unstaged file and supports v1, v2, and v3 basel
 test("stop rules cover target score and generation limit without stalls", () => {
   const state = {
     baseline: { summary: { scoredPointsHundredths: 1500 } },
-    config: { targetPointsHundredths: 1500, maxGenerations: 6 },
+    config: { targetPointsHundredths: 1600, maxGenerations: 6 },
     generations: [],
     consecutiveNoPromotion: 0,
   };
+  assert.equal(getStopReason(state), null);
+  state.baseline.summary.scoredPointsHundredths = 1600;
   assert.equal(getStopReason(state), "target score reached");
-  state.baseline.summary.scoredPointsHundredths = 1400;
+  state.baseline.summary.scoredPointsHundredths = 1500;
   state.generations = Array.from({ length: 6 }, (_, index) => ({ number: index + 1, status: "promoted" }));
   assert.equal(getStopReason(state), "generation limit reached");
   state.generations = [];

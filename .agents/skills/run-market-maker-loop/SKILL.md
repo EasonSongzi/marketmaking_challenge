@@ -11,7 +11,7 @@ Operate as the lead agent. Continue without interaction until the pipeline repor
 
 Start with `candidate_pipeline/loop.sh start --run-id <run-id>`. For an existing run, inspect `status`, execute `resume` only when it is failed, and continue the first incomplete generation. Before drafting a plan, read `AGENTS.MD`, the challenge, `docs/instruction.md`, `results/frontier.json`, the complete `MarketMaker`, `results/champion/champion.json`, `results/strategy-state.json`, recent evidence, and `candidate_pipeline/README.md`. Treat `docs/instruction.md` as a research ledger: hard invariants are mandatory, while scoped closures may be reopened only under their stated condition. `results/baselines/best.*` is only a compatibility view.
 
-The fixed grader is evaluated once per unique source SHA-256. Never rerun a completed or cached source. A run stops at 15.00/16.00 or after six completed generations; there is no stall stop.
+The fixed grader is evaluated once per unique source SHA-256. Never rerun a completed or cached source. A run stops at 16.00/16.00 or after six completed generations; there is no stall stop.
 
 ## Operational fast path
 

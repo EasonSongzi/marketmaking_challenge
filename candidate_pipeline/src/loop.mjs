@@ -35,6 +35,7 @@ const MODES = new Set(["explore", "tune"]);
 const FAILURE_KINDS = new Set(["authentication", "browser", "runner", "integrity"]);
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const CHALLENGER_ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,84}$/;
+const DEFAULT_TARGET_POINTS_HUNDREDTHS = 1600;
 
 export class LoopInputError extends Error {}
 
@@ -409,7 +410,7 @@ export async function startRun(options) {
       exploreCandidateCount: 3,
       maxTuningAttempts: 2,
       maxGenerations: options.maxGenerations ?? 6,
-      targetPointsHundredths: options.targetPointsHundredths ?? 1500,
+      targetPointsHundredths: options.targetPointsHundredths ?? DEFAULT_TARGET_POINTS_HUNDREDTHS,
     },
     startingBaseline: structuredClone(baselineState),
     baseline: baselineState,

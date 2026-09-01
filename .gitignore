@@ -2,3 +2,4 @@ results/runs/
 .claude/settings.local.json
 .DS_Store
 .probe-ci/
+candidate_pipeline/.pycache-test/

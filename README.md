@@ -16,7 +16,7 @@ joint parameter vectors, and evaluates the materialized variants serially.
 Every unique source SHA is run once through the fixed grader; later occurrences
 reuse the project evaluation cache.
 
-The loop stops after reaching 15.00/16.00 or completing six generations. Its
+The loop stops after reaching 16.00/16.00 or completing six generations. Its
 tracked report is written to
 `results/experiments/<run-id>.md`; state and archived candidate evidence live
 under `results/runs/<run-id>/`. The canonical champion lives in

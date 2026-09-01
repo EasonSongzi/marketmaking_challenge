@@ -68,7 +68,7 @@ continue the first incomplete generation. Before choosing a mode, read `AGENTS.M
 view.
 
 The fixed grader is evaluated once per unique source SHA-256. Never rerun a
-completed or cached source. A run stops at 15.00/16.00 or after six completed
+completed or cached source. A run stops at 16.00/16.00 or after six completed
 generations; there is no stall stop.
 
 ## Choose a generation mode
